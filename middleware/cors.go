@@ -17,15 +17,17 @@ func CORS() gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 		origin := c.GetHeader("Origin")
+		
+		// Set CORS headers for allowed origins
 		if origin != "" && isAllowedOrigin(origin, allowedOrigins) {
 			c.Header("Access-Control-Allow-Origin", origin)
 			c.Header("Access-Control-Allow-Credentials", "true")
+			c.Header("Access-Control-Allow-Headers", "Authorization, Content-Type, X-CSRF-Token")
+			c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
+			c.Header("Access-Control-Max-Age", "43200") // Cache preflight for 12 hours
 		}
 
-		c.Header("Access-Control-Allow-Headers", "Authorization, Content-Type, X-CSRF-Token")
-		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
-
-		// Preflight
+		// Handle preflight requests
 		if c.Request.Method == http.MethodOptions {
 			c.AbortWithStatus(http.StatusNoContent)
 			return

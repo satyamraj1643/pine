@@ -91,6 +91,8 @@ export const loginUser = createAsyncThunk<
 
       const data = await response.json();
 
+      console.log("Here is the data from login: ", data)
+
       if (!response.ok) {
         return rejectWithValue(data);
       }
@@ -103,7 +105,9 @@ export const loginUser = createAsyncThunk<
         token: data.token ?? null,
       }
 
-      console.log("from login", datab)
+      localStorage.setItem("auth_token", data.token);
+
+      console.log("set up tok in localstorage, here is the data", datab)
 
       return {
         user_id: data.user_id ?? data.id ?? undefined,

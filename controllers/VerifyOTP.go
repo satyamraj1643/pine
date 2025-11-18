@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"time"
-
 	"github.com/gin-gonic/gin"
 	"github.com/satyamraj1643/go-diary/config"
 	"github.com/satyamraj1643/go-diary/models"
@@ -10,7 +9,6 @@ import (
 
 func VerifyOTP(c *gin.Context) {
          
-
 	var input struct {
 		Email string `json:"email" binding:"required,email"`
 		OTP string `json:"otp" binding:"required,len=6"`

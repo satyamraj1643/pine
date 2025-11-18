@@ -7,7 +7,6 @@ import {
   FaPlusCircle,
   FaSmile,
   FaTimes,
-  FaSpinner,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import emojiData from "emoji-datasource/emoji.json";
@@ -38,7 +37,7 @@ const emojiOptions = emojiData
   .map((e) => ({
     id: e.short_name,
     emoji: charFromUtf16(e.unified),
-    label: e.name.charAt(0).toUpperCase() + e.name.slice(1).toLowerCase(),
+    label: e.name.charAt(0)?.toUpperCase() + e.name.slice(1)?.toLowerCase(),
     category: e.category,
     short_names: e.short_names,
   }));
@@ -68,10 +67,20 @@ const MoodSkeleton = () => (
 
 // Delete Confirmation Modal
 const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, moodName, isDeleting }) => {
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === "Escape" && !isDeleting) {
+        onClose();
+      }
+    };
+    document.addEventListener("keydown", handleEsc);
+    return () => document.removeEventListener("keydown", handleEsc);
+  }, [onClose, isDeleting]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 bg-[rgb(var(--background))] bg-opacity-20 backdrop-blur-sm">
+    <div className={`fixed inset-0 flex items-center justify-center z-50 bg-[rgb(var(--background))] bg-opacity-20 backdrop-blur-sm ${isDeleting ? 'pointer-events-none' : ''}`}>
       <div className="bg-[rgb(var(--card))] rounded-xl shadow-lg border border-[rgb(var(--border))] max-w-sm w-full p-4">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-serif text-[rgb(var(--copy-primary))]">
@@ -80,7 +89,7 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, moodName, isDelet
           <button
             onClick={onClose}
             disabled={isDeleting}
-            className="p-1 rounded-full hover:bg-[rgb(var(--surface))] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`p-1 rounded-full hover:bg-[rgb(var(--surface))] transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[rgb(var(--cta))] focus:ring-offset-2 ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''}`}
             aria-label="Close modal"
           >
             <FaTimes className="text-[rgb(var(--copy-muted))] text-sm" />
@@ -94,18 +103,41 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, moodName, isDelet
           <button
             onClick={onClose}
             disabled={isDeleting}
-            className="px-3 py-2 bg-[rgb(var(--surface))] text-[rgb(var(--copy-secondary))] rounded-lg text-sm hover:bg-[rgb(var(--border))] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-3 py-2 bg-[rgb(var(--surface))] text-[rgb(var(--copy-secondary))] rounded-lg text-sm hover:bg-[rgb(var(--border))] transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[rgb(var(--cta))] focus:ring-offset-2"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
             disabled={isDeleting}
-            className="px-3 py-2 bg-[rgb(var(--error))] text-white rounded-lg text-sm hover:bg-[rgb(var(--error))] opacity-80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className={`px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
+              isDeleting
+                ? "bg-[rgb(var(--error))] opacity-70 cursor-not-allowed"
+                : "bg-[rgb(var(--error))] hover:opacity-80"
+            } text-white focus:outline-none focus:ring-2 focus:ring-[rgb(var(--error))] focus:ring-offset-2`}
           >
             {isDeleting ? (
               <>
-                <FaSpinner className="text-xs animate-spin" />
+                <svg
+                  className="animate-spin h-4 w-4 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
                 Deleting...
               </>
             ) : (
@@ -121,18 +153,20 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, moodName, isDelet
 // Mood item component
 const MoodItem = ({ mood, onDelete, isDeletingMood, deletingMoodId }) => {
   const selectedEmoji =
-    emojiOptions.find((e) => e.id === mood.emoji)?.emoji || "😊";
+    emojiOptions.find((e) => e.id === mood.Emoji)?.emoji || "😊";
 
-  const isThisMoodDeleting = isDeletingMood && deletingMoodId === mood.id;
+  const isThisMoodDeleting = isDeletingMood && deletingMoodId === mood.ID;
 
   return (
     <div
       className={`rounded-xl overflow-hidden bg-[rgb(var(--card))] flex transition-all duration-200 border border-[rgb(var(--border))] hover:shadow-md ${
         isThisMoodDeleting ? 'opacity-60' : ''
       }`}
+      role="article"
+      aria-labelledby={`mood-${mood.ID}-name`}
     >
       {/* Color accent ribbon */}
-      <div className="w-1.5" style={{ backgroundColor: mood.color }} />
+      <div className="w-1.5" style={{ backgroundColor: mood?.Color }} />
 
       {/* Card Content */}
       <div className="flex-1 p-3">
@@ -140,12 +174,15 @@ const MoodItem = ({ mood, onDelete, isDeletingMood, deletingMoodId }) => {
           <div className="flex items-center gap-2 flex-1 min-w-0">
             <div
               className="w-8 h-8 rounded-lg flex items-center justify-center text-white flex-shrink-0"
-              style={{ backgroundColor: mood.color }}
+              style={{ backgroundColor: mood?.Color }}
             >
               {selectedEmoji}
             </div>
-            <h3 className="text-sm font-medium text-[rgb(var(--copy-primary))] capitalize truncate">
-              {mood.name}
+            <h3 
+              id={`mood-${mood.ID}-name`}
+              className="text-sm font-medium text-[rgb(var(--copy-primary))] capitalize truncate"
+            >
+              {mood.Name}
             </h3>
           </div>
         </div>
@@ -153,7 +190,7 @@ const MoodItem = ({ mood, onDelete, isDeletingMood, deletingMoodId }) => {
         <div className="space-y-1">
           <div className="flex items-center gap-1 text-[rgb(var(--copy-muted))] text-xs">
             <FaClock className="text-xs" />
-            <span>Created {formatDate(mood.created_at)}</span>
+            <span>Created {formatDate(mood.CreatedAt)}</span>
           </div>
         </div>
       </div>
@@ -162,14 +199,33 @@ const MoodItem = ({ mood, onDelete, isDeletingMood, deletingMoodId }) => {
       <button
         onClick={() => onDelete(mood)}
         disabled={isThisMoodDeleting}
-        className={`w-10 flex items-center justify-center bg-[rgb(var(--surface))] text-[rgb(var(--copy-muted))] hover:bg-[rgb(var(--error))] hover:text-white transition-all border-l border-[rgb(var(--border))] ${
+        className={`w-10 flex items-center justify-center bg-[rgb(var(--surface))] text-[rgb(var(--copy-muted))] hover:bg-[rgb(var(--error))] hover:text-white transition-all border-l border-[rgb(var(--border))] disabled:opacity-50 disabled:cursor-not-allowed ${
           isThisMoodDeleting ? 'cursor-not-allowed' : ''
-        }`}
+        } focus:outline-none focus:ring-2 focus:ring-[rgb(var(--error))] focus:ring-offset-2`}
         title={isThisMoodDeleting ? "Deleting..." : "Delete mood"}
         aria-label={isThisMoodDeleting ? "Deleting mood" : "Delete mood"}
       >
         {isThisMoodDeleting ? (
-          <FaSpinner className="text-sm animate-spin" />
+          <svg
+            className="animate-spin h-4 w-4 text-[rgb(var(--copy-muted))]"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
         ) : (
           <FaTimes className="text-sm" />
         )}
@@ -182,6 +238,16 @@ const MoodItem = ({ mood, onDelete, isDeletingMood, deletingMoodId }) => {
 const EmojiPalette = ({ onSelect, onClose, selectedEmojiId }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const paletteRef = useRef(null);
+
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    document.addEventListener("keydown", handleEsc);
+    return () => document.removeEventListener("keydown", handleEsc);
+  }, [onClose]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -198,12 +264,19 @@ const EmojiPalette = ({ onSelect, onClose, selectedEmojiId }) => {
       ...category,
       emojis: category.emojis.filter((e) =>
         [
-          e.label.toLowerCase(),
-          ...e.short_names.map((n) => n.toLowerCase()),
-        ].some((s) => s.includes(searchTerm.toLowerCase().trim()))
+          e.label?.toLowerCase(),
+          ...e.short_names.map((n) => n?.toLowerCase()),
+        ].some((s) => s.includes(searchTerm?.toLowerCase().trim()))
       ),
     }))
     .filter((category) => category.emojis.length > 0);
+
+  const handleClearSearch = () => {
+    setSearchTerm("");
+    // Refocus the input for better UX
+    const input = document.getElementById("emoji-search");
+    input?.focus();
+  };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-[rgb(var(--background))] bg-opacity-20 backdrop-blur-sm">
@@ -217,7 +290,7 @@ const EmojiPalette = ({ onSelect, onClose, selectedEmojiId }) => {
           </h3>
           <button
             onClick={onClose}
-            className="p-2 rounded-full hover:bg-[rgb(var(--surface))] transition-colors"
+            className="p-2 rounded-full hover:bg-[rgb(var(--surface))] transition-colors focus:outline-none focus:ring-2 focus:ring-[rgb(var(--cta))] focus:ring-offset-2"
             aria-label="Close emoji palette"
           >
             <FaTimes className="text-[rgb(var(--copy-muted))] text-sm" />
@@ -225,8 +298,12 @@ const EmojiPalette = ({ onSelect, onClose, selectedEmojiId }) => {
         </div>
         <div className="p-4">
           <div className="relative mb-4">
+            <label htmlFor="emoji-search" className="sr-only">
+              Search emojis
+            </label>
             <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[rgb(var(--copy-muted))] text-sm" />
             <input
+              id="emoji-search"
               type="text"
               placeholder="Search emojis..."
               value={searchTerm}
@@ -234,13 +311,22 @@ const EmojiPalette = ({ onSelect, onClose, selectedEmojiId }) => {
               className="w-full pl-8 pr-3 py-2 h-10 bg-[rgb(var(--surface))] border border-[rgb(var(--border))] rounded-lg text-sm text-[rgb(var(--copy-primary))] focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               autoFocus
             />
+            {searchTerm && (
+              <button
+                onClick={handleClearSearch}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded-full hover:bg-[rgb(var(--surface))] transition-colors focus:outline-none focus:ring-2 focus:ring-[rgb(var(--cta))] focus:ring-offset-2"
+                aria-label="Clear search"
+              >
+                <FaTimes className="text-xs text-[rgb(var(--copy-muted))]" />
+              </button>
+            )}
           </div>
           {filteredCategories.map((category) => (
             <div key={category.category} className="mb-4">
               <h4 className="text-sm font-medium text-[rgb(var(--copy-secondary))] mb-2 capitalize">
                 {category.category}
               </h4>
-              <div className="grid grid-cols-8 gap-1">
+              <div className="grid grid-cols-6 sm:grid-cols-8 gap-1">
                 {category.emojis.map((emoji) => (
                   <button
                     key={emoji.id}
@@ -248,7 +334,7 @@ const EmojiPalette = ({ onSelect, onClose, selectedEmojiId }) => {
                       onSelect(emoji.id);
                       onClose();
                     }}
-                    className={`p-1.5 rounded-lg text-xl hover:bg-[rgb(var(--surface))] transition-colors ${
+                    className={`p-1.5 rounded-lg text-xl hover:bg-[rgb(var(--surface))] transition-colors focus:outline-none focus:ring-2 focus:ring-[rgb(var(--cta))] focus:ring-offset-2 ${
                       selectedEmojiId === emoji.id
                         ? "bg-blue-50 border border-blue-500"
                         : ""
@@ -323,6 +409,7 @@ export default function Mood() {
       setIsLoading(true);
       const response = await GetAllMood();
       if (response.fetched === true) {
+        console.log("All the fetched moods", response.data)
         setMoods(response.data);
       } else {
         toast.error("Failed to fetch moods.");
@@ -355,7 +442,7 @@ export default function Mood() {
 
   const filteredAndSortedMoods = moods
     .filter((mood) =>
-      mood.name.toLowerCase().includes(searchTerm.toLowerCase().trim())
+      mood?.Name?.toLowerCase().includes(searchTerm?.toLowerCase().trim())
     )
     .sort((a, b) => {
       switch (sortBy) {
@@ -363,7 +450,7 @@ export default function Mood() {
           return new Date(b.created_at) - new Date(a.created_at);
         case "name":
         default:
-          return a.name.localeCompare(b.name);
+          return a.Name.localeCompare(b.Name);
       }
     });
 
@@ -405,17 +492,17 @@ export default function Mood() {
     if (selectedMood && !isDeleting) {
       try {
         setIsDeleting(true);
-        setDeletingMoodId(selectedMood.id);
+        setDeletingMoodId(selectedMood.ID);
         
-        const isMoodDeleted = await DeleteMood(selectedMood.id);
+        const isMoodDeleted = await DeleteMood(selectedMood.ID);
         if (isMoodDeleted) {
-          toast.success(`"${selectedMood.name}" deleted successfully.`);
+          toast.success(`"${selectedMood.Name}" deleted successfully.`);
           await getAllMoods();
         } else {
-          toast.error(`Failed to delete "${selectedMood.name}".`);
+          toast.error(`Failed to delete "${selectedMood.Name}".`);
         }
       } catch (error) {
-        toast.error(`Error deleting "${selectedMood.name}".`);
+        toast.error(`Error deleting "${selectedMood.Name}".`);
         console.error("Error deleting mood:", error);
       } finally {
         setIsDeleting(false);
@@ -453,6 +540,16 @@ export default function Mood() {
     setIsCustomColor(true);
   };
 
+  const handleClearSearch = () => {
+    setSearchTerm("");
+  };
+
+  const handleMoodNameKeyDown = (e) => {
+    if (e.key === "Enter" && !isCreating && newMoodName.trim()) {
+      handleAddMood();
+    }
+  };
+
   const currentEmoji =
     emojiOptions.find((e) => e.id === selectedEmoji)?.emoji || "😊";
 
@@ -479,8 +576,12 @@ export default function Mood() {
           <div className="bg-[rgb(var(--card))] rounded-xl p-4 shadow-sm border border-[rgb(var(--border))]">
             <div className="flex flex-col md:flex-row gap-3 items-start md:items-center justify-between">
               <div className="relative flex-1 max-w-md w-full">
+                <label htmlFor="search-moods" className="sr-only">
+                  Search moods
+                </label>
                 <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[rgb(var(--copy-muted))] text-sm" />
                 <input
+                  id="search-moods"
                   type="text"
                   placeholder="Search moods..."
                   value={searchTerm}
@@ -488,6 +589,15 @@ export default function Mood() {
                   className="w-full pl-8 pr-3 py-2 h-10 bg-[rgb(var(--surface))] border border-[rgb(var(--border))] rounded-lg text-sm text-[rgb(var(--copy-primary))] focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   autoFocus
                 />
+                {searchTerm && (
+                  <button
+                    onClick={handleClearSearch}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded-full hover:bg-[rgb(var(--surface))] transition-colors focus:outline-none focus:ring-2 focus:ring-[rgb(var(--cta))] focus:ring-offset-2"
+                    aria-label="Clear search"
+                  >
+                    <FaTimes className="text-sm text-[rgb(var(--copy-muted))]" />
+                  </button>
+                )}
               </div>
 
               <div className="flex gap-2">
@@ -497,7 +607,7 @@ export default function Mood() {
                 >
                   <button
                     onClick={(e) => toggleDropdown("sort", e)}
-                    className="flex items-center gap-2 px-3 py-2 h-10 bg-[rgb(var(--surface))] hover:bg-[rgb(var(--surface))] rounded-lg text-sm border border-[rgb(var(--border))]"
+                    className="flex items-center gap-2 px-3 py-2 h-10 bg-[rgb(var(--surface))] hover:bg-[rgb(var(--surface))] rounded-lg text-sm border border-[rgb(var(--border))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--cta))] focus:ring-offset-2"
                   >
                     <FaFilter className="text-[rgb(var(--copy-muted))] text-xs" />
                     <span className="text-[rgb(var(--copy-secondary))]">
@@ -512,7 +622,7 @@ export default function Mood() {
                           setSortBy("name");
                           setActiveDropdown(null);
                         }}
-                        className={`w-full text-left px-3 py-2 hover:bg-[rgb(var(--surface))] flex items-center gap-2 text-xs ${
+                        className={`w-full text-left px-3 py-2 hover:bg-[rgb(var(--surface))] flex items-center gap-2 text-xs focus:outline-none focus:ring-2 focus:ring-[rgb(var(--cta))] focus:ring-offset-2 ${
                           sortBy === "name"
                             ? "bg-amber-50 text-amber-600"
                             : "text-[rgb(var(--copy-primary))]"
@@ -526,7 +636,7 @@ export default function Mood() {
                           setSortBy("recent");
                           setActiveDropdown(null);
                         }}
-                        className={`w-full text-left px-3 py-2 hover:bg-[rgb(var(--surface))] flex items-center gap-2 text-xs ${
+                        className={`w-full text-left px-3 py-2 hover:bg-[rgb(var(--surface))] flex items-center gap-2 text-xs focus:outline-none focus:ring-2 focus:ring-[rgb(var(--cta))] focus:ring-offset-2 ${
                           sortBy === "recent"
                             ? "bg-amber-50 text-amber-600"
                             : "text-[rgb(var(--copy-primary))]"
@@ -544,11 +654,16 @@ export default function Mood() {
             <div className="mt-4 p-4 rounded-lg border border-[rgb(var(--border))] bg-[rgb(var(--surface))]">
               <div className="flex flex-col md:flex-row gap-4 items-center">
                 <div className="flex-1 w-full">
+                  <label htmlFor="mood-name" className="sr-only">
+                    Mood name
+                  </label>
                   <input
+                    id="mood-name"
                     type="text"
                     placeholder="Mood name..."
                     value={newMoodName}
                     onChange={(e) => setNewMoodName(e.target.value)}
+                    onKeyDown={handleMoodNameKeyDown}
                     disabled={isCreating}
                     className="w-full px-3 py-2 h-10 bg-[rgb(var(--card))] border border-[rgb(var(--border))] rounded-lg text-sm text-[rgb(var(--copy-primary))] focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-60"
                   />
@@ -556,7 +671,8 @@ export default function Mood() {
                 <button
                   onClick={() => setIsEmojiPaletteOpen(true)}
                   disabled={isCreating}
-                  className="flex items-center gap-2 px-3 py-2 h-10 bg-[rgb(var(--surface))] border border-[rgb(var(--border))] rounded-lg text-2xl hover:bg-[rgb(var(--surface))] disabled:opacity-60"
+                  className="flex items-center gap-2 px-3 py-2 h-10 bg-[rgb(var(--surface))] border border-[rgb(var(--border))] rounded-lg text-2xl hover:bg-[rgb(var(--surface))] disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-[rgb(var(--cta))] focus:ring-offset-2"
+                  aria-label="Select emoji"
                 >
                   {currentEmoji}
                   <FaSmile className="text-sm text-[rgb(var(--copy-muted))]" />
@@ -570,7 +686,7 @@ export default function Mood() {
                         setIsCustomColor(false);
                       }}
                       disabled={isCreating}
-                      className="w-6 h-6 rounded-full border hover:scale-110 transition-transform disabled:opacity-60"
+                      className="w-6 h-6 rounded-full border hover:scale-110 transition-transform disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-[rgb(var(--cta))] focus:ring-offset-2"
                       style={{
                         backgroundColor: color,
                         borderColor:
@@ -582,7 +698,8 @@ export default function Mood() {
                             ? "2px"
                             : "1px",
                       }}
-                      title={color}
+                      title={`Select ${color} color`}
+                      aria-label={`Select ${color} color`}
                     />
                   ))}
                   <div className="relative w-6 h-6">
@@ -607,7 +724,7 @@ export default function Mood() {
                         input?.click();
                       }}
                       disabled={isCreating}
-                      className="absolute w-6 h-6 rounded-full border hover:scale-110 transition-transform disabled:opacity-60"
+                      className="absolute w-6 h-6 rounded-full border hover:scale-110 transition-transform disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-[rgb(var(--cta))] focus:ring-offset-2"
                       style={{
                         backgroundColor: selectedColor,
                         borderColor: isCustomColor
@@ -617,6 +734,7 @@ export default function Mood() {
                         zIndex: 5,
                       }}
                       title="Choose custom color"
+                      aria-label="Choose custom color"
                     />
                   </div>
                 </div>
@@ -627,7 +745,7 @@ export default function Mood() {
                     newMoodName.trim() && !isCreating
                       ? "shadow-sm"
                       : "cursor-not-allowed opacity-60"
-                  }`}
+                  } focus:outline-none focus:ring-2 focus:ring-[rgb(var(--cta))] focus:ring-offset-2`}
                   style={{
                     backgroundColor: newMoodName.trim() && !isCreating
                       ? "rgb(var(--cta))"
@@ -636,11 +754,35 @@ export default function Mood() {
                   }}
                 >
                   {isCreating ? (
-                    <FaSpinner className="text-xs animate-spin" />
+                    <>
+                      <svg
+                        className="animate-spin h-4 w-4 text-[rgb(var(--cta-text))]"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      Creating...
+                    </>
                   ) : (
-                    <FaPlusCircle className="text-xs" />
+                    <>
+                      <FaPlusCircle className="text-xs" />
+                      Add Mood
+                    </>
                   )}
-                  {isCreating ? "Creating..." : "Add Mood"}
                 </button>
               </div>
             </div>
@@ -656,7 +798,7 @@ export default function Mood() {
           ) : filteredAndSortedMoods.length > 0 ? (
             filteredAndSortedMoods.map((mood) => (
               <MoodItem 
-                key={mood.id} 
+                key={mood.ID} 
                 mood={mood} 
                 onDelete={openDeleteModal}
                 isDeletingMood={isDeleting}

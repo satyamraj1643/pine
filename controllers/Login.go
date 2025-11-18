@@ -59,10 +59,20 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	// Store the JWT in an HttpOnly cookie that persists until logout
-	// Using 30 days (2592000 seconds) as MaxAge - adjust as needed
-	c.SetSameSite(http.SameSiteNoneMode)
-	c.SetCookie("auth_token", token, 2592000, "/", "localhost", true, true)
+    c.SetSameSite(http.SameSiteLaxMode)
+    
+    // Use c.SetCookie for consistency with Gin framework
+    c.SetCookie(
+        "auth_token",              // name
+        token,                      // value
+        365*24*60*60,              // maxAge in seconds (1 year)
+        "/",                        // path
+        "",                         // domain (empty for current domain)
+        false,                      // secure (false for http://localhost)
+        true,                       // httpOnly (true for security)
+    )
+
+	
 
 	c.JSON(http.StatusOK, gin.H{
 		"user_id":       user.ID,

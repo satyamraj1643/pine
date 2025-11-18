@@ -31,17 +31,42 @@ import Mood from "./pages/Mood";
 import useIsMobile from "./hooks/useIsMobile";
 import VerifyOTP from "./pages/VerifyOTP";
 
+function AppLayout() {
+  return (
+    <div className="flex">
+      <SideBar />
+      <div className="flex-1 bg-[rgb(var(--background))] p-4 ml-64">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/my-entries" element={<RecentEntries />} />
+          <Route path="/chapters" element={<Chapters />} />
+          <Route path="/collections" element={<Collections />} />
+          <Route path="/statistics" element={<Statistics />} />
+          <Route path="/backup" element={<Backup />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/archives" element={<Archives />} />
+          <Route path="/entry-view" element={<EntryView />} />
+          <Route path="/mood" element={<Mood />} />
+          <Route path="/chapter-view" element={<ChapterView />} />
+          <Route path="/create-entry" element={<CreateEntry />} />
+          <Route path="/create-chapter" element={<CreateChapter />} />
+          <Route path="/create-collection" element={<CreateCollection />} />
+        </Routes>
+      </div>
+    </div>
+  );
+}
+
 const App = () => {
   useValidateUser();
 
-  const {
-    isOtpVerified,
-    isLoggedIn,
-    isValidating,
-  } = useSelector((state: RootState) => state.auth);
+  const { isOtpVerified, isValidating, isValidated } = useSelector(
+    (state: RootState) => state.auth
+  );
 
   const isMobile = useIsMobile();
 
+  // 📵 Block mobile
   if (isMobile) {
     return (
       <div
@@ -49,19 +74,19 @@ const App = () => {
           textAlign: "center",
           padding: "2rem",
           fontSize: "1.2rem",
-          fontFamily: "sans-serif",
         }}
       >
-        📱 You can't possibly write a journal on mobile, try opening on tablet/desktop!
+        📱 You can't possibly write a journal on mobile, try opening on
+        tablet/desktop!
       </div>
     );
   }
 
-  // ⏳ Show loader only during validation
+  // ⏳ Show loader during validation
   if (isValidating) return <Validating />;
 
-  // 🔐 User has JWT but OTP is NOT verified
-  if (isLoggedIn && !isOtpVerified) {
+  // 🚨 If OTP is NOT verified → FORCE to VerifyOTP page
+  if (!isOtpVerified) {
     return (
       <>
         <Toaster position="top-right" />
@@ -73,38 +98,20 @@ const App = () => {
     );
   }
 
-  // 🟩 User is logged in + OTP verified → full app
-  if (isLoggedIn && isOtpVerified) {
+  // 🟩 OTP Verified + Validated → Full app
+  if (isOtpVerified && isValidated) {
     return (
       <>
         <Toaster position="top-right" />
-        <div className="flex">
-          <SideBar />
-          <div className="flex-1 bg-[rgb(var(--background))] p-4 ml-64">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/my-entries" element={<RecentEntries />} />
-              <Route path="/chapters" element={<Chapters />} />
-              <Route path="/collections" element={<Collections />} />
-              <Route path="/statistics" element={<Statistics />} />
-              <Route path="/backup" element={<Backup />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/archives" element={<Archives />} />
-              <Route path="/entry-view" element={<EntryView />} />
-              <Route path="/mood" element={<Mood />} />
-              <Route path="/chapter-view" element={<ChapterView />} />
-              <Route path="/create-entry" element={<CreateEntry />} />
-              <Route path="/create-chapter" element={<CreateChapter />} />
-              <Route path="/create-collection" element={<CreateCollection />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </div>
-        </div>
+        <Routes>
+          <Route path="/*" element={<AppLayout />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
       </>
     );
   }
 
-  // 🚪 Not logged in → show guest routes
+  // 👤 Guest routes
   return (
     <>
       <Toaster position="top-right" />
@@ -112,7 +119,6 @@ const App = () => {
         <Route path="/" element={<Hero />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/verifyOtp" element={<VerifyOTP />} />
         <Route path="/reset_password" element={<RequestPasswordReset />} />
         <Route
           path="/password/reset/confirm/:uid/:token"

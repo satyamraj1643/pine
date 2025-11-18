@@ -1,1 +1,0 @@
-web: gunicorn diary_api.wsgi

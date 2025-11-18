@@ -8,15 +8,16 @@ import { getCookie } from "./utilities/csrf";
 
 const csrfToken = getCookie("csrftoken");
 
+const token = localStorage.getItem("auth_token")
+
 export const createCollection = async (collection: Collection): Promise<any> => {
     try {
-        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/collections/create-new/`, {
+        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/collections/create-new`, {
             method: "POST",
             headers: {
+                "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json"
             },
-            credentials: "include",
-
             body: JSON.stringify({
                 "name": collection.name,
                 "color": collection.color
@@ -27,9 +28,9 @@ export const createCollection = async (collection: Collection): Promise<any> => 
             return response.statusText;
         }
 
-        const data: Collections = await response.json();
+        const data = await response.json();
 
-        console.log(data)
+        console.log("data froom save collection", data);
 
         return data;
 
@@ -42,19 +43,19 @@ export const createCollection = async (collection: Collection): Promise<any> => 
 
 export const GetAllCollections = async (): Promise<any> => {
     try {
-        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/collections/all/`, {
+        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/collections/all`, {
             method: "GET",
-            credentials: "include",
             headers: {
+                "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json"
-            }
+            },
         })
 
         if (!response.ok) {
             return response.statusText
         }
 
-        const data: Collections = await response.json()
+        const data = await response.json()
 
         console.log("in get collection", data);
 
@@ -70,12 +71,14 @@ export const GetAllCollections = async (): Promise<any> => {
 export const DeleteCollection = async (id: number) => {
     try {
 
-        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/collections/delete/${id}/`, {
+        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/collections/delete/${id}`, {
 
             method: 'DELETE',
             headers: {
-                'Content-Type': 'application/json'
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
             },
+
             credentials: "include",
             body: JSON.stringify({})
         })
@@ -103,13 +106,13 @@ export const CreateMood = async (mood: Mood): Promise<any> => {
 
         console.log("in create mood", mood)
 
-        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/moods/create-new/`, {
+        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/moods/create-new`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken || "",
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
             },
-            credentials: "include",
+            
 
             body: JSON.stringify(mood),
 
@@ -133,15 +136,12 @@ export const CreateMood = async (mood: Mood): Promise<any> => {
 export const GetAllMood = async () => {
     try {
         console.log("in mood fetch")
-        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/moods/all/`, {
+        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/moods/all`, {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken || ""
-            },
-
-            credentials: 'include',
-
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
 
         })
 
@@ -151,14 +151,15 @@ export const GetAllMood = async () => {
                 "fetched": false,
             })
         }
-
-
+        
 
         if (response.status === 200) {
             const data = await response.json()
+
+            console.log("All moods", data)
             return {
                 "fetched": true,
-                "data": data.data
+                "data": data.moods
             }
         }
         else {
@@ -178,13 +179,14 @@ export const GetAllMood = async () => {
 
 export const DeleteMood = async (id: number) => {
     try {
-        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/moods/delete/${id}/`, {
+        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/moods/delete/${id}`, {
 
             method: 'DELETE',
             headers: {
-                'Content-Type': 'application/json'
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
             },
-            credentials: "include",
+            
             body: JSON.stringify({})
         })
 
@@ -257,7 +259,7 @@ export const CreateNewEntry = async (entry: any): Promise<any> => {
 }
 
 
-export const UpdateEntry = async (id: number, updatedEntry:any): Promise<any> => {
+export const UpdateEntry = async (id: number, updatedEntry: any): Promise<any> => {
 
     try {
 
@@ -272,7 +274,7 @@ export const UpdateEntry = async (id: number, updatedEntry:any): Promise<any> =>
             'credentials': 'include',
 
 
-            body : JSON.stringify(updatedEntry)
+            body: JSON.stringify(updatedEntry)
 
 
         })
@@ -474,7 +476,7 @@ export const DeleteEntry = async (id: number) => {
 
 
 
-export const ArchiveEntry = async (id: number, is_archived:boolean) => {
+export const ArchiveEntry = async (id: number, is_archived: boolean) => {
 
     try {
 
@@ -509,7 +511,7 @@ export const ArchiveEntry = async (id: number, is_archived:boolean) => {
 }
 
 
-export const ArchiveChapter = async (id: number, is_archived:boolean) => {
+export const ArchiveChapter = async (id: number, is_archived: boolean) => {
 
     try {
 
@@ -648,7 +650,7 @@ export const DeleteChapter = async (id: number) => {
 
 }
 
-export const UpdateChapter = async (id: number, updatedChapter:any) => {
+export const UpdateChapter = async (id: number, updatedChapter: any) => {
 
     try {
 
@@ -661,7 +663,7 @@ export const UpdateChapter = async (id: number, updatedChapter:any) => {
             },
             'credentials': 'include',
 
-            body : JSON.stringify({
+            body: JSON.stringify({
                 "color": updatedChapter.color,
                 "title": updatedChapter.title,
                 "decription": updatedChapter.description,

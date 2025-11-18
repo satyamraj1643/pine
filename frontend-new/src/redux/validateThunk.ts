@@ -13,10 +13,19 @@ export const validateUser = createAsyncThunk<
   void,
   { rejectValue: { detail?: string } }
 >("auth/validateUser", async (_, { rejectWithValue }) => {
+
+  const token = localStorage.getItem("auth_token");
+  console.log("the token from the localstorage", token);
+
+  
   try {
     const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/auth/validate`, {
       method: "GET",
-      credentials: "include", // send cookies
+      credentials: "include",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
     });
 
     const data = await response.json();

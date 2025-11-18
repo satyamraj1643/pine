@@ -22,11 +22,15 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { FaRegClock } from "react-icons/fa6";
 
+
+
 const formatDate = (dateString) => {
   const date = new Date(dateString);
   const now = new Date();
   //@ts-ignore
   const diffInMinutes = Math.floor((now - date) / (1000 * 60));
+
+
 
   if (diffInMinutes < 60) {
     return `${diffInMinutes}m ago`;
@@ -45,41 +49,48 @@ const formatDate = (dateString) => {
   }
 };
 
-// Skeleton Loading Components
+
+
 const SkeletonCard = () => (
   <div className="rounded-xl overflow-hidden bg-[rgb(var(--card))] flex transition-all duration-200 border border-[rgb(var(--border))] animate-pulse">
     {/* Color accent ribbon skeleton */}
     <div className="w-1.5 bg-gray-300" />
-    
+  
     {/* Card Content */}
     <div className="flex-1 p-3">
       <div className="flex items-start justify-between mb-2">
         <div className="flex items-center gap-2 flex-1 min-w-0">
-          <div className="w-8 h-8 rounded-lg bg-gray-300 flex-shrink-0" />
-          <div className="h-4 bg-gray-300 rounded flex-1 max-w-24" />
+         <div className="w-8 h-8 rounded-lg bg-gray-300 flex-shrink-0" />
+         <div className="h-4 bg-gray-300 rounded flex-1 max-w-24" />
         </div>
       </div>
 
+
+
       <div className="space-y-2">
         <div className="flex items-center gap-1">
-          <div className="w-3 h-3 bg-gray-200 rounded" />
-          <div className="h-3 bg-gray-200 rounded w-16" />
+         <div className="w-3 h-3 bg-gray-200 rounded" />
+         <div className="h-3 bg-gray-200 rounded w-16" />
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-3 h-3 bg-gray-200 rounded" />
-          <div className="h-3 bg-gray-200 rounded w-14" />
+         <div className="w-3 h-3 bg-gray-200 rounded" />
+         <div className="h-3 bg-gray-200 rounded w-14" />
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-3 h-3 bg-gray-200 rounded" />
-          <div className="h-3 bg-gray-200 rounded w-20" />
+         <div className="w-3 h-3 bg-gray-200 rounded" />
+         <div className="h-3 bg-gray-200 rounded w-20" />
         </div>
       </div>
     </div>
+
+
 
     {/* Delete Button skeleton */}
     <div className="w-10 bg-gray-100 border-l border-[rgb(var(--border))]" />
   </div>
 );
+
+
 
 const SkeletonLoader = () => (
   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -89,11 +100,15 @@ const SkeletonLoader = () => (
   </div>
 );
 
-const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, tagName }) => {
+
+
+const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, tagName, isDeleting }) => {
   if (!isOpen) return null;
 
+
+
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 bg-[rgb(var(--background))] bg-opacity-20 backdrop-blur-sm">
+    <div className={`fixed inset-0 flex items-center justify-center z-50 bg-[rgb(var(--background))] bg-opacity-20 backdrop-blur-sm ${isDeleting ? 'pointer-events-none' : ''}`}>
       <div className="bg-[rgb(var(--card))] rounded-xl shadow-lg border border-[rgb(var(--border))] max-w-sm w-full p-4">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-serif text-[rgb(var(--copy-primary))]">
@@ -101,7 +116,8 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, tagName }) => {
           </h3>
           <button
             onClick={onClose}
-            className="p-1 rounded-full hover:bg-[rgb(var(--surface))] transition-colors"
+            disabled={isDeleting}
+            className={`p-1 rounded-full hover:bg-[rgb(var(--surface))] transition-colors ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''}`}
             aria-label="Close modal"
           >
             <FaTimes className="text-[rgb(var(--copy-muted))] text-sm" />
@@ -114,21 +130,55 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, tagName }) => {
         <div className="flex justify-end gap-2">
           <button
             onClick={onClose}
-            className="px-3 py-2 bg-[rgb(var(--surface))] text-[rgb(var(--copy-secondary))] rounded-lg text-sm hover:bg-[rgb(var(--border))] transition-colors"
+            disabled={isDeleting}
+            className="px-3 py-2 bg-[rgb(var(--surface))] text-[rgb(var(--copy-secondary))] rounded-lg text-sm hover:bg-[rgb(var(--border))] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
-            className="px-3 py-2 bg-[rgb(var(--error))] text-white rounded-lg text-sm hover:bg-[rgb(var(--error))] opacity-80 transition-colors"
+            disabled={isDeleting}
+            className={`px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
+              isDeleting
+                ? "bg-[rgb(var(--error))] opacity-70 cursor-not-allowed"
+                : "bg-[rgb(var(--error))] hover:opacity-80"
+            } text-white`}
           >
-            Delete
+            {isDeleting ? (
+              <>
+                <svg
+                  className="animate-spin h-4 w-4 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Deleting...
+              </>
+            ) : (
+              "Delete"
+            )}
           </button>
         </div>
       </div>
     </div>
   );
 };
+
+
 
 const Collections = () => {
   const [tags, setTags] = useState([]);
@@ -140,15 +190,19 @@ const Collections = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTag, setSelectedTag] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const dropdownRefs = useRef({});
   const navigate = useNavigate();
+
+
 
   const getData = async () => {
     try {
       setIsLoading(true);
       const response = await GetAllCollections();
-      if (response && Array.isArray(response.data)) {
-        setTags(response.data);
+      console.log("Getting the response in collections", response.collections)
+      if (response && Array.isArray(response.collections)) {
+        setTags(response.collections);
         setError(null);
       } else {
         setError("Failed to load collections: Invalid data format");
@@ -161,9 +215,13 @@ const Collections = () => {
     }
   };
 
+
+
   useEffect(() => {
     getData();
   }, []);
+
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -173,43 +231,51 @@ const Collections = () => {
       }
     };
 
+
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+
+
   const filteredAndSortedTags = tags
     .filter((tag) =>
-      tag.name.toLowerCase().includes(searchTerm.toLowerCase().trim())
+      tag.Name.toLowerCase().includes(searchTerm.toLowerCase().trim())
     )
     .sort((a, b) => {
       switch (sortBy) {
         case "chapters":
           return sortOrder === "asc"
-            ? a.chapters_count - b.chapters_count
-            : b.chapters_count - a.chapters_count;
+            ? (a.Chapters || 0) - (b.Chapters || 0)
+            : (b.Chapters || 0) - (a.Chapters || 0);
         case "entries":
           return sortOrder === "asc"
-            ? a.entries_count - b.entries_count
-            : b.entries_count - a.entries_count;
+            ? (a.Entries || 0) - (b.Entries || 0)
+            : (b.Entries || 0) - (a.Entries || 0);
         case "recent":
           //@ts-ignore
           return sortOrder === "asc"
             ? //@ts-ignore
-              new Date(a.last_used) - new Date(b.last_used)
+              new Date(a.LastUsed) - new Date(b.LastUsed)
             : //@ts-ignore
-              new Date(b.last_used) - new Date(a.last_used);
+              new Date(b.LastUsed) - new Date(a.LastUsed);
         case "name":
         default:
           return sortOrder === "asc"
-            ? a.name.localeCompare(b.name)
-            : b.name.localeCompare(a.name);
+            ? a.Name.localeCompare(b.Name)
+            : b.Name.localeCompare(a.Name);
       }
     });
+
+
 
   const toggleDropdown = (id, event) => {
     event.stopPropagation();
     setActiveDropdown(activeDropdown === id ? null : id);
   };
+
+
 
   const getSortLabel = () => {
     switch (sortBy) {
@@ -217,46 +283,66 @@ const Collections = () => {
         return "Chapters Used";
       case "entries":
         return "Entries Used";
-      case "recent":
-        return "Recently Used";
+      // case "recent":
+      //   return "Recently Used";
       case "name":
       default:
         return "Alphabetical";
     }
   };
 
+
+
   const handleCreateCollection = () => {
     navigate("/create-collection");
   };
 
-  const handleDeleteClick = async (id, name) => {
-    const isDeleted = await DeleteCollection(id);
 
-    if (isDeleted) {
-      toast.success(`Tag ${name} deleted successfully.`);
-      getData();
-    } else {
-      toast.error("Failed to delete.");
+
+  const handleDeleteClick = async (id: number, name: string) => {
+    setIsDeleting(true);
+    try {
+      const isDeleted = await DeleteCollection(id);
+
+      if (isDeleted) {
+        toast.success(`Collection "${name}" deleted successfully.`);
+        await getData(); // Refresh the list
+      } else {
+        toast.error("Failed to delete collection.");
+      }
+    } catch (err) {
+      toast.error("An error occurred while deleting.");
+      console.error("Delete error:", err);
+    } finally {
+      setIsDeleting(false);
     }
   };
+
+
 
   const openDeleteModal = (tag) => {
     setSelectedTag(tag);
     setIsModalOpen(true);
   };
 
-  const confirmDelete = () => {
+
+
+  const confirmDelete = async () => {
     if (selectedTag) {
-      handleDeleteClick(selectedTag.id, selectedTag.name);
+      await handleDeleteClick(selectedTag.ID, selectedTag.Name);
     }
     setIsModalOpen(false);
     setSelectedTag(null);
   };
 
+
+
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedTag(null);
   };
+
+
 
   return (
     <div className="min-h-screen bg-[rgb(var(--background))]">
@@ -279,6 +365,8 @@ const Collections = () => {
           </div>
         </div>
 
+
+
         {/* Search and Controls */}
         <div className="mb-8">
           <div className="bg-[rgb(var(--card))] rounded-xl p-4 shadow-sm ring-1 ring-[rgb(var(--border))]">
@@ -297,6 +385,8 @@ const Collections = () => {
                 />
               </div>
 
+
+
               <div className="flex gap-3 items-center">
                 <div
                   className="relative"
@@ -314,6 +404,8 @@ const Collections = () => {
                     </span>
                   </button>
 
+
+
                   {activeDropdown === "sort" && !isLoading && (
                     <div className="absolute right-0 top-full mt-1 w-48 bg-[rgb(var(--card))] rounded-lg shadow-md border border-[rgb(var(--border))] z-20">
                       {[
@@ -322,11 +414,11 @@ const Collections = () => {
                           value: "name",
                           icon: FaSortAlphaDown,
                         },
-                        {
-                          label: "Recently Used",
-                          value: "recent",
-                          icon: FaClock,
-                        },
+                        // {
+                        //   label: "Recently Used",
+                        //   value: "recent",
+                        //   icon: FaClock,
+                        // },
                         {
                           label: "Chapters Used",
                           value: "chapters",
@@ -358,6 +450,8 @@ const Collections = () => {
                   )}
                 </div>
 
+
+
                 <button
                   onClick={() =>
                     setSortOrder(sortOrder === "asc" ? "desc" : "asc")
@@ -382,6 +476,8 @@ const Collections = () => {
                   )}
                 </button>
 
+
+
                 <button
                   onClick={handleCreateCollection}
                   disabled={isLoading}
@@ -399,8 +495,12 @@ const Collections = () => {
           </div>
         </div>
 
+
+
         {/* Loading State */}
         {isLoading && <SkeletonLoader />}
+
+
 
         {/* Error State */}
         {error && !isLoading && (
@@ -426,16 +526,20 @@ const Collections = () => {
           </div>
         )}
 
+
+
         {/* Tags Grid */}
         {!error && !isLoading && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredAndSortedTags.map((tag) => (
               <div
-                key={tag.id}
+                key={tag.ID}
                 className="rounded-xl overflow-hidden bg-[rgb(var(--card))] flex transition-all duration-200 border border-[rgb(var(--border))] hover:shadow-md"
               >
                 {/* Color accent ribbon */}
-                <div className="w-1.5" style={{ backgroundColor: tag.color }} />
+                <div className="w-1.5" style={{ backgroundColor: tag.Color }} />
+
+
 
                 {/* Card Content */}
                 <div className="flex-1 p-3">
@@ -443,36 +547,41 @@ const Collections = () => {
                     <div className="flex items-center gap-2 flex-1 min-w-0">
                       <div
                         className="w-8 h-8 rounded-lg flex items-center justify-center text-white flex-shrink-0"
-                        style={{ backgroundColor: tag.color }}
+                        style={{ backgroundColor: tag.Color }}
                       >
                         <FaHashtag className="text-xs" />
                       </div>
                       <h3 className="text-sm font-medium text-[rgb(var(--copy-primary))] capitalize truncate">
-                        {tag.name}
+                        {tag.Name}
                       </h3>
                     </div>
                   </div>
 
+
+
                   <div className="space-y-1">
                     <div className="flex items-center gap-1 text-[rgb(var(--copy-secondary))] text-xs">
                       <FaBookOpen className="text-xs" />
-                      <span>{tag.chapters_count} chapters</span>
+                      <span>{tag.Chapters || 0} chapters</span>
                     </div>
                     <div className="flex items-center gap-1 text-[rgb(var(--copy-secondary))] text-xs">
                       <FaPenNib className="text-xs" />
-                      <span>{tag.entries_count} entries</span>
+                      <span>{tag.Entries || 0} entries</span>
                     </div>
-                    <div className="flex items-center gap-1 text-[rgb(var(--copy-muted))] text-xs">
+                    {/* <div className="flex items-center gap-1 text-[rgb(var(--copy-muted))] text-xs">
                       <FaRegClock className="text-xs" />
-                      <span>Used {formatDate(tag.last_used)}</span>
-                    </div>
+                      <span>Used {formatDate(tag.LastUsed)}</span>
+                    </div> */}
                   </div>
                 </div>
+
+
 
                 {/* Delete Button */}
                 <button
                   onClick={() => openDeleteModal(tag)}
-                  className="w-10 flex items-center justify-center bg-[rgb(var(--surface))] text-[rgb(var(--copy-muted))] hover:bg-[rgb(var(--error))] hover:text-white transition-all border-l border-[rgb(var(--border))]"
+                  disabled={isDeleting}
+                  className="w-10 flex items-center justify-center bg-[rgb(var(--surface))] text-[rgb(var(--copy-muted))] hover:bg-[rgb(var(--error))] hover:text-white transition-all border-l border-[rgb(var(--border))] disabled:opacity-50 disabled:cursor-not-allowed"
                   title="Delete collection"
                   aria-label="Delete collection"
                 >
@@ -482,6 +591,8 @@ const Collections = () => {
             ))}
           </div>
         )}
+
+
 
         {/* Empty State */}
         {!error && !isLoading && filteredAndSortedTags.length === 0 && (
@@ -503,13 +614,18 @@ const Collections = () => {
           </div>
         )}
 
+
+
         {/* Delete Confirmation Modal */}
         <DeleteConfirmationModal
           isOpen={isModalOpen}
           onClose={closeModal}
           onConfirm={confirmDelete}
-          tagName={selectedTag?.name || ""}
+          tagName={selectedTag?.Name || ""}
+          isDeleting={isDeleting}
         />
+
+
 
         {/* Footer */}
         {!error && !isLoading && filteredAndSortedTags.length > 0 && (
@@ -528,5 +644,7 @@ const Collections = () => {
     </div>
   );
 };
+
+
 
 export default Collections;
