@@ -1,0 +1,516 @@
+@import "tailwindcss";
+@import "flowbite/src/themes/default";
+@plugin "flowbite/plugin";
+@source "../node_modules/flowbite";
+
+
+
+
+
+:root {
+   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+  --background: 255, 255, 255;        /* Pure white for maximum clarity */
+  --surface: 248, 250, 252;           /* Subtle off-white for elevated elements */
+  --border: 226, 232, 240;            /* Soft gray-blue border */
+  --card: 248, 250, 252;              /* Light gray-blue card background */
+  --copy-primary: 15, 23, 42;         /* Deep slate for primary text */
+  --copy-secondary: 100, 116, 139;    /* Medium slate for secondary text */
+  --copy-muted: 148, 163, 184;        /* Light slate for muted text */
+  --cta: 37, 99, 235;                 /* Vibrant blue for actions */
+  --cta-active: 29, 78, 216;          /* Darker blue for active states */
+  --cta-text: 255, 255, 255;          /* White text on CTA */
+  --success: 34, 197, 94;             /* Fresh green for success */
+  --warning: 245, 158, 11;            /* Warm amber for warnings */
+  --error: 239, 68, 68;               /* Clear red for errors */
+  --accent: 59, 130, 246;             /* Additional accent color */
+  --accent-muted: 147, 197, 253;      /* Muted accent */
+}
+
+/* Refined Light Mode - Clean & Professional */
+.theme-light {
+  --background: 255, 255, 255;
+  --surface: 248, 250, 252;
+  --border: 226, 232, 240;
+  --card: 248, 250, 252;
+  --copy-primary: 15, 23, 42;
+  --copy-secondary: 100, 116, 139;
+  --copy-muted: 148, 163, 184;
+  --cta: 37, 99, 235;
+  --cta-active: 29, 78, 216;
+  --cta-text: 255, 255, 255;
+  --success: 34, 197, 94;
+  --warning: 245, 158, 11;
+  --error: 239, 68, 68;
+  --accent: 59, 130, 246;
+  --accent-muted: 147, 197, 253;
+  --shadow: 0, 0, 0, 0.05;
+  --shadow-lg: 0, 0, 0, 0.1;
+}
+
+/* Refined Dark Mode - Modern & Eye-friendly */
+.theme-dark {
+  --background: 2, 6, 23;
+  --surface: 15, 23, 42;
+  --border: 30, 41, 59;
+  --card: 15, 23, 42;
+  --copy-primary: 248, 250, 252;
+  --copy-secondary: 148, 163, 184;
+  --copy-muted: 100, 116, 139;
+  --cta: 59, 130, 246;
+  --cta-active: 37, 99, 235;
+  --cta-text: 255, 255, 255;
+  --success: 34, 197, 94;
+  --warning: 251, 191, 36;
+  --error: 248, 113, 113;
+  --accent: 99, 102, 241;
+  --accent-muted: 67, 56, 202;
+  --shadow: 0, 0, 0, 0.2;
+  --shadow-lg: 0, 0, 0, 0.3;
+}
+
+/* Enhanced Light Mode - Warmer Alternative */
+.theme-light-warm {
+  --background: 255, 253, 250;
+  --surface: 250, 245, 238;
+  --border: 231, 220, 204;
+  --card: 252, 248, 242;
+  --copy-primary: 41, 37, 36;
+  --copy-secondary: 120, 113, 108;
+  --copy-muted: 168, 162, 158;
+  --cta: 194, 65, 12;
+  --cta-active: 154, 52, 18;
+  --cta-text: 255, 255, 255;
+  --success: 22, 163, 74;
+  --warning: 217, 119, 6;
+  --error: 220, 38, 38;
+  --accent: 251, 146, 60;
+  --accent-muted: 253, 186, 116;
+  --shadow: 139, 69, 19, 0.05;
+  --shadow-lg: 139, 69, 19, 0.1;
+}
+
+/* Enhanced Dark Mode - Purple-tinted Alternative */
+.theme-dark-purple {
+  --background: 11, 11, 23;
+  --surface: 24, 24, 39;
+  --border: 39, 39, 64;
+  --card: 20, 20, 35;
+  --copy-primary: 241, 241, 248;
+  --copy-secondary: 161, 161, 185;
+  --copy-muted: 113, 113, 139;
+  --cta: 139, 92, 246;
+  --cta-active: 124, 58, 237;
+  --cta-text: 255, 255, 255;
+  --success: 52, 211, 153;
+  --warning: 251, 191, 36;
+  --error: 248, 113, 113;
+  --accent: 168, 85, 247;
+  --accent-muted: 196, 181, 253;
+  --shadow: 139, 92, 246, 0.1;
+  --shadow-lg: 139, 92, 246, 0.2;
+}
+
+/* 1) Ivory Paper */
+.theme-ivory {
+  --background: 249, 245, 240;
+  --surface: 255, 254, 251;
+  --border: 220, 215, 206;
+  --card: 255, 254, 251;
+  --copy-primary: 51, 48, 44;
+  --copy-secondary: 102, 99, 94;
+  --copy-muted: 148, 144, 138;
+  --cta: 141, 129, 112;
+  --cta-active: 120, 110, 96;
+  --cta-text: 255, 255, 255;
+  --success: 34, 151, 94;
+  --warning: 217, 162, 46;
+  --error: 185, 68, 68;
+  --accent: 160, 147, 130;
+  --accent-muted: 194, 184, 172;
+  --shadow: 51, 48, 44, 0.05;
+  --shadow-lg: 51, 48, 44, 0.1;
+}
+
+/* 2) Sage & Stone */
+.theme-sage {
+  --background: 238, 243, 238;
+  --surface: 220, 230, 219;
+  --border: 189, 201, 188;
+  --card: 220, 230, 219;
+  --copy-primary: 44, 62, 46;
+  --copy-secondary: 99, 114, 100;
+  --copy-muted: 134, 146, 135;
+  --cta: 88, 114, 98;
+  --cta-active: 72, 93, 80;
+  --cta-text: 255, 255, 255;
+  --success: 34, 153, 74;
+  --warning: 202, 138, 4;
+  --error: 185, 68, 68;
+  --accent: 107, 134, 117;
+  --accent-muted: 153, 174, 161;
+  --shadow: 44, 62, 46, 0.05;
+  --shadow-lg: 44, 62, 46, 0.1;
+}
+
+/* 3) Twilight Blue */
+.theme-twilight {
+  --background: 17, 24, 39;
+  --surface: 15, 23, 42;
+  --border: 30, 41, 59;
+  --card: 15, 23, 42;
+  --copy-primary: 226, 232, 240;
+  --copy-secondary: 148, 163, 184;
+  --copy-muted: 100, 116, 139;
+  --cta: 71, 85, 105;
+  --cta-active: 30, 64, 175;
+  --cta-text: 255, 255, 255;
+  --success: 52, 211, 153;
+  --warning: 251, 191, 36;
+  --error: 248, 113, 113;
+  --accent: 99, 102, 241;
+  --accent-muted: 129, 140, 248;
+  --shadow: 0, 0, 0, 0.2;
+  --shadow-lg: 0, 0, 0, 0.3;
+}
+
+/* 4) Lavender Mist */
+.theme-lavender {
+  --background: 245, 241, 249;
+  --surface: 227, 219, 237;
+  --border: 205, 197, 217;
+  --card: 227, 219, 237;
+  --copy-primary: 62, 44, 88;
+  --copy-secondary: 110, 96, 134;
+  --copy-muted: 139, 128, 158;
+  --cta: 114, 84, 164;
+  --cta-active: 92, 68, 133;
+  --cta-text: 255, 255, 255;
+  --success: 34, 151, 94;
+  --warning: 217, 162, 46;
+  --error: 185, 68, 108;
+  --accent: 139, 111, 184;
+  --accent-muted: 167, 149, 204;
+  --shadow: 62, 44, 88, 0.05;
+  --shadow-lg: 62, 44, 88, 0.1;
+}
+
+/* 5) Honey & Wheat */
+.theme-honey {
+  --background: 252, 248, 237;
+  --surface: 245, 236, 211;
+  --border: 227, 218, 197;
+  --card: 245, 236, 211;
+  --copy-primary: 85, 66, 33;
+  --copy-secondary: 127, 106, 73;
+  --copy-muted: 156, 138, 108;
+  --cta: 181, 146, 95;
+  --cta-active: 149, 120, 78;
+  --cta-text: 255, 255, 255;
+  --success: 34, 151, 94;
+  --warning: 217, 162, 46;
+  --error: 185, 68, 68;
+  --accent: 202, 170, 119;
+  --accent-muted: 223, 196, 155;
+  --shadow: 85, 66, 33, 0.05;
+  --shadow-lg: 85, 66, 33, 0.1;
+}
+
+/* 6) Midnight */
+.theme-midnight {
+  --background: 20, 20, 35;
+  --surface: 30, 30, 50;
+  --border: 50, 50, 80;
+  --card: 30, 30, 50;
+  --copy-primary: 240, 240, 255;
+  --copy-secondary: 180, 180, 200;
+  --copy-muted: 140, 140, 170;
+  --cta: 99, 122, 255;
+  --cta-active: 72, 93, 200;
+  --cta-text: 255, 255, 255;
+  --success: 52, 211, 153;
+  --warning: 251, 191, 36;
+  --error: 248, 113, 113;
+  --accent: 124, 140, 255;
+  --accent-muted: 165, 180, 252;
+  --shadow: 0, 0, 0, 0.3;
+  --shadow-lg: 0, 0, 0, 0.4;
+}
+
+/* 7) Blush Rose */
+.theme-blush {
+  --background: 253, 245, 247;
+  --surface: 250, 230, 240;
+  --border: 235, 210, 218;
+  --card: 250, 230, 240;
+  --copy-primary: 87, 52, 75;
+  --copy-secondary: 128, 90, 105;
+  --copy-muted: 158, 125, 140;
+  --cta: 210, 110, 150;
+  --cta-active: 180, 90, 130;
+  --cta-text: 255, 255, 255;
+  --success: 34, 151, 94;
+  --warning: 217, 162, 46;
+  --error: 185, 68, 108;
+  --accent: 236, 135, 175;
+  --accent-muted: 251, 186, 116;
+  --shadow: 90, 60, 40, 0.05;
+  --shadow-lg: 90, 60, 40, 0.1;
+}
+
+/* 10) Forest Deep */
+.theme-forest {
+  --background: 10, 25, 15;
+  --surface: 15, 35, 25;
+  --border: 20, 50, 30;
+  --card: 15, 35, 25;
+  --copy-primary: 209, 250, 229;
+  --copy-secondary: 167, 243, 208;
+  --copy-muted: 125, 211, 175;
+  --cta: 22, 101, 52;
+  --cta-active: 20, 83, 45;
+  --cta-text: 255, 255, 255;
+  --success: 52, 211, 153;
+  --warning: 251, 191, 36;
+  --error: 248, 113, 113;
+  --accent: 34, 131, 72;
+  --accent-muted: 74, 222, 128;
+  --shadow: 0, 0, 0, 0.3;
+  --shadow-lg: 0, 0, 0, 0.4;
+}
+
+/* 11) Sunset Glow */
+.theme-sunset {
+  --background: 255, 251, 235;
+  --surface: 255, 237, 213;
+  --border: 254, 215, 170;
+  --card: 255, 237, 213;
+  --copy-primary: 120, 53, 15;
+  --copy-secondary: 154, 83, 30;
+  --copy-muted: 180, 113, 60;
+  --cta: 249, 115, 22;
+  --cta-active: 234, 88, 12;
+  --cta-text: 255, 255, 255;
+  --success: 34, 151, 94;
+  --warning: 217, 162, 46;
+  --error: 185, 68, 68;
+  --accent: 251, 146, 60;
+  --accent-muted: 253, 186, 116;
+  --shadow: 120, 53, 15, 0.05;
+  --shadow-lg: 120, 53, 15, 0.1;
+}
+
+/* 12) Plum Velvet */
+.theme-plum {
+  --background: 24, 16, 36;
+  --surface: 30, 20, 45;
+  --border: 49, 37, 71;
+  --card: 30, 20, 45;
+  --copy-primary: 243, 232, 255;
+  --copy-secondary: 216, 180, 254;
+  --copy-muted: 180, 150, 220;
+  --cta: 139, 92, 246;
+  --cta-active: 124, 58, 237;
+  --cta-text: 255, 255, 255;
+  --success: 52, 211, 153;
+  --warning: 251, 191, 36;
+  --error: 248, 113, 113;
+  --accent: 168, 85, 247;
+  --accent-muted: 196, 181, 253;
+  --shadow: 139, 92, 246, 0.1;
+  --shadow-lg: 139, 92, 246, 0.2;
+}
+
+/* 13) Mint Fresh */
+.theme-mint {
+  --background: 240, 253, 244;
+  --surface: 187, 247, 208;
+  --border: 220, 252, 231;
+  --card: 187, 247, 208;
+  --copy-primary: 20, 83, 45;
+  --copy-secondary: 34, 110, 56;
+  --copy-muted: 74, 140, 86;
+  --cta: 22, 163, 74;
+  --cta-active: 21, 128, 61;
+  --cta-text: 255, 255, 255;
+  --success: 34, 197, 94;
+  --warning: 217, 162, 46;
+  --error: 185, 68, 68;
+  --accent: 52, 211, 153;
+  --accent-muted: 110, 231, 183;
+  --shadow: 20, 83, 45, 0.05;
+  --shadow-lg: 20, 83, 45, 0.1;
+}
+
+/* 14) Coral Reef */
+.theme-coral {
+  --background: 255, 245, 245;
+  --surface: 254, 226, 226;
+  --border: 254, 215, 215;
+  --card: 254, 226, 226;
+  --copy-primary: 127, 29, 29;
+  --copy-secondary: 153, 61, 61;
+  --copy-muted: 185, 95, 95;
+  --cta: 229, 62, 62;
+  --cta-active: 220, 38, 38;
+  --cta-text: 255, 255, 255;
+  --success: 34, 151, 94;
+  --warning: 217, 162, 46;
+  --error: 239, 68, 68;
+  --accent: 248, 113, 113;
+  --accent-muted: 252, 165, 165;
+  --shadow: 127, 29, 29, 0.05;
+  --shadow-lg: 127, 29, 29, 0.1;
+}
+
+/* 15) Slate Modern */
+.theme-slate {
+  --background: 15, 23, 42;
+  --surface: 24, 33, 55;
+  --border: 30, 41, 59;
+  --card: 24, 33, 55;
+  --copy-primary: 226, 232, 240;
+  --copy-secondary: 148, 163, 184;
+  --copy-muted: 100, 116, 139;
+  --cta: 71, 85, 105;
+  --cta-active: 51, 65, 85;
+  --cta-text: 255, 255, 255;
+  --success: 52, 211, 153;
+  --warning: 251, 191, 36;
+  --error: 248, 113, 113;
+  --accent: 99, 102, 241;
+  --accent-muted: 129, 140, 248;
+  --shadow: 0, 0, 0, 0.2;
+  --shadow-lg: 0, 0, 0, 0.3;
+}
+
+
+
+/* 8) Ocean Breeze */
+.theme-ocean {
+  --background: 232, 250, 255;
+  --surface: 210, 240, 245;
+  --border: 184, 220, 230;
+  --card: 210, 240, 245;
+  --copy-primary: 30, 60, 80;
+  --copy-secondary: 70, 110, 130;
+  --copy-muted: 110, 150, 170;
+  --cta: 0, 160, 190;
+  --cta-active: 0, 130, 160;
+  --cta-text: 255, 255, 255;
+  --success: 34, 151, 124;
+  --warning: 217, 162, 46;
+  --error: 185, 68, 68;
+  --accent: 34, 180, 210;
+  --accent-muted: 125, 211, 252;
+  --shadow: 30, 60, 80, 0.05;
+  --shadow-lg: 30, 60, 80, 0.1;
+}
+
+/* 9) Autumn Ember */
+.theme-autumn {
+  --background: 250, 242, 232;
+  --surface: 245, 225, 200;
+  --border: 220, 200, 180;
+  --card: 245, 225, 200;
+  --copy-primary: 90, 60, 40;
+  --copy-secondary: 120, 85, 60;
+  --copy-muted: 150, 115, 90;
+  --cta: 200, 100, 50;
+  --cta-active: 170, 80, 40;
+  --cta-text: 255, 255, 255;
+  --success: 34, 151, 94;
+  --warning: 217, 162, 46;
+  --error: 185, 88, 68;
+  --accent: 225, 125, 75;
+  --accent-muted: 251,182, 206;
+  --shadow: 87, 52, 75, 0.05;
+  --shadow-lg: 87, 52, 75, 0.1;
+}
+
+/* Global Utility Classes for Enhanced Themes */
+.shadow-theme {
+  box-shadow: 0 4px 6px -1px rgba(var(--shadow)), 0 2px 4px -1px rgba(var(--shadow));
+}
+
+.shadow-theme-lg {
+  box-shadow: 0 10px 15px -3px rgba(var(--shadow-lg)), 0 4px 6px -2px rgba(var(--shadow-lg));
+}
+
+.shadow-theme-xl {
+  box-shadow: 0 20px 25px -5px rgba(var(--shadow-lg)), 0 10px 10px -5px rgba(var(--shadow-lg));
+}
+
+.border-accent {
+  border-color: rgb(var(--accent));
+}
+
+.text-accent {
+  color: rgb(var(--accent));
+}
+
+.bg-accent {
+  background-color: rgb(var(--accent));
+}
+
+.bg-accent-muted {
+  background-color: rgb(var(--accent-muted));
+}
+
+/* Enhanced animations and transitions */
+.theme-transition {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Smooth hover effects */
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(var(--shadow-lg)), 0 10px 10px -5px rgba(var(--shadow-lg));
+}
+
+/* Interactive elements */
+.interactive {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.interactive:hover {
+  transform: scale(1.02);
+}
+
+.interactive:active {
+  transform: scale(0.98);
+}
+
+/* Focus states for accessibility */
+.focus-ring:focus {
+  outline: 2px solid rgb(var(--cta));
+  outline-offset: 2px;
+}
+
+/* Glass morphism effect */
+.glass {
+  backdrop-filter: blur(12px);
+  background: rgba(var(--card), 0.8);
+  border: 1px solid rgba(var(--border), 0.3);
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, rgb(var(--cta)), rgb(var(--accent)));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Enhanced card styles */
+.card-elevated {
+  background: rgb(var(--card));
+  border: 1px solid rgb(var(--border));
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(var(--shadow)), 0 2px 4px -1px rgba(var(--shadow));
+  transition: all 0.3s ease;
+}
+
+.card-elevated:hover {
+  box-shadow: 0 20px 25px -5px rgba(var(--shadow-lg)), 0 10px 10px -5px rgba(var(--shadow-lg));
+  border-color: rgba(var(--cta), 0.3);
+}
