@@ -30,6 +30,7 @@ import {
   GetAllEntries,
   ArchiveEntry,
 } from "../APIs";
+
 import emoji from "emoji-datasource";
 import toast from "react-hot-toast";
 
@@ -40,7 +41,7 @@ const SkeletonCard = ({ index }) => (
     style={{ animationDelay: `${index * 100}ms` }}
   >
     {/* Color bar at top */}
-    <div className="h-1.5 bg-[rgb(var(--surface))]" />
+    <div className="h-1?.5 bg-[rgb(var(--surface))]" />
     
     <div className="p-4 flex flex-col flex-1">
       {/* Header section with icon, title, and action buttons */}
@@ -77,7 +78,7 @@ const SkeletonCard = ({ index }) => (
           <div className="w-7 h-7 bg-[rgb(var(--surface))] rounded-lg border border-[rgb(var(--border))]/30" />
           <div className="w-7 h-7 bg-[rgb(var(--surface))] rounded-lg border border-[rgb(var(--border))]/30">
             <div className="flex items-center justify-center h-full">
-              <div className="flex gap-0.5">
+              <div className="flex gap-0?.5">
                 <div className="w-1 h-1 bg-[rgb(var(--border))]/40 rounded-full" />
                 <div className="w-1 h-1 bg-[rgb(var(--border))]/40 rounded-full" />
                 <div className="w-1 h-1 bg-[rgb(var(--border))]/40 rounded-full" />
@@ -89,7 +90,7 @@ const SkeletonCard = ({ index }) => (
 
       {/* Tags section */}
       <div className="flex flex-wrap gap-2 mb-3">
-        {[1, 2, 3].map((tagIndex) => (
+        {[1, 2, 3]?.map((tagIndex) => (
           <div 
             key={tagIndex}
             className="h-6 bg-[rgb(var(--surface))] rounded-full border border-[rgb(var(--border))]/30 px-3"
@@ -105,10 +106,10 @@ const SkeletonCard = ({ index }) => (
         
         {/* Content lines */}
         <div className="pl-3 space-y-2">
-          <div className="space-y-1.5">
-            <div className="h-3.5 bg-[rgb(var(--surface))] rounded-md w-full border border-[rgb(var(--border))]/20" />
-            <div className="h-3.5 bg-[rgb(var(--surface))] rounded-md border border-[rgb(var(--border))]/20" style={{ width: `${75 + (index * 5) % 20}%` }} />
-            <div className="h-3.5 bg-[rgb(var(--surface))] rounded-md border border-[rgb(var(--border))]/20" style={{ width: `${60 + (index * 7) % 25}%` }} />
+          <div className="space-y-1?.5">
+            <div className="h-3?.5 bg-[rgb(var(--surface))] rounded-md w-full border border-[rgb(var(--border))]/20" />
+            <div className="h-3?.5 bg-[rgb(var(--surface))] rounded-md border border-[rgb(var(--border))]/20" style={{ width: `${75 + (index * 5) % 20}%` }} />
+            <div className="h-3?.5 bg-[rgb(var(--surface))] rounded-md border border-[rgb(var(--border))]/20" style={{ width: `${60 + (index * 7) % 25}%` }} />
           </div>
         </div>
       </div>
@@ -118,7 +119,7 @@ const SkeletonCard = ({ index }) => (
         <div className="flex justify-between items-center">
           {/* Last modified time */}
           <div className="flex items-center gap-2">
-            <div className="w-3.5 h-3.5 bg-[rgb(var(--surface))] rounded-full border border-[rgb(var(--border))]/30" />
+            <div className="w-3?.5 h-3?.5 bg-[rgb(var(--surface))] rounded-full border border-[rgb(var(--border))]/30" />
             <div className="h-3 bg-[rgb(var(--surface))] rounded-md border border-[rgb(var(--border))]/20" style={{ width: `${60 + (index * 3) % 15}px` }} />
           </div>
           
@@ -137,7 +138,7 @@ const SkeletonCard = ({ index }) => (
 
 const LoadingSkeleton = () => (
   <div className="grid gap-4 md:grid-cols-2">
-    {Array.from({ length: 4 }, (_, index) => (
+    {Array?.from({ length: 4 }, (_, index) => (
       <SkeletonCard key={index} index={index} />
     ))}
   </div>
@@ -156,7 +157,7 @@ const ConfirmationModal = ({
   const isDelete = actionType === "delete";
   const title = isDelete ? "Delete Entry" : "Archive Entry";
   const message = isDelete
-    ? "Are you sure you want to delete this entry? This action cannot be undone."
+    ? "Are you sure you want to delete this entry? This action cannot be undone?."
     : "Are you sure you want to archive this entry?";
   const confirmText = isDelete ? "Delete Chapter" : "Archive Chapter";
   const confirmColor = isDelete
@@ -222,7 +223,7 @@ const ConfirmationModal = ({
 
 // Cozy Welcome Header Component
 const CozyWelcomeHeader = () => {
-  const currentDate = new Date().toLocaleDateString("en-US", {
+  const currentDate = new Date()?.toLocaleDateString("en-US", {
     weekday: "long",
     year: "numeric",
     month: "long",
@@ -271,7 +272,7 @@ const CozyControlPanel = ({
             type="text"
             placeholder="Search your thoughts..."
             value={searchValue}
-            onChange={(e) => onSearchChange(e.target.value)}
+            onChange={(e) => onSearchChange(e?.target?.value)}
             disabled={isLoading}
             className="w-full pl-8 pr-3 py-2 bg-[rgb(var(--surface))] border border-[rgb(var(--border))] rounded-lg text-sm text-[rgb(var(--copy-primary))] focus:ring-2 focus:ring-[rgb(var(--cta))] focus:border-transparent transition-all font-light placeholder-[rgb(var(--copy-muted))] disabled:opacity-50 disabled:cursor-not-allowed"
           />
@@ -281,7 +282,7 @@ const CozyControlPanel = ({
             <FaSort className="absolute left-3 top-1/2 -translate-y-1/2 text-[rgb(var(--copy-muted))] text-xs" />
             <select
               value={sortBy}
-              onChange={(e) => onSortChange(e.target.value)}
+              onChange={(e) => onSortChange(e?.target?.value)}
               disabled={isLoading}
               className="pl-8 pr-6 py-2 bg-[rgb(var(--surface))] border border-[rgb(var(--border))] rounded-lg text-sm text-[rgb(var(--copy-primary))] focus:ring-2 focus:ring-[rgb(var(--warning))] focus:border-transparent transition-all font-medium appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -295,12 +296,12 @@ const CozyControlPanel = ({
             <FaFilter className="absolute left-3 top-1/2 -translate-y-1/2 text-[rgb(var(--copy-muted))] text-xs" />
             <select
               value={filterBy}
-              onChange={(e) => onFilterChange(e.target.value)}
+              onChange={(e) => onFilterChange(e?.target?.value)}
               disabled={isLoading}
               className="pl-8 pr-6 py-2 bg-[rgb(var(--surface))] border border-[rgb(var(--border))] rounded-lg text-sm text-[rgb(var(--copy-primary))] focus:ring-2 focus:ring-[rgb(var(--success))] focus:border-transparent transition-all font-medium appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <option value="all">All Chapters</option>
-              {uniqueChapters.map((chapter) => (
+              {uniqueChapters?.map((chapter) => (
                 <option key={chapter} value={chapter}>
                   {chapter}
                 </option>
@@ -352,23 +353,23 @@ const CozyEntryCard = ({
   const [showMenu, setShowMenu] = useState(false);
   const [isFavoriting, setIsFavoriting] = useState(false);
   const menuRef = useRef(null);
-  const entryId = entry.id;
-  const isFavorite = favorites.has(entryId);
+  const entryId = entry?.ID;
+  const isFavorite = favorites?.has(entryId);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
+      if (menuRef?.current && !menuRef?.current?.contains(e?.target)) {
         setShowMenu(false);
       }
     };
     if (showMenu) {
-      document.addEventListener("mousedown", handleClickOutside);
+      document?.addEventListener("mousedown", handleClickOutside);
     }
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () => document?.removeEventListener("mousedown", handleClickOutside);
   }, [showMenu]);
 
   const toggleFavorite = async (e) => {
-    e.stopPropagation();
+    e?.stopPropagation();
     if (isFavoriting) return;
     setIsFavoriting(true);
     const value = !isFavorite;
@@ -376,34 +377,34 @@ const CozyEntryCard = ({
       const response = await FavouriteEntry(entryId, value);
       if (response) {
         fetchEntries();
-        toast.success(value ? "Added to favorites" : "Removed from favorites");
+        toast?.success(value ? "Added to favorites" : "Removed from favorites");
       } else {
-        toast.error("Unable to update favorite status.");
+        toast?.error("Unable to update favorite status?.");
       }
     } catch (error) {
-      toast.error("Error updating favorite status.");
+      toast?.error("Error updating favorite status?.");
     } finally {
       setIsFavoriting(false);
     }
   };
 
   const toggleMenu = (e) => {
-    e.stopPropagation();
+    e?.stopPropagation();
     setShowMenu((prev) => !prev);
   };
 
   const handleEdit = (e) => {
-    e.stopPropagation();
+    e?.stopPropagation();
     onEdit(entry);
   };
 
   const handleDelete = (e) => {
-    e.stopPropagation();
+    e?.stopPropagation();
     onDelete(entry);
   };
 
   const handleArchive = (e) => {
-    e.stopPropagation();
+    e?.stopPropagation();
     onArchive(entry);
   };
 
@@ -413,36 +414,35 @@ const CozyEntryCard = ({
       style={{ animationDelay: `${index * 100}ms` }}
       onClick={() => onShowEntry(entry)}
     >
-      <div className="h-1.5" style={{ backgroundColor: entry.color }} />
+      <div className="h-1?.5" style={{ backgroundColor: entry?.Color }} />
       <div className="p-4 flex flex-col flex-1">
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-start gap-3 flex-1">
             <div
               className="p-2 rounded-lg flex-shrink-0"
-              style={{ backgroundColor: `${entry.chapter.color}20` }}
+              style={{ backgroundColor: `${entry?.Chapter?.Color}20` }}
             >
               <FaFileAlt
                 className="text-sm"
-                style={{ color: entry.chapter.color }}
+                style={{ color: entry?.Chapter?.Color }}
               />
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="text-base font-serif font-semibold text-[rgb(var(--copy-primary))] leading-tight">
-                {entry.title}
+                {entry?.Title}
               </h3>
               <div className="flex items-center gap-4 text-xs text-[rgb(var(--copy-secondary))] mt-1">
                 <span className="flex items-center gap-1">
                   <FaFolderOpen
                     className="text-xs"
-                    style={{ color: entry.chapter.color }}
+                    style={{ color: entry?.Chapter?.Color }}
                   />
-                  {entry.chapter.name}
+                  {entry?.Chapter?.Name}
                 </span>
                 <span className="flex items-center gap-1">
-                  <span style={{ color: entry.mood.color }}>
-                    {getEmojiFromShortcode(entry.mood.emoji)}
+                  <span style={{ color: entry?.Mood?.Color }}>
+                    {getEmojiFromShortcode(entry?.Mood?.Emoji)}
                   </span>
-                  {entry.mood.name}
                 </span>
               </div>
             </div>
@@ -480,13 +480,13 @@ const CozyEntryCard = ({
                 </button>
                 <button
                   onClick={handleDelete}
-                  className="flex items-center gap-2 px-2 py-1 text-xs w-full hover:bg-[rgb(var(--error)),0.1] hover:text-[rgb(var(--error))] text-[rgb(var(--copy-primary))] rounded"
+                  className="flex items-center gap-2 px-2 py-1 text-xs w-full hover:bg-[rgb(var(--error)),0?.1] hover:text-[rgb(var(--error))] text-[rgb(var(--copy-primary))] rounded"
                 >
                   <FaTrash className="text-[rgb(var(--copy-muted))]" /> Delete
                 </button>
                 <button
                   onClick={handleArchive}
-                  className="flex items-center gap-2 px-2 py-1 text-xs w-full hover:bg-[rgb(var(--error)),0.1] hover:text-[rgb(var(--error))] text-[rgb(var(--copy-primary))] rounded"
+                  className="flex items-center gap-2 px-2 py-1 text-xs w-full hover:bg-[rgb(var(--error)),0?.1] hover:text-[rgb(var(--error))] text-[rgb(var(--copy-primary))] rounded"
                 >
                   <FaArchive className="text-[rgb(var(--copy-muted))]" />{" "}
                   Archive
@@ -495,15 +495,15 @@ const CozyEntryCard = ({
             )}
           </div>
         </div>
-        {entry.tags?.length > 0 && (
+        {entry?.Collections?.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-3">
-            {entry.tags.map((tag, idx) => (
+            {entry?.Collections?.map((tag, idx) => (
               <span
                 key={idx}
                 className="px-2 py-1 text-xs font-medium rounded-full text-[rgb(var(--cta-text))]"
-                style={{ backgroundColor: tag.color }}
+                style={{ backgroundColor: tag?.Color }}
               >
-                #{tag.name}
+                {tag?.Name}
               </span>
             ))}
           </div>
@@ -511,16 +511,16 @@ const CozyEntryCard = ({
         <div className="relative mb-3 flex-1">
           <FaQuoteLeft className="text-[rgb(var(--copy-muted))] text-xs mb-2" />
           <div className="text-[rgb(var(--copy-secondary))] leading-relaxed text-sm font-light pl-2 line-clamp-2">
-            {entry.content}
+            {entry?.Content}
           </div>
         </div>
         <div className="p-3 flex justify-between items-center border-t border-[rgb(var(--border))] h-12 flex-shrink-0">
           <div className="flex items-center gap-1 text-[rgb(var(--copy-muted))] text-xs">
             <FaClock className="text-xs" />
-            <span>Updated {formatDate(entry.lastModified)}</span>
+            <span>Updated {formatDate(entry?.lastModified)}</span>
           </div>
           <div className="text-xs text-[rgb(var(--copy-secondary))]">
-            {entry.readTime} • {entry.wordCount} words
+            {entry?.readTime} • {entry?.wordCount} words
           </div>
         </div>
       </div>
@@ -530,7 +530,7 @@ const CozyEntryCard = ({
 
 // Pagination Component
 const CozyPagination = ({ currentPage, totalPages, onPageChange }) => {
-  const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+  const pageNumbers = Array?.from({ length: totalPages }, (_, i) => i + 1);
 
   return (
     <div className="flex items-center justify-center gap-2 mt-6">
@@ -546,7 +546,7 @@ const CozyPagination = ({ currentPage, totalPages, onPageChange }) => {
       >
         <FaArrowLeft />
       </button>
-      {pageNumbers.map((page) => (
+      {pageNumbers?.map((page) => (
         <button
           key={page}
           onClick={() => onPageChange(page)}
@@ -585,7 +585,7 @@ const CozyEmptyState = ({ searchValue, filterBy, archivedEntryCount }) => (
       </div>
     </div>
     <h3 className="text-xl font-serif font-semibold text-[rgb(var(--copy-primary))] mb-2">
-      {searchValue.trim() || filterBy !== "all"
+      {searchValue?.trim() || filterBy !== "all"
         ? "No matching entries"
         : "No entries yet  "}
       {archivedEntryCount > 0 && (
@@ -598,9 +598,9 @@ const CozyEmptyState = ({ searchValue, filterBy, archivedEntryCount }) => (
       )}
     </h3>
     <p className="text-[rgb(var(--copy-secondary))] text-sm max-w-md mx-auto font-light leading-relaxed">
-      {searchValue.trim() || filterBy !== "all"
-        ? "Try adjusting your search or filter to find what you're looking for."
-        : "Start writing your first entry to capture your thoughts."}
+      {searchValue?.trim() || filterBy !== "all"
+        ? "Try adjusting your search or filter to find what you're looking for?."
+        : "Start writing your first entry to capture your thoughts?."}
     </p>
   </div>
 );
@@ -610,19 +610,19 @@ const formatDate = (dateString) => {
   const date = new Date(dateString);
   const now = new Date();
     // @ts-ignore
-  const diffInMinutes = Math.floor((now - date) / (1000 * 60));
+  const diffInMinutes = Math?.floor((now - date) / (1000 * 60));
 
   if (diffInMinutes < 60) {
     return `${diffInMinutes}m ago`;
   } else if (diffInMinutes < 1440) {
-    return `${Math.floor(diffInMinutes / 60)}h ago`;
+    return `${Math?.floor(diffInMinutes / 60)}h ago`;
   } else if (diffInMinutes < 10080) {
-    return `${Math.floor(diffInMinutes / 1440)}d ago`;
+    return `${Math?.floor(diffInMinutes / 1440)}d ago`;
   } else {
-    return date.toLocaleDateString("en-US", {
+    return date?.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
-      year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
+      year: date?.getFullYear() !== now?.getFullYear() ? "numeric" : undefined,
     });
   }
 };
@@ -648,49 +648,86 @@ const RecentEntries = () => {
   const navigate = useNavigate();
 
   const getEmojiFromShortcode = (shortcode) => {
-    const emojiData = emoji.find((e) => e.short_name === shortcode);
-    if (emojiData && emojiData.unified) {
-      return String.fromCodePoint(parseInt(emojiData.unified, 16));
+    const emojiData = emoji?.find((e) => e?.short_name === shortcode);
+    if (emojiData && emojiData?.unified) {
+      return String?.fromCodePoint(parseInt(emojiData?.unified, 16));
     }
     return "😐";
   };
 
   const calculateWordCount = (content) => {
     if (!content) return 0;
-    return content.trim().split(/\s+/).length;
+    return content?.trim()?.split(/\s+/)?.length;
   };
 
   const calculateReadTime = (wordCount) => {
     if (wordCount === 0) return "0 min read";
     const wordsPerMinute = 200;
-    const minutes = Math.ceil(wordCount / wordsPerMinute);
+    const minutes = Math?.ceil(wordCount / wordsPerMinute);
     return `${minutes} min read`;
   };
 
   const transformEntry = (apiEntry) => {
-    const wordCount = calculateWordCount(apiEntry.content);
+    const wordCount = calculateWordCount(apiEntry?.Content ?? apiEntry?.content);
+    const chapter = apiEntry?.Chapter ?? apiEntry?.chapter;
+    const mood = apiEntry?.Mood ?? apiEntry?.mood;
+    const collections = apiEntry?.Collections ?? apiEntry?.collections ?? apiEntry?.Collection;
+
     return {
-      id: apiEntry.id,
-      title: apiEntry.title,
-      content: apiEntry.content,
-      color: apiEntry.chapter.color,
-      chapter: {
-        id: apiEntry.chapter.id,
-        name: apiEntry.chapter.title,
-        color: apiEntry.chapter.color,
-      },
-      tags: apiEntry.collection.map((col) => ({
-        id: col.id,
-        name: col.name,
-        color: col.color,
+      ID: apiEntry?.ID ?? apiEntry?.id,
+      id: apiEntry?.ID ?? apiEntry?.id,
+      Title: apiEntry?.Title ?? apiEntry?.title,
+      Content: apiEntry?.Content ?? apiEntry?.content,
+      Color: chapter?.Color ?? chapter?.color,
+      Chapter: chapter
+        ? {
+            ID: chapter?.ID ?? chapter?.id,
+            Name: chapter?.Name ?? chapter?.Title ?? chapter?.Name ?? chapter?.title,
+            Color: chapter?.Color ?? chapter?.color,
+          }
+        : null,
+      chapter: chapter
+        ? {
+            id: chapter?.ID ?? chapter?.id,
+            name: chapter?.Name ?? chapter?.Title ?? chapter?.Name ?? chapter?.title,
+            color: chapter?.Color ?? chapter?.color,
+          }
+        : null,
+      Collections: (collections || [])?.map((col) => ({
+        ID: col?.ID ?? col?.id,
+        id: col?.ID ?? col?.id,
+        Name: col?.Name ?? col?.Name,
+        Color: col?.Color ?? col?.color,
       })),
-      createdAt: apiEntry.created_at,
-      lastModified: apiEntry.updated_at,
-      mood: apiEntry.mood,
+      tags: (collections || [])?.map((col) => ({
+        id: col?.ID ?? col?.id,
+        name: col?.Name ?? col?.Name,
+        color: col?.Color ?? col?.color,
+      })),
+      createdAt:
+        apiEntry?.CreatedAt ??
+        apiEntry?.CreatedAt ??
+        apiEntry?.createdAt ??
+        apiEntry?.CreatedAt,
+      lastModified:
+        apiEntry?.UpdatedAt ??
+        apiEntry?.updated_at ??
+        apiEntry?.updatedAt ??
+        apiEntry?.updated_at,
+      Mood: mood
+        ? {
+            ID: mood?.ID ?? mood?.id,
+            Name: mood?.Name ?? mood?.Name,
+            Emoji: mood?.Emoji ?? mood?.emoji,
+            Color: mood?.Color ?? mood?.color,
+          } : 
+    
       wordCount,
       readTime: calculateReadTime(wordCount),
-      is_favourite: apiEntry.is_favourite,
-      is_archived: apiEntry.is_archived,
+      is_favourite:
+        apiEntry?.IsFavourite ?? apiEntry?.is_favourite ?? apiEntry?.isFavourite,
+      is_archived:
+        apiEntry?.IsArchived ?? apiEntry?.is_archived ?? apiEntry?.isArchived,
     };
   };
 
@@ -698,35 +735,35 @@ const RecentEntries = () => {
     setIsLoading(true);
     try {
       const response = await GetAllEntries();
-      console.log("in entreis", response?.data)
-      if (response && Array.isArray(response.data)) {
-        const transformedEntries = response.data.map(transformEntry);
+      console?.log("in entreis", response?.data)
+      if (response && Array?.isArray(response?.data)) {
+        let transformedEntries = response?.data?.map(transformEntry);
 
-        const nonArchivedEntries = transformedEntries.filter(
-          (entry) => !entry.is_archived
+        const nonArchivedEntries = transformedEntries?.filter(
+          (entry) => !entry?.is_archived
         );
 
-        setArchivedEntriesCount(transformedEntries.length - nonArchivedEntries.length)
+        setArchivedEntriesCount(transformedEntries?.length - nonArchivedEntries?.length)
 
         setEntries(nonArchivedEntries);
 
         const initialFavorites = new Set(
           transformedEntries
-            .filter((entry) => entry.is_favourite)
-            .map((entry) => entry.id)
+            ?.filter((entry) => entry?.is_favourite)
+            ?.map((entry) => entry?.ID)
         );
-        const archivedEntries = transformedEntries.filter(
-          (entry) => entry.is_archived
-        ).length;
+        const archivedEntries = transformedEntries?.filter(
+          (entry) => entry?.is_archived
+        )?.length;
       
         setFavorites(initialFavorites);
       } else {
         setEntries([]);
       }
     } catch (error) {
-      console.error("Error fetching entries:", error);
+      console?.error("Error fetching entries:", error);
       setEntries([]);
-      toast.error("Failed to load entries");
+      toast?.error("Failed to load entries");
     } finally {
       setIsLoading(false);
     }
@@ -737,7 +774,13 @@ const RecentEntries = () => {
   }, []);
 
   const uniqueChapters = useMemo(() => {
-    const chapters = entries.map((entry) => entry.chapter.name);
+    const chapters = entries?.map(
+      (entry) =>
+        entry?.Chapter?.Name ||
+        entry?.chapter?.Name ||
+        entry?.chapter?.Name ||
+        entry?.chapterName
+    );
     return [...new Set(chapters)];
   }, [entries]);
 
@@ -772,13 +815,13 @@ const RecentEntries = () => {
     try {
       let response;
       if (actionType === "delete") {
-        response = await DeleteEntry(entry.id);
+        response = await DeleteEntry(entry?.ID);
       } else if (actionType === "archive") {
-        response = await ArchiveEntry(entry.id, true);
+        response = await ArchiveEntry(entry?.ID, true);
       }
 
       if (response) {
-        toast.success(
+        toast?.success(
           actionType === "delete"
             ? "Entry deleted successfully"
             : "Entry archived successfully"
@@ -792,17 +835,17 @@ const RecentEntries = () => {
           isProcessing: false,
         });
       } else {
-        toast.error(`Failed to ${actionType} entry`);
+        toast?.error(`Failed to ${actionType} entry`);
         setConfirmationModal((prev) => ({ ...prev, isProcessing: false }));
       }
     } catch (error) {
-      toast.error(`Error ${actionType}ing entry`);
+      toast?.error(`Error ${actionType}ing entry`);
       setConfirmationModal((prev) => ({ ...prev, isProcessing: false }));
     }
   };
 
   const cancelAction = () => {
-    if (!confirmationModal.isProcessing) {
+    if (!confirmationModal?.isProcessing) {
       setConfirmationModal({
         isOpen: false,
         entry: null,
@@ -817,37 +860,45 @@ const RecentEntries = () => {
   };
 
   const handleShowEntry = (entry) => {
-    console.log("from recent entries, going to entry view", entry)
+    console?.log("from recent entries, going to entry view", entry)
     navigate("/entry-view", { state: { entry } });
   };
 
   const filteredAndSortedEntries = useMemo(() => {
     let filtered = entries;
-    if (searchValue.trim()) {
-      const searchLower = searchValue.toLowerCase();
-      filtered = filtered.filter(
+    if (searchValue?.trim()) {
+      const searchLower = searchValue?.toLowerCase();
+      filtered = filtered?.filter(
         (entry) =>
-          entry.title.toLowerCase().includes(searchLower) ||
-          entry.content.toLowerCase().includes(searchLower) ||
-          entry.chapter.name.toLowerCase().includes(searchLower) ||
-          entry.tags.some((tag) => tag.name.toLowerCase().includes(searchLower))
+          entry?.Title?.toLowerCase()?.includes(searchLower) ||
+          entry?.Content?.toLowerCase()?.includes(searchLower) ||
+          entry?.Chapter?.Name?.toLowerCase()?.includes(searchLower) ||
+          entry?.chapter?.Name?.toLowerCase()?.includes(searchLower) ||
+          entry?.Collections?.some((tag) =>
+            (tag?.Name || tag?.Name)?.toLowerCase()?.includes(searchLower)
+          )
       );
     }
     if (filterBy !== "all") {
-      filtered = filtered.filter((entry) => entry.chapter.name === filterBy);
+      filtered = filtered?.filter(
+        (entry) =>
+          entry?.Chapter?.Name === filterBy ||
+          entry?.chapter?.Name === filterBy ||
+          entry?.chapter?.Name === filterBy
+      );
     }
-    filtered.sort((a, b) => {
+    filtered?.sort((a, b) => {
       switch (sortBy) {
         case "lastModified":
             // @ts-ignore
-          return new Date(b.lastModified) - new Date(a.lastModified);
+          return new Date(b?.lastModified) - new Date(a?.lastModified);
         case "created":
             // @ts-ignore
-          return new Date(b.createdAt) - new Date(a.createdAt);
+          return new Date(b?.createdAt) - new Date(a?.createdAt);
         case "title":
-          return a.title.localeCompare(b.title);
+          return a?.Title?.localeCompare(b?.Title);
         case "chapter":
-          return a.chapter.name.localeCompare(b.chapter.name);
+          return a?.Chapter?.Name?.localeCompare(b?.Chapter?.Name);
         default:
           return 0;
       }
@@ -855,10 +906,10 @@ const RecentEntries = () => {
     return filtered;
   }, [entries, searchValue, sortBy, filterBy]);
 
-  const totalPages = Math.ceil(
-    filteredAndSortedEntries.length / entriesPerPage
+  const totalPages = Math?.ceil(
+    filteredAndSortedEntries?.length / entriesPerPage
   );
-  const paginatedEntries = filteredAndSortedEntries.slice(
+  const paginatedEntries = filteredAndSortedEntries?.slice(
     (currentPage - 1) * entriesPerPage,
     currentPage * entriesPerPage
   );
@@ -866,7 +917,7 @@ const RecentEntries = () => {
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      window?.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
@@ -881,8 +932,8 @@ const RecentEntries = () => {
           onSortChange={setSortBy}
           filterBy={filterBy}
           onFilterChange={setFilterBy}
-          totalCount={entries.length}
-          filteredCount={filteredAndSortedEntries.length}
+          totalCount={entries?.length}
+          filteredCount={filteredAndSortedEntries?.length}
           onCreateNew={handleCreateNew}
           uniqueChapters={uniqueChapters}
           isLoading={isLoading}
@@ -892,12 +943,12 @@ const RecentEntries = () => {
         ) : (
           <>
             <div className="grid gap-4 md:grid-cols-2">
-              {paginatedEntries.length > 0 ? (
-                paginatedEntries.map(
+              {paginatedEntries?.length > 0 ? (
+                paginatedEntries?.map(
                   (entry, index) =>
                     entry?.is_archived === false && (
                       <CozyEntryCard
-                        key={entry.id}
+                        key={entry?.ID}
                         entry={entry}
                         favorites={favorites}
                         setFavorites={setFavorites}
@@ -921,20 +972,20 @@ const RecentEntries = () => {
                 </div>
               )}
             </div>
-            {filteredAndSortedEntries.length > entriesPerPage && (
+            {filteredAndSortedEntries?.length > entriesPerPage && (
               <CozyPagination
                 currentPage={currentPage}
                 totalPages={totalPages}
                 onPageChange={handlePageChange}
               />
             )}
-            {paginatedEntries.length > 0 && (
+            {paginatedEntries?.length > 0 && (
               <div className="mt-8 text-center">
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-[rgb(var(--card))] rounded-full shadow-sm ring-1 ring-[rgb(var(--border))]">
                   <FaHeart className="text-[rgb(var(--accent))] text-xs" />
                   <span className="text-[rgb(var(--copy-secondary))] text-sm font-light">
-                    {filteredAndSortedEntries.length}{" "}
-                    {filteredAndSortedEntries.length === 1
+                    {filteredAndSortedEntries?.length}{" "}
+                    {filteredAndSortedEntries?.length === 1
                       ? "entry"
                       : "entries"}{" "}
                     {archivedEntriesCount > 0 && (
@@ -954,12 +1005,12 @@ const RecentEntries = () => {
           </>
         )}
         <ConfirmationModal
-          isOpen={confirmationModal.isOpen}
+          isOpen={confirmationModal?.isOpen}
           onClose={cancelAction}
           onConfirm={confirmAction}
-          entryTitle={confirmationModal.entry?.title || ""}
-          isLoading={confirmationModal.isProcessing}
-          actionType={confirmationModal.actionType}
+          entryTitle={confirmationModal?.entry?.Title || ""}
+          isLoading={confirmationModal?.isProcessing}
+          actionType={confirmationModal?.actionType}
         />
       </div>
     </div>

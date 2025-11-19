@@ -26,16 +26,51 @@ import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 
 interface Chapter {
-  id: string;
+  id: string | number;
   title: string;
   color: string;
 }
 
 interface Tag {
-  id: number;
+  id: string | number;
   name: string;
   color: string;
 }
+
+interface Mood {
+  id: string | number;
+  name: string;
+  emoji: string;
+  color: string;
+}
+
+const normalizeChapter = (chapter: any): Chapter | null => {
+  if (!chapter) return null;
+  return {
+    id: chapter.ID ?? chapter.id ?? "",
+    title: chapter.Title ?? chapter.title ?? chapter.Name ?? chapter.name ?? "",
+    color: chapter.Color ?? chapter.color ?? "rgb(var(--cta))",
+  };
+};
+
+const normalizeCollection = (collection: any): Tag | null => {
+  if (!collection) return null;
+  return {
+    id: collection.ID ?? collection.id ?? "",
+    name: collection.Name ?? collection.name ?? "",
+    color: collection.Color ?? collection.color ?? "rgb(var(--cta))",
+  };
+};
+
+const normalizeMood = (mood: any): Mood | null => {
+  if (!mood) return null;
+  return {
+    id: mood.ID ?? mood.id ?? "",
+    name: mood.Name ?? mood.name ?? "",
+    emoji: mood.Emoji ?? mood.Emoji ?? "",
+    color: mood.Color ?? mood.color ?? "rgb(var(--cta))",
+  };
+};
 
 // Helper function to determine if text should be white or dark based on background color
 const getTextColor = (backgroundColor: string): string => {
@@ -60,9 +95,9 @@ const getTextColor = (backgroundColor: string): string => {
 const CreateEntry: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [moods, SetMoods] = useState([]);
-  const [tags, SetTags] = useState([]);
-  const [chapters, SetChapters] = useState([]);
+  const [moods, SetMoods] = useState<Mood[]>([]);
+  const [collections, SetCollections] = useState<Tag[]>([]);
+  const [chapters, SetChapters] = useState<Chapter[]>([]);
 
   useEffect(() => {
     const getMoodAndCollections = async () => {
@@ -71,14 +106,26 @@ const CreateEntry: React.FC = () => {
       const chapters = await GetAllChapter();
       console.log(moods.data, collections.data, chapters.data);
 
-      if (collections) {
-        SetTags(collections.data);
+      if (collections?.data) {
+        SetCollections(
+          collections.data
+            .map((c: any) => normalizeCollection(c))
+            .filter(Boolean)
+        );
       }
-      if (moods) {
-        SetMoods(moods.data);
+      if (moods?.data) {
+        SetMoods(
+          moods.data
+            .map((m: any) => normalizeMood(m))
+            .filter(Boolean)
+        );
       }
-      if (chapters) {
-        SetChapters(chapters.data);
+      if (chapters?.data) {
+        SetChapters(
+          chapters.data
+            .map((ch: any) => normalizeChapter(ch))
+            .filter(Boolean)
+        );
       }
     };
 
@@ -94,28 +141,50 @@ const CreateEntry: React.FC = () => {
   };
 
   // Form state
-  const [title, setTitle] = useState(location.state?.title  || "");
-  const [content, setContent] = useState(location.state?.content || "");
-   
+  const [title, setTitle] = useState(
+    location.state?.Title ||
+      location.state?.title ||
+      location.state?.entry?.title ||
+      ""
+  );
+  const [content, setContent] = useState(
+    location.state?.content || location.state?.entry?.content || ""
+  );
+
   const [selectedChapter, setSelectedChapter] = useState(
-    location.state?.chapter || location.state?.project || null
+    normalizeChapter(
+      location.state?.chapter ||
+        location.state?.project ||
+        location.state?.entry?.chapter
+    )
   );
   const [selectedMood, setSelectedMood] = useState(
-    location.state?.mood?.id || ""
+    location.state?.mood?.id ||
+      location.state?.mood?.ID ||
+      location.state?.entry?.mood?.id ||
+      location.state?.entry?.mood?.ID ||
+      ""
   );
-  const [selectedTag, setSelectedTags] = useState(location.state?.tags || []);
+  const [selectedCollections, setSelectedCollections] = useState(
+    (location.state?.Collections ||
+      location.state?.collections ||
+      location.state?.entry?.collections ||
+      [])
+      .map((c: any) => normalizeCollection(c))
+      .filter(Boolean)
+  );
 
   // UI state
   const [chapterSearch, setChapterSearch] = useState("");
-  const [tagSearch, setTagSearch] = useState("");
+  const [collectionSearch, setCollectionSearch] = useState("");
   const [showChapterDropdown, setShowChapterDropdown] = useState(false);
   const [showMoodDropdown, setShowMoodDropdown] = useState(false);
-  const [showTagDropdown, setShowTagDropdown] = useState(false);
+  const [showCollectionDropdown, setShowCollectionDropdown] = useState(false);
 
   // Refs for dropdown management
   const chapterDropdownRef = useRef<HTMLDivElement>(null);
   const moodDropdownRef = useRef<HTMLDivElement>(null);
-  const tagDropdownRef = useRef<HTMLDivElement>(null);
+  const collectionDropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -134,11 +203,11 @@ const CreateEntry: React.FC = () => {
         setShowMoodDropdown(false);
       }
       if (
-        tagDropdownRef.current &&
-        !tagDropdownRef.current.contains(e.target as Node)
+        collectionDropdownRef.current &&
+        !collectionDropdownRef.current.contains(e.target as Node)
       ) {
-        setShowTagDropdown(false);
-        setTagSearch("");
+        setShowCollectionDropdown(false);
+        setCollectionSearch("");
       }
     };
 
@@ -152,17 +221,18 @@ const CreateEntry: React.FC = () => {
 
   const handleCreate = async () => {
     if (!title.trim() || !content.trim() || !selectedChapter) return;
-    const selectedTagIds = selectedTag.map((tag) => tag.id);
+    const selectedCollectionIds = selectedCollections.map((collection) => collection.id);
 
     const newEntry = {
       title: title.trim(),
       content: content.trim(),
       chapter: selectedChapter.id,
-      collection: selectedTagIds,
+      collection: selectedCollectionIds,
       mood: selectedMood,
     };
 
     if (!location.state?.update == true) {
+      console.log("data going for entry", newEntry)
       const data = await CreateNewEntry(newEntry);
 
       if (data.created) {
@@ -193,41 +263,56 @@ const CreateEntry: React.FC = () => {
       location.state?.chapter || location.state?.project || null
     );
     setSelectedMood(location.state?.mood || "");
-    setSelectedTags(location.state?.tags || []);
+    setSelectedCollections(location.state?.Collections || []);
     setShowChapterDropdown(false);
     setShowMoodDropdown(false);
-    setShowTagDropdown(false);
+    setShowCollectionDropdown(false);
     setChapterSearch("");
-    setTagSearch("");
+    setCollectionSearch("");
     navigate(-1);
   };
 
-  const addTag = (tag: Tag) => {
-    if (!selectedTag.some((existingTag) => existingTag.name === tag.name)) {
-      setSelectedTags([...selectedTag, tag]);
-      setShowTagDropdown(false);
-      setTagSearch("");
+  const addCollection = (collection: Tag) => {
+    if (
+      !selectedCollections.some(
+        (existingCollection) => existingCollection.id === collection.id
+      )
+    ) {
+      setSelectedCollections([...selectedCollections, collection]);
+      setShowCollectionDropdown(false);
+      setCollectionSearch("");
     }
   };
 
-  const addCustomTag = (tagName: string) => {
+  const addCustomCollection = (collectionName: string) => {
     navigate("/create-collection", {
-      state: tagName,
+      state: collectionName,
     });
   };
 
-  const removeTag = (tagName: string) => {
-    setSelectedTags(selectedTag.filter((tag) => tag.name !== tagName));
+  const removeCollection = (collectionId: string | number) => {
+    setSelectedCollections(
+      selectedCollections.filter((collection) => collection.id !== collectionId)
+    );
   };
 
-  const filteredChapters = chapters.filter((chapter) =>
-    chapter.title.toLowerCase().includes(chapterSearch.toLowerCase().trim())
+  const filteredChapters = chapters.filter((chapter: Chapter) =>
+    (chapter.title || "")
+      .toLowerCase()
+      .includes(chapterSearch.toLowerCase().trim())
   );
 
-  const filteredSuggestedTags = tags.filter(
-    (collection) =>
-      collection.name.toLowerCase().includes(tagSearch.toLowerCase().trim()) &&
-      !selectedTag.some((existingTag) => existingTag.name === collection.name)
+  const filteredSuggestedCollections = collections.filter((collection: Tag) =>
+    (collection.name || "")
+      .toLowerCase()
+      .includes(collectionSearch.toLowerCase().trim()) &&
+    !selectedCollections.some(
+      (existingCollection) => existingCollection.id === collection.id
+    )
+  );
+
+  const selectedMoodOption = moods.find(
+    (mood) => String(mood.id) === String(selectedMood)
   );
 
   const isFormValid = title.trim() && content.trim() && selectedChapter;
@@ -323,7 +408,7 @@ const CreateEntry: React.FC = () => {
                             borderColor: "rgb(var(--border))",
                           }}
                         />
-                        <span className="truncate">{selectedChapter.title || selectedChapter.name}</span>
+                        <span className="truncate">{selectedChapter.title}</span>
                       </>
                     ) : (
                       <span
@@ -435,10 +520,10 @@ const CreateEntry: React.FC = () => {
                 )}
               </div>
 
-              {/* Tag Selection */}
-              <div className="relative flex-1 max-w-xs" ref={tagDropdownRef}>
+              {/* Collection Selection */}
+              <div className="relative flex-1 max-w-xs" ref={collectionDropdownRef}>
                 <button
-                  onClick={() => setShowTagDropdown(!showTagDropdown)}
+                  onClick={() => setShowCollectionDropdown(!showCollectionDropdown)}
                   className="w-full flex items-center justify-between gap-2 px-3 py-2 border rounded-lg text-sm hover:opacity-80 transition-all"
                   style={{
                     backgroundColor: "rgb(var(--surface))",
@@ -455,21 +540,21 @@ const CreateEntry: React.FC = () => {
                       className="truncate"
                       style={{ color: "rgb(var(--copy-muted))" }}
                     >
-                      {selectedTag.length > 0
-                        ? `${selectedTag.length} tag${
-                            selectedTag.length !== 1 ? "s" : ""
+                      {selectedCollections.length > 0
+                        ? `${selectedCollections.length} collection${
+                            selectedCollections.length !== 1 ? "s" : ""
                           } selected`
                         : "Add collections..."}
                     </span>
                   </div>
                   <FaChevronDown
                     className={`text-xs transition-transform ${
-                      showTagDropdown ? "rotate-180" : ""
+                      showCollectionDropdown ? "rotate-180" : ""
                     }`}
                     style={{ color: "rgb(var(--copy-muted))" }}
                   />
                 </button>
-                {showTagDropdown && (
+                {showCollectionDropdown && (
                   <div
                     className="absolute top-full mt-1 w-full rounded-lg shadow-lg border z-20"
                     style={{
@@ -491,12 +576,12 @@ const CreateEntry: React.FC = () => {
                         <input
                           type="text"
                           placeholder="Search or create collections..."
-                          value={tagSearch}
-                          onChange={(e) => setTagSearch(e.target.value)}
+                          value={collectionSearch}
+                          onChange={(e) => setCollectionSearch(e.target.value)}
                           onKeyDown={(e) => {
-                            if (e.key === "Enter" && tagSearch.trim()) {
+                            if (e.key === "Enter" && collectionSearch.trim()) {
                               e.preventDefault();
-                              addCustomTag(tagSearch);
+                              addCustomCollection(collectionSearch);
                             }
                           }}
                           className="w-full pl-8 pr-3 py-2 border rounded-lg text-xs focus:ring-2 focus:border-transparent"
@@ -513,15 +598,15 @@ const CreateEntry: React.FC = () => {
                     </div>
 
                     <div className="py-2">
-                      {/* Create new tag option */}
-                      {tagSearch.trim() &&
-                        !tags.some(
-                          (tag) =>
-                            tag.name.toLowerCase() ===
-                            tagSearch.toLowerCase().trim()
+                      {/* Create new collection option */}
+                      {collectionSearch.trim() &&
+                        !collections.some(
+                          (collection) =>
+                            collection.name.toLowerCase() ===
+                            collectionSearch.toLowerCase().trim()
                         ) && (
                           <button
-                            onClick={() => addCustomTag(tagSearch)}
+                            onClick={() => addCustomCollection(collectionSearch)}
                             className="w-full flex items-center gap-3 px-4 py-2 hover:opacity-80 text-xs transition-all border-b"
                             style={{
                               color: "rgb(var(--copy-secondary))",
@@ -540,16 +625,16 @@ const CreateEntry: React.FC = () => {
                               className="text-xs flex-shrink-0"
                               style={{ color: "rgb(var(--success))" }}
                             />
-                            <span>Create "{tagSearch.trim()}"</span>
+                            <span>Create "{collectionSearch.trim()}"</span>
                           </button>
                         )}
 
-                      {/* Suggested tags */}
-                      {filteredSuggestedTags.length > 0 ? (
-                        filteredSuggestedTags.slice(0, 8).map((tag) => (
+                      {/* Suggested collections */}
+                      {filteredSuggestedCollections.length > 0 ? (
+                        filteredSuggestedCollections.slice(0, 8).map((collection) => (
                           <button
-                            key={tag.name}
-                            onClick={() => addTag(tag)}
+                            key={collection.id}
+                            onClick={() => addCollection(collection)}
                             className="w-full flex items-center gap-3 px-4 py-2 hover:opacity-80 text-xs transition-all"
                             style={{ color: "rgb(var(--copy-secondary))" }}
                             onMouseEnter={(e) => {
@@ -564,14 +649,14 @@ const CreateEntry: React.FC = () => {
                             <div
                               className="w-3 h-3 rounded-full border flex-shrink-0"
                               style={{
-                                backgroundColor: tag.color,
+                                backgroundColor: collection.color,
                                 borderColor: "rgb(var(--border))",
                               }}
                             />
-                            <span>#{tag.name}</span>
+                            <span>#{collection.name}</span>
                           </button>
                         ))
-                      ) : tagSearch.trim() === "" ? (
+                      ) : collectionSearch.trim() === "" ? (
                         <div
                           className="px-4 py-3 text-xs text-center"
                           style={{ color: "rgb(var(--copy-muted))" }}
@@ -580,7 +665,7 @@ const CreateEntry: React.FC = () => {
                         </div>
                       ) : null}
 
-                      {filteredSuggestedTags.length > 8 && (
+                      {filteredSuggestedCollections.length > 8 && (
                         <div
                           className="px-4 py-2 text-xs text-center border-t"
                           style={{
@@ -588,7 +673,7 @@ const CreateEntry: React.FC = () => {
                             borderColor: "rgba(var(--border), 0.5)",
                           }}
                         >
-                          +{filteredSuggestedTags.length - 8} more tags
+                          +{filteredSuggestedCollections.length - 8} more collections
                         </div>
                       )}
                     </div>
@@ -608,21 +693,18 @@ const CreateEntry: React.FC = () => {
                   }}
                   title="Select mood"
                 >
-                  {moods.find((m) => m.id === selectedMood) && (
+                  {selectedMoodOption && (
                     <span
                       className="text-xs"
                       style={{
-                        color: moods.find((m) => m.id === selectedMood)?.color,
+                        color: selectedMoodOption.color,
                       }}
                     >
-                      {getEmojiFromShortcode(
-                        moods.find((m) => m.id === selectedMood)?.emoji
-                      ) || "😊"}
+                      {getEmojiFromShortcode(selectedMoodOption.Emoji) || "😊"}
                     </span>
                   )}
                   <span className="capitalize text-xs">
-                    {moods.find((m) => m.id === selectedMood)?.name ||
-                      "Select Mood"}
+                    {selectedMoodOption?.name || "Select Mood"}
                   </span>
                   <FaChevronDown
                     className={`text-xs transition-transform ${
@@ -652,23 +734,23 @@ const CreateEntry: React.FC = () => {
                           className="w-full flex items-center gap-3 px-4 py-2 text-xs transition-all duration-200"
                           style={{
                             backgroundColor:
-                              selectedMood === mood.id
+                              String(selectedMood) === String(mood.id)
                                 ? "rgba(var(--warning), 0.1)"
                                 : "transparent",
                             color:
-                              selectedMood === mood.id
+                              String(selectedMood) === String(mood.id)
                                 ? "rgb(var(--warning))"
                                 : "rgb(var(--copy-secondary))",
                           }}
                           onMouseEnter={(e) => {
-                            if (selectedMood !== mood.id) {
+                            if (String(selectedMood) !== String(mood.id)) {
                               e.currentTarget.style.backgroundColor =
                                 "rgba(var(--surface), 0.5)";
                               e.currentTarget.style.transform = "scale(1.02)";
                             }
                           }}
                           onMouseLeave={(e) => {
-                            if (selectedMood !== mood.id) {
+                            if (String(selectedMood) !== String(mood.id)) {
                               e.currentTarget.style.backgroundColor =
                                 "transparent";
                               e.currentTarget.style.transform = "scale(1)";
@@ -683,7 +765,7 @@ const CreateEntry: React.FC = () => {
                             className="text-xs"
                             style={{ color: mood.color }}
                           >
-                            {getEmojiFromShortcode(mood.emoji) || "😊"}
+                            {getEmojiFromShortcode(mood.Emoji) || "😊"}
                           </span>
                           <span className="capitalize">{mood.name}</span>
                         </button>
@@ -735,24 +817,24 @@ const CreateEntry: React.FC = () => {
               />
             </div>
 
-            {/* Selected Tags Display */}
-            {selectedTag.length > 0 && (
+            {/* Selected Collections Display */}
+            {selectedCollections.length > 0 && (
               <div>
                 <div className="flex flex-wrap items-center gap-2">
-                  {selectedTag.map((tag) => (
-                    <span
-                      key={tag.name}
-                      className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full cursor-pointer group shadow-sm"
-                      style={{
-                        backgroundColor: tag.color,
-                        color: getTextColor(tag.color),
-                      }}
-                    >
-                      #{tag.name}
+                    {selectedCollections.map((collection) => (
+                      <span
+                        key={collection.id}
+                        className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full cursor-pointer group shadow-sm"
+                        style={{
+                          backgroundColor: collection.color,
+                          color: getTextColor(collection.color),
+                        }}
+                      >
+                      #{collection.name}
                       <button
-                        onClick={() => removeTag(tag.name)}
+                        onClick={() => removeCollection(collection.id)}
                         className="ml-1 opacity-70 hover:opacity-100 transition-opacity"
-                        style={{ color: getTextColor(tag.color) }}
+                        style={{ color: getTextColor(collection.color) }}
                       >
                         <FaTimes className="text-xs" />
                       </button>
@@ -792,12 +874,12 @@ const CreateEntry: React.FC = () => {
                 <span>{wordCount} words</span>
                 <span>•</span>
                 <span>{estimatedReadTime} min read</span>
-                {selectedTag.length > 0 && (
+                {selectedCollections.length > 0 && (
                   <>
                     <span>•</span>
                     <span>
-                      {selectedTag.length} tag
-                      {selectedTag.length !== 1 ? "s" : ""}
+                      {selectedCollections.length} collection
+                      {selectedCollections.length !== 1 ? "s" : ""}
                     </span>
                   </>
                 )}

@@ -213,7 +213,7 @@ const EntryItem = ({
   const [isArchiving, setIsArchiving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const menuRef = useRef(null);
-  const entryId = parseInt(`${entry.id}`);
+  const entryId = parseInt(`${entry.ID}`);
   const isFavorite = favorites.has(entryId);
   const navigate = useNavigate();
 
@@ -269,10 +269,12 @@ const EntryItem = ({
 
     setIsArchiving(true);
     try {
-      const response = await ArchiveEntry(entryId, !entry.is_archived);
+      const response = await ArchiveEntry(entryId, !entry.IsArchived
+);
       if (response) {
         toast.success(
-          entry.is_archived
+          entry.IsArchived
+
             ? "Entry unarchived successfully."
             : "Entry archived successfully."
         );
@@ -315,10 +317,10 @@ const EntryItem = ({
       state: {
         entry: {
           update: true,
-          id: entry.id,
-          title: entry.title,
-          content: entry.content,
-          collection: entry.collection,
+          id: entry.ID,
+          title: entry.Title,
+          content: entry.Content,
+          collection: entry.Collections,
         },
         chapter: { id: chapterId },
       },
@@ -334,7 +336,7 @@ const EntryItem = ({
           <div className="flex justify-between items-start gap-2">
             <div className="flex items-center gap-2 min-w-0 flex-1">
               <h3 className="text-sm font-medium text-[rgb(var(--copy-primary))] truncate">
-                {entry.title}
+                {entry.Title}
               </h3>
               <button
                 onClick={toggleFavorite}
@@ -346,7 +348,7 @@ const EntryItem = ({
                   <div className="animate-spin text-xs text-[rgb(var(--copy-muted))]">
                     ⟳
                   </div>
-                ) : isFavorite || entry.is_favourite ? (
+                ) : isFavorite || entry.IsFavourite ? (
                   <FaStar className="text-xs text-[rgb(var(--accent))]" />
                 ) : (
                   <FaRegStar className="text-xs text-[rgb(var(--copy-muted))] hover:text-[rgb(var(--accent))] transition-colors" />
@@ -377,10 +379,12 @@ const EntryItem = ({
                     onClick={handleArchive}
                     disabled={isArchiving}
                     className="flex items-center gap-2 px-2 py-1 text-xs w-full hover:bg-[rgb(var(--surface))] text-[rgb(var(--copy-primary))] rounded disabled:opacity-50 disabled:cursor-not-allowed"
-                    aria-label={entry.is_archived ? "Unarchive entry" : "Archive entry"}
+                    aria-label={entry.IsArchived
+ ? "Unarchive entry" : "Archive entry"}
                   >
                     <FaArchive className="text-[rgb(var(--copy-muted))]" />
-                    {entry.is_archived ? "Unarchive" : "Archive"}
+                    {entry.IsArchived
+ ? "Unarchive" : "Archive"}
                   </button>
                   <button
                     onClick={handleDelete}
@@ -395,24 +399,24 @@ const EntryItem = ({
             </div>
           </div>
           <p className="text-xs text-[rgb(var(--copy-secondary))] mt-1 line-clamp-2 leading-relaxed">
-            {entry.content.substring(0, 150)}...
+            {entry.Content.substring(0, 150)}...
           </p>
-          {entry.collection?.length > 0 && (
+          {entry.Collections?.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-1">
-              {entry.collection.map((tag) => (
+              {entry.Collections.map((tag) => (
                 <span
-                  key={tag.id}
+                  key={tag.ID}
                   className="px-1.5 py-0.5 text-xs font-medium rounded-full text-[rgb(var(--cta-text))]"
-                  style={{ backgroundColor: tag.color }}
+                  style={{ backgroundColor: tag.Color }}
                 >
-                  #{tag.name}
+                  #{tag.Name}
                 </span>
               ))}
             </div>
           )}
           <div className="flex items-center gap-1 text-[rgb(var(--copy-muted))] text-xs mt-1">
             <FaClock className="text-xs" />
-            <span>Updated {formatDate(entry.updated_at)}</span>
+            <span>Updated {formatDate(entry.UpdatedAt)}</span>
           </div>
         </div>
       </div>
@@ -435,7 +439,7 @@ const ChapterCard = ({
   const [isFavoriting, setIsFavoriting] = useState(false);
   const menuRef = useRef(null);
   const navigate = useNavigate();
-  const chapterId = `chapter-${chapter.id}`;
+  const chapterId = `chapter-${chapter.ID}`;
   const isFavorite = favorites.has(chapterId);
 
   useEffect(() => {
@@ -459,7 +463,7 @@ const ChapterCard = ({
     const value = !isFavorite;
 
     try {
-      const response = await FavouriteChapter(chapter.id, value);
+      const response = await FavouriteChapter(chapter.ID, value);
       if (response) {
         setFavorites((prev) => {
           const newFavorites = new Set(prev);
@@ -495,9 +499,9 @@ const ChapterCard = ({
       state: {
         chapter: {
           update: true,
-          id: chapter.id,
-          title: chapter.title,
-          color: chapter.color,
+          id: chapter.ID,
+          title: chapter.Title,
+          color: chapter.Color,
         },
       },
     });
@@ -512,27 +516,27 @@ const ChapterCard = ({
       role="button"
       tabIndex={0}
       onKeyDown={(e) => e.key === "Enter" && handleShowChapterView()}
-      aria-label={`View chapter ${chapter.title}`}
+      aria-label={`View chapter ${chapter.Title}`}
     >
-      <div className="h-1.5" style={{ backgroundColor: chapter.color }} />
+      <div className="h-1.5" style={{ backgroundColor: chapter.Color }} />
       <div className="p-4">
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-start gap-3 flex-1">
             <div
               className="p-2 rounded-lg flex-shrink-0"
-              style={{ backgroundColor: `${chapter.color}20` }}
+              style={{ backgroundColor: `${chapter.Color}20` }}
             >
               <FaBookOpen
                 className="text-sm"
-                style={{ color: chapter.color }}
+                style={{ color: chapter.Color }}
               />
             </div>
             <div className="flex-1 min-w-0">
               <h2 className="text-base font-serif font-semibold text-[rgb(var(--copy-primary))] leading-tight capitalize">
-                {chapter.title}
+                {chapter.Title}
               </h2>
               <div className="flex items-center gap-4 text-xs text-[rgb(var(--copy-secondary))] mt-1">
-                <span>{chapter.entries.length} entries</span>
+                <span>{chapter.Entries.length} entries</span>
               </div>
             </div>
           </div>
@@ -548,7 +552,7 @@ const ChapterCard = ({
                 <div className="animate-spin text-sm text-[rgb(var(--copy-muted))]">
                   ⟳
                 </div>
-              ) : isFavorite || chapter.is_favourite ? (
+              ) : isFavorite || chapter.IsFavourite ? (
                 <FaStar className="text-sm text-[rgb(var(--accent))]" />
               ) : (
                 <FaRegStar className="text-sm text-[rgb(var(--copy-muted))] hover:text-[rgb(var(--accent))] transition-colors" />
@@ -583,10 +587,12 @@ const ChapterCard = ({
                 <button
                   onClick={(e) => { e.stopPropagation(); onArchive(chapter); }}
                   className="flex items-center gap-2 px-2 py-1 text-xs w-full hover:bg-[rgb(var(--surface))] text-[rgb(var(--copy-primary))] rounded"
-                  aria-label={chapter.is_archived ? "Unarchive chapter" : "Archive chapter"}
+                  aria-label={chapter.IsArchived
+ ? "Unarchive chapter" : "Archive chapter"}
                 >
                   <FaArchive className="text-[rgb(var(--copy-muted))]" />
-                  {chapter.is_archived ? "Unarchive" : "Archive"}
+                  {chapter.IsArchived
+ ? "Unarchive" : "Archive"}
                 </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); onDelete(chapter); }}
@@ -601,30 +607,30 @@ const ChapterCard = ({
         </div>
         <div className="relative mb-3">
           <p className="text-[rgb(var(--copy-secondary))] leading-relaxed text-sm font-light line-clamp-2">
-            {chapter.description || "No description provided."}
+            {chapter.Description || "No description provided."}
           </p>
         </div>
-        {chapter.collection?.length > 0 && (
+        {chapter.Collections?.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-3">
-            {chapter.collection.map((tag) => (
+            {chapter.Collections.map((tag) => (
               <span
-                key={tag.id}
+                key={tag.ID}
                 className="px-2 py-1 text-xs font-medium rounded-full text-[rgb(var(--cta-text))]"
-                style={{ backgroundColor: tag.color }}
+                style={{ backgroundColor: tag.Color }}
               >
-                #{tag.name}
+                #{tag.Name}
               </span>
             ))}
           </div>
         )}
       </div>
       <div className="p-3 space-y-2 bg-[rgb(var(--card))] flex-1">
-        {chapter.entries.slice(0, 2).map((entry, idx) => (
+        {chapter.Entries.slice(0, 2).map((entry, idx) => (
           <EntryItem
-            key={entry.id}
+            key={entry.ID}
             entry={entry}
             index={idx}
-            chapterId={chapter.id}
+            chapterId={chapter.ID}
             favorites={favorites}
             setFavorites={setFavorites}
             fetchChapters={fetchChapters}
@@ -634,11 +640,11 @@ const ChapterCard = ({
       <div className="p-3 flex justify-between items-center border-t border-[rgb(var(--border))] h-12 flex-shrink-0">
         <div className="flex items-center gap-1 text-[rgb(var(--copy-muted))] text-xs">
           <FaClock className="text-xs" />
-          <span>Updated {formatDate(chapter.updated_at)}</span>
+          <span>Updated {formatDate(chapter.UpdatedAt)}</span>
         </div>
         <div className="text-xs text-[rgb(var(--copy-secondary))]">
-          {chapter.entries.length}{" "}
-          {chapter.entries.length === 1 ? "entry" : "entries"}
+          {chapter.Entries.length}{" "}
+          {chapter.Entries.length === 1 ? "entry" : "entries"}
         </div>
       </div>
     </div>
@@ -841,22 +847,25 @@ export default function Chapters() {
     setIsLoading(true);
     try {
       const response = await GetAllChapter();
+      console.log("here is the response in chapters", response.data);
+
       if (response && Array.isArray(response.data)) {
         const unarchivedChapters = response.data.filter(
-          (chapter) => !chapter.is_archived
+          (chapter) => !chapter.IsArchived
+
         );
         setArchivedChapterCount(response.data.length - unarchivedChapters.length);
         setChapters(unarchivedChapters);
         const initialFavorites = new Set(
           unarchivedChapters
-            .filter((chapter) => chapter.is_favourite)
-            .map((chapter) => `chapter-${chapter.id}`)
+            .filter((chapter) => chapter.IsFavourite)
+            .map((chapter) => `chapter-${chapter.ID}`)
         );
         unarchivedChapters.forEach((chapter) => {
-          chapter.entries.forEach((entry) => {
-            if (entry.is_favourite) {
+          chapter.Entries.forEach((entry) => {
+            if (entry.IsFavourite) {
                 // @ts-ignore
-              initialFavorites.add(parseInt(entry.id));
+              initialFavorites.add(parseInt(entry.ID));
             }
           });
         });
@@ -878,7 +887,17 @@ export default function Chapters() {
   }, []);
 
   const handleEdit = (chapter) => {
-    navigate("/create-chapter", { state: chapter });
+    navigate("/create-chapter", {
+      state: {
+        edit: true,
+        id: chapter.ID,
+        title: chapter.Title,
+        description: chapter.Description || chapter.Description,
+        color: chapter.Color,
+        entries: chapter.Entries,
+        collection: chapter.Collections,
+      },
+    });
   };
 
   const handleDelete = (chapter) => {
@@ -890,7 +909,7 @@ export default function Chapters() {
     setDeleteModal((prev) => ({ ...prev, isDeleting: true }));
 
     try {
-      const response = await DeleteChapter(chapter.id);
+      const response = await DeleteChapter(chapter.ID);
       if (response) {
         toast.success("Chapter deleted successfully.");
         fetchChapters();
@@ -921,10 +940,12 @@ export default function Chapters() {
     setArchiveModal((prev) => ({ ...prev, isArchiving: true }));
 
     try {
-      const response = await ArchiveChapter(chapter.id, !chapter.is_archived);
+      const response = await ArchiveChapter(chapter.ID, !chapter.IsArchived
+);
       if (response) {
         toast.success(
-          chapter.is_archived
+          chapter.IsArchived
+
             ? "Chapter unarchived successfully."
             : "Chapter archived successfully."
         );
@@ -959,11 +980,18 @@ export default function Chapters() {
       const searchLower = searchValue.toLowerCase();
       filtered = filtered.filter(
         (chapter) =>
-          chapter.title.toLowerCase().includes(searchLower) ||
-          chapter.description?.toLowerCase().includes(searchLower) ||
-          chapter.collection.some((tag) =>
-            tag.name.toLowerCase().includes(searchLower)
-          )
+          (chapter.Title || chapter.title || "")
+            .toLowerCase()
+            .includes(searchLower) ||
+          (chapter.Description || chapter.description || "")
+            .toLowerCase()
+            .includes(searchLower) ||
+          (chapter.Collections || [])
+            .some((tag) =>
+              (tag.Name || tag.name || "")
+                .toLowerCase()
+                .includes(searchLower)
+            )
       );
     }
 
@@ -971,14 +999,14 @@ export default function Chapters() {
       switch (sortBy) {
         case "recent":
           // @ts-ignore
-          return new Date(b.updated_at) - new Date(a.updated_at);
+          return new Date(b.UpdatedAt) - new Date(a.UpdatedAt);
         case "created":
             // @ts-ignore
-          return new Date(b.created_at) - new Date(a.created_at);
+          return new Date(b.CreatedAt) - new Date(a.CreatedAt);
         case "name":
-          return a.title.localeCompare(b.title);
+          return a.Title.localeCompare(b.Title);
         case "entries":
-          return b.entries.length - a.entries.length;
+          return b.Entries.length - a.Entries.length;
         default:
           return 0;
       }
@@ -1023,7 +1051,7 @@ export default function Chapters() {
               {paginatedChapters.length > 0 ? (
                 paginatedChapters.map((chapter, index) => (
                   <ChapterCard
-                    key={chapter.id}
+                    key={chapter.ID}
                     chapter={chapter}
                     favorites={favorites}
                     setFavorites={setFavorites}
@@ -1082,7 +1110,7 @@ export default function Chapters() {
           onConfirm={confirmDelete}
           title="Delete Chapter"
           message="Are you sure you want to delete this chapter? This action cannot be undone."
-          itemTitle={deleteModal.chapter?.title || ""}
+          itemTitle={deleteModal.chapter?.Title || ""}
           isProcessing={deleteModal.isDeleting}
           confirmText="Delete Chapter"
           confirmColor="bg-red-600 hover:bg-red-700 active:bg-red-800"
@@ -1091,13 +1119,16 @@ export default function Chapters() {
           isOpen={archiveModal.isOpen}
           onClose={cancelArchive}
           onConfirm={confirmArchive}
-          title={archiveModal.chapter?.is_archived ? "Unarchive Chapter" : "Archive Chapter"}
+          title={archiveModal.chapter?.IsArchived
+ ? "Unarchive Chapter" : "Archive Chapter"}
           message={`Are you sure you want to ${
-            archiveModal.chapter?.is_archived ? "unarchive" : "archive"
+            archiveModal.chapter?.IsArchived
+ ? "unarchive" : "archive"
           } this chapter?`}
-          itemTitle={archiveModal.chapter?.title || ""}
+          itemTitle={archiveModal.chapter?.Title || ""}
           isProcessing={archiveModal.isArchiving}
-          confirmText={archiveModal.chapter?.is_archived ? "Unarchive Chapter" : "Archive Chapter"}
+          confirmText={archiveModal.chapter?.IsArchived
+ ? "Unarchive Chapter" : "Archive Chapter"}
           confirmColor="bg-blue-600 hover:bg-blue-700 active:bg-blue-800"
         />
       </div>

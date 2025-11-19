@@ -200,9 +200,9 @@ const Collections = () => {
     try {
       setIsLoading(true);
       const response = await GetAllCollections();
-      console.log("Getting the response in collections", response.collections)
-      if (response && Array.isArray(response.collections)) {
-        setTags(response.collections);
+      console.log("Getting the response in collections", response.data)
+      if (response && Array.isArray(response.data)) {
+        setTags(response.data);
         setError(null);
       } else {
         setError("Failed to load collections: Invalid data format");

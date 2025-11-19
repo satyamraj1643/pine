@@ -12,6 +12,7 @@ func DiaryRoutes(r *gin.Engine) {
 		entries.POST("/create-new", controllers.EntryCreate)
 		entries.GET("/details/:id", controllers.EntryDetail)
 		entries.GET("/all", controllers.EntryList)
+		entries.DELETE("/delete/:id", controllers.EntryDelete)
 		entries.POST("/mark-favourite/:id", controllers.EntryMarkFavourite)
 		entries.POST("/archive/:id", controllers.EntryArchive)
 	}

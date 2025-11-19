@@ -86,20 +86,21 @@ const App = () => {
   if (isValidating) return <Validating />;
 
   // 🚨 If OTP is NOT verified → FORCE to VerifyOTP page
-  if (!isOtpVerified) {
-    return (
-      <>
-        <Toaster position="top-right" />
-        <Routes>
-          <Route path="/verifyOtp" element={<VerifyOTP />} />
-          <Route path="*" element={<VerifyOTP />} />
-        </Routes>
-      </>
-    );
-  }
+  // if (!isOtpVerified) {
+  //   return (
+  //     <>
+  //       <Toaster position="top-right" />
+  //       <Routes>
+  //         <Route path="/verifyOtp" element={<VerifyOTP />} />
+  //         <Route path="*" element={<VerifyOTP />} />
+  //       </Routes>
+  //     </>
+  //   );
+  // }
 
   // 🟩 OTP Verified + Validated → Full app
   if (isOtpVerified && isValidated) {
+    
     return (
       <>
         <Toaster position="top-right" />

@@ -60,7 +60,9 @@ export const GetAllCollections = async (): Promise<any> => {
         console.log("in get collection", data);
 
 
-        return data;
+        return {
+            "data": data.collections
+        };
 
     } catch (error) {
         return error
@@ -214,14 +216,14 @@ export const CreateNewEntry = async (entry: any): Promise<any> => {
 
     try {
 
-        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/entries/create-new/`, {
+        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/entries/create-new`, {
             method: "POST",
 
             headers: {
-                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
             },
 
-            'credentials': 'include',
 
             body: JSON.stringify({
                 "title": entry.title,
@@ -263,12 +265,12 @@ export const UpdateEntry = async (id: number, updatedEntry: any): Promise<any> =
 
     try {
 
-        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/entries/details/${id}/`, {
+        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/entries/details/${id}`, {
             method: "PATCH",
 
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken || "",
+             headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
             },
 
             'credentials': 'include',
@@ -307,11 +309,11 @@ export const UpdateEntry = async (id: number, updatedEntry: any): Promise<any> =
 export const GetAllEntries = async () => {
     try {
         console.log("in entries fetch")
-        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/entries/all/`, {
+        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/entries/all`, {
             method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken || ""
+             headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
             },
 
             credentials: 'include',
@@ -330,6 +332,8 @@ export const GetAllEntries = async () => {
 
         if (response.status === 200) {
             const data = await response.json()
+
+            console.log("Data from entries api", data.data)
             return {
                 "fetched": true,
                 "data": data.data
@@ -352,11 +356,12 @@ export const GetAllEntries = async () => {
 export const CreateNewChapter = async (chapter: any): Promise<any> => {
 
     try {
-        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/chapters/create-new/`, {
+        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/chapters/create-new`, {
             method: "POST",
 
             headers: {
-                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
             },
 
             'credentials': 'include',
@@ -364,7 +369,7 @@ export const CreateNewChapter = async (chapter: any): Promise<any> => {
             body: JSON.stringify({
                 "color": chapter.color,
                 "title": chapter.title,
-                "decription": chapter.description,
+                "description": chapter.description,
                 "collection": chapter.collection,
             })
 
@@ -400,15 +405,14 @@ export const CreateNewChapter = async (chapter: any): Promise<any> => {
 export const GetAllChapter = async () => {
     try {
         console.log("in chapter fetch")
-        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/chapters/all/`, {
+        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/chapters/all`, {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken || ""
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
             },
 
             credentials: 'include',
-
 
         })
 
@@ -425,7 +429,7 @@ export const GetAllChapter = async () => {
             const data = await response.json()
             return {
                 "fetched": true,
-                "data": data.data
+                "data": data.chapters
             }
         }
         else {
@@ -445,11 +449,12 @@ export const GetAllChapter = async () => {
 
 export const DeleteEntry = async (id: number) => {
     try {
-        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/entries/details/${id}/`, {
+        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/entries/delete/${id}`, {
 
             method: 'DELETE',
             headers: {
-                'Content-Type': 'application/json'
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
             },
             credentials: "include",
             body: JSON.stringify({})
@@ -480,12 +485,12 @@ export const ArchiveEntry = async (id: number, is_archived: boolean) => {
 
     try {
 
-        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/entries/archive/${id}/`, {
+        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/entries/archive/${id}`, {
             method: "POST",
 
             headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken || ""
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
             },
 
             'credentials': 'include',
@@ -515,14 +520,13 @@ export const ArchiveChapter = async (id: number, is_archived: boolean) => {
 
     try {
 
-        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/chapters/archive/${id}/`, {
+        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/chapters/archive/${id}`, {
             method: "POST",
 
             headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken || ""
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
             },
-
             'credentials': 'include',
 
             body: JSON.stringify({
@@ -552,15 +556,14 @@ export const FavouriteChapter = async (id: number, is_favourite: boolean) => {
 
     try {
 
-        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/chapters/mark-favourite/${id}/`, {
+        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/chapters/mark-favourite/${id}`, {
             method: "POST",
 
             headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken || ""
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
             },
 
-            'credentials': 'include',
 
             body: JSON.stringify({
                 "is_favourite": is_favourite
@@ -587,12 +590,12 @@ export const FavouriteEntry = async (id: number, is_favourite: boolean) => {
 
     try {
 
-        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/entries/mark-favourite/${id}/`, {
+        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/entries/mark-favourite/${id}`, {
             method: "POST",
 
             headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken || ""
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
             },
 
             'credentials': 'include',
@@ -622,15 +625,14 @@ export const DeleteChapter = async (id: number) => {
 
     try {
 
-        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/chapters/delete/${id}/`, {
+        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/chapters/delete/${id}`, {
             method: "DELETE",
 
             headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken || ""
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
             },
-
-            'credentials': 'include',
+        
 
 
         })
@@ -654,19 +656,20 @@ export const UpdateChapter = async (id: number, updatedChapter: any) => {
 
     try {
 
-        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/chapters/update/${id}/`, {
-            method: "PATCH",
+        const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/chapters/update/${id}`, {
+            method: "PUT",
 
             headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken || ""
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
             },
+
             'credentials': 'include',
 
             body: JSON.stringify({
                 "color": updatedChapter.color,
                 "title": updatedChapter.title,
-                "decription": updatedChapter.description,
+                "description": updatedChapter.description,
                 "collection": updatedChapter.collection,
             })
 

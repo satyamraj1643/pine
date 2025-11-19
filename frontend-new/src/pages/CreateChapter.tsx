@@ -163,19 +163,25 @@ const getTextColor = (backgroundColor: string): string => {
 const CreateChapter: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const locationState: any = location.state || {};
+  const isEdit = locationState?.edit === true;
 
   // Form state
-  const [title, setTitle] = useState(location.state?.title || "");
+  const [title, setTitle] = useState(
+    locationState?.title || locationState?.Title || ""
+  );
   const [description, setDescription] = useState(
-    location.state?.description || ""
+    locationState?.description || locationState?.Description || ""
   );
   const [selectedColor, setSelectedColor] = useState(
-    location.state?.color || "#efbf10"
+    locationState?.color || locationState?.Color || "#efbf10"
   );
   const [selectedEntries, setSelectedEntries] = useState(
-    location.state?.entries || []
+    locationState?.entries || locationState?.Entries || []
   );
-  const [selectedTags, setSelectedTags] = useState(location.state?.collection || []);
+  const [selectedTags, setSelectedTags] = useState(
+    locationState?.collection || locationState?.Collections || []
+  );
   const [tags, setTags] = useState([]);
 
   // UI state
@@ -253,19 +259,22 @@ const CreateChapter: React.FC = () => {
   const handleCreate = async () => {
     if (!title.trim()) return;
 
-    const selectedTagIds = selectedTags.map((tag) => tag.id);
+    const selectedTagIds = selectedTags.map((tag) => tag.ID);
 
     const newChapter = {
       title: title.trim(),
       description: description.trim(),
       color: selectedColor,
-      // entries: selectedEntries,
+      entries: selectedEntries,
       // entryCount: selectedEntries.length,
       collection: selectedTagIds,
     };
 
-    if (location.state) {
-      const updated = await UpdateChapter(location.state?.id, newChapter);
+    if (isEdit) {
+      const updated = await UpdateChapter(
+        locationState?.id || locationState?.ID,
+        newChapter
+      );
 
       if (updated) {
         toast.success(`Chapter updated with title ${newChapter.title}`);
@@ -315,7 +324,7 @@ const CreateChapter: React.FC = () => {
   };
 
   const addTag = (tag) => {
-    if (!selectedTags.some((existingTag) => existingTag.name === tag.name)) {
+    if (!selectedTags.some((existingTag) => existingTag.name === tag.Name)) {
       setSelectedTags([...selectedTags, tag]);
       setShowTagDropdown(false);
       setTagSearch("");
@@ -329,7 +338,7 @@ const CreateChapter: React.FC = () => {
   };
 
   const removeTag = (tagName: string) => {
-    setSelectedTags(selectedTags.filter((tag) => tag.name !== tagName));
+    setSelectedTags(selectedTags.filter((tag) => tag.Name !== tagName));
   };
 
   const createNewEntry = () => {
@@ -354,7 +363,7 @@ const CreateChapter: React.FC = () => {
     const titleMatch = entry.title.toLowerCase().includes(searchTerm);
     const contentMatch = entry.content.toLowerCase().includes(searchTerm);
     const tagMatch = entry.tags.some((tag) =>
-      tag.name.toLowerCase().includes(searchTerm)
+      tag.Name.toLowerCase().includes(searchTerm)
     );
 
     return (
@@ -366,8 +375,8 @@ const CreateChapter: React.FC = () => {
   // Filter tags
   const filteredSuggestedTags = tags.filter(
     (tag) =>
-      tag.name.toLowerCase().includes(tagSearch.toLowerCase().trim()) &&
-      !selectedTags.some((existingTag) => existingTag.name === tag.name)
+      tag.Name?.toLowerCase().includes(tagSearch.toLowerCase().trim()) &&
+      !selectedTags.some((existingTag) => existingTag.name === tag.Name)
   );
 
   const isFormValid = title.trim();
@@ -414,13 +423,15 @@ const CreateChapter: React.FC = () => {
                 className="text-2xl font-serif font-semibold"
                 style={{ color: "rgb(var(--copy-primary))" }}
               >
-                Create New Chapter
+                {isEdit ? "Edit Chapter" : "Create New Chapter"}
               </h1>
               <p
                 className="text-sm"
                 style={{ color: "rgb(var(--copy-secondary))" }}
               >
-                Organize your entries into meaningful collections
+                {isEdit
+                  ? "Update chapter details and organizing tags"
+                  : "Organize your entries into meaningful collections"}
               </p>
             </div>
           </div>
@@ -692,15 +703,15 @@ const CreateChapter: React.FC = () => {
                                     />
                                     {entry.tags.slice(0, 3).map((tag) => (
                                       <span
-                                        key={tag.name}
+                                        key={tag.Name}
                                         className="px-1.5 py-0.5 text-xs rounded-full font-medium border"
                                         style={{
-                                          backgroundColor: `${tag.color}15`,
-                                          color: tag.color,
-                                          borderColor: `${tag.color}30`,
+                                          backgroundColor: `${tag.Color}15`,
+                                          color: tag.Color,
+                                          borderColor: `${tag.Color}30`,
                                         }}
                                       >
-                                        {tag.name}
+                                        {tag.Name}
                                       </span>
                                     ))}
                                     {entry.tags.length > 3 && (
@@ -853,7 +864,7 @@ const CreateChapter: React.FC = () => {
                       {tagSearch.trim() &&
                         !tags.some(
                           (tag) =>
-                            tag.name.toLowerCase() ===
+                            tag.Name.toLowerCase() ===
                             tagSearch.toLowerCase().trim()
                         ) && (
                           <button
@@ -882,7 +893,7 @@ const CreateChapter: React.FC = () => {
                       {filteredSuggestedTags.length > 0 ? (
                         filteredSuggestedTags.slice(0, 8).map((tag) => (
                           <button
-                            key={tag.name}
+                            key={tag.Name}
                             onClick={() => addTag(tag)}
                             className="w-full flex items-center gap-3 px-4 py-2 hover:opacity-80 text-sm transition-all"
                             style={{ color: "rgb(var(--copy-secondary))" }}
@@ -898,11 +909,11 @@ const CreateChapter: React.FC = () => {
                             <div
                               className="w-3 h-3 rounded-full border flex-shrink-0"
                               style={{
-                                backgroundColor: tag.color,
+                                backgroundColor: tag.Color,
                                 borderColor: "rgb(var(--border))",
                               }}
                             />
-                            <span>#{tag.name}</span>
+                            <span>#{tag.Name}</span>
                           </button>
                         ))
                       ) : tagSearch.trim() === "" ? (
@@ -982,18 +993,18 @@ const CreateChapter: React.FC = () => {
                 <div className="flex flex-wrap items-center gap-2">
                   {selectedTags.map((tag) => (
                     <span
-                      key={tag.name}
+                      key={tag.Name}
                       className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full cursor-pointer group shadow-sm"
                       style={{
-                        backgroundColor: tag.color,
-                        color: getTextColor(tag.color),
+                        backgroundColor: tag.Color,
+                        color: getTextColor(tag.Color),
                       }}
                     >
-                      #{tag.name}
+                      #{tag.Name}
                       <button
-                        onClick={() => removeTag(tag.name)}
+                        onClick={() => removeTag(tag.Name)}
                         className="ml-1 opacity-70 hover:opacity-100 transition-opacity"
-                        style={{ color: getTextColor(tag.color) }}
+                        style={{ color: getTextColor(tag.Color) }}
                       >
                         <FaTimes className="text-xs" />
                       </button>
@@ -1081,15 +1092,15 @@ const CreateChapter: React.FC = () => {
                               <div className="flex gap-1">
                                 {entry.tags.slice(0, 2).map((tag) => (
                                   <span
-                                    key={tag.name}
+                                    key={tag.Name}
                                     className="px-1.5 py-0.5 text-xs rounded-full font-medium border"
                                     style={{
-                                      backgroundColor: `${tag.color}15`,
-                                      color: tag.color,
-                                      borderColor: `${tag.color}30`,
+                                      backgroundColor: `${tag.Color}15`,
+                                      color: tag.Color,
+                                      borderColor: `${tag.Color}30`,
                                     }}
                                   >
-                                    {tag.name}
+                                    {tag.Name}
                                   </span>
                                 ))}
                                 {entry.tags.length > 2 && (
@@ -1172,7 +1183,7 @@ const CreateChapter: React.FC = () => {
               }}
             >
               <FaBookOpen className="text-sm" />
-              {location.state ? "Update Chapter" : "Create Chapter"}
+              {isEdit ? "Edit Chapter" : "Create Chapter"}
             </button>
           </div>
         </div>
