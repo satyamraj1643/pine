@@ -1,0 +1,622 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Roboto, sans-serif;
+}
+
+/* ── Typography Scale ── */
+/* 
+  Standardized font sizes:
+  - text-4xl/5xl: Hero headlines (marketing only)
+  - text-2xl: Page titles
+  - text-xl: Feature headings
+  - text-lg: Subheadings
+  - text-base (16px): Body text
+  - text-sm (14px): Labels, buttons, secondary text
+  - text-xs (12px): Metadata, timestamps
+  - text-[10px]: Micro text (badges, compact tags)
+*/
+
+:root {
+   font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Roboto, Helvetica, Arial, sans-serif, "Segoe UI Emoji", "Noto Color Emoji";
+   -webkit-font-smoothing: antialiased;
+   -moz-osx-font-smoothing: grayscale;
+   letter-spacing: -0.015em;
+   line-height: 1.5;
+  --background: 252, 250, 245;           /* Warm off-white */
+  --surface: 247, 244, 238;              /* Soft cream */
+  --border: 228, 223, 213;               /* Warm taupe border */
+  --card: 250, 247, 241;                 /* Light cream card */
+  --copy-primary: 58, 53, 47;            /* Warm charcoal text */
+  --copy-secondary: 122, 115, 105;       /* Muted brown */
+  --copy-muted: 168, 161, 150;           /* Soft taupe */
+  --cta: 168, 139, 108;                  /* Warm camel */
+  --cta-active: 143, 116, 87;            /* Deeper camel */
+  --cta-text: 255, 255, 255;
+  --success: 134, 164, 134;              /* Soft sage success */
+  --warning: 212, 175, 117;              /* Warm honey */
+  --error: 194, 129, 129;                /* Muted rose error */
+  --accent: 188, 163, 135;               /* Warm tan accent */
+  --accent-muted: 213, 197, 177;         /* Light tan */
+}
+
+/* Clean Girl - Minimal beige & soft neutrals */
+.theme-light {
+  --background: 252, 250, 245;           /* Warm off-white */
+  --surface: 247, 244, 238;              /* Soft cream */
+  --border: 228, 223, 213;               /* Warm taupe border */
+  --card: 250, 247, 241;                 /* Light cream card */
+  --copy-primary: 58, 53, 47;            /* Warm charcoal text */
+  --copy-secondary: 122, 115, 105;       /* Muted brown */
+  --copy-muted: 168, 161, 150;           /* Soft taupe */
+  --cta: 168, 139, 108;                  /* Warm camel */
+  --cta-active: 143, 116, 87;            /* Deeper camel */
+  --cta-text: 255, 255, 255;
+  --success: 134, 164, 134;              /* Soft sage success */
+  --warning: 212, 175, 117;              /* Warm honey */
+  --error: 194, 129, 129;                /* Muted rose error */
+  --accent: 188, 163, 135;               /* Warm tan accent */
+  --accent-muted: 213, 197, 177;         /* Light tan */
+  --shadow: 58, 53, 47, 0.04;
+  --shadow-lg: 58, 53, 47, 0.08;
+}
+
+/* Y2K Dark - Chrome vibes, electric accents */
+.theme-dark {
+  --background: 8, 8, 16;                /* Deep space black */
+  --surface: 18, 18, 32;                 /* Dark chrome base */
+  --border: 45, 45, 72;                  /* Metallic border */
+  --card: 22, 22, 38;                    /* Chrome card */
+  --copy-primary: 240, 238, 255;         /* Bright chrome white */
+  --copy-secondary: 175, 170, 210;       /* Soft lavender */
+  --copy-muted: 120, 115, 155;           /* Muted purple-gray */
+  --cta: 255, 105, 180;                  /* Hot pink */
+  --cta-active: 255, 64, 150;            /* Electric pink */
+  --cta-text: 255, 255, 255;
+  --success: 0, 255, 170;                /* Cyber mint */
+  --warning: 255, 215, 0;                /* Y2K gold */
+  --error: 255, 92, 138;                 /* Bubblegum error */
+  --accent: 138, 180, 255;               /* Baby blue */
+  --accent-muted: 180, 140, 255;         /* Soft purple */
+  --shadow: 255, 105, 180, 0.1;          /* Pink glow shadow */
+  --shadow-lg: 255, 105, 180, 0.15;
+}
+
+/* Cottagecore - Rustic warmth, muted earth */
+.theme-light-warm {
+  --background: 253, 250, 243;           /* Warm parchment */
+  --surface: 247, 241, 230;              /* Aged cream */
+  --border: 220, 208, 188;               /* Dried hay */
+  --card: 250, 245, 235;                 /* Soft linen */
+  --copy-primary: 72, 60, 48;            /* Warm brown ink */
+  --copy-secondary: 115, 98, 80;         /* Soft brown */
+  --copy-muted: 158, 142, 122;           /* Faded brown */
+  --cta: 139, 115, 85;                   /* Earthy brown */
+  --cta-active: 115, 93, 65;             /* Deeper earth */
+  --cta-text: 255, 255, 255;
+  --success: 108, 140, 108;              /* Moss green */
+  --warning: 198, 155, 85;               /* Warm honey */
+  --error: 175, 100, 88;                 /* Terracotta */
+  --accent: 156, 132, 100;               /* Warm mushroom */
+  --accent-muted: 188, 168, 142;         /* Light taupe */
+  --shadow: 72, 60, 48, 0.05;
+  --shadow-lg: 72, 60, 48, 0.1;
+}
+
+/* Dark Academia - Scholarly burgundy & forest */
+.theme-dark-purple {
+  --background: 18, 14, 12;              /* Aged leather black */
+  --surface: 32, 26, 22;                 /* Dark wood */
+  --border: 55, 45, 38;                  /* Antique bronze */
+  --card: 28, 22, 18;                    /* Library dark */
+  --copy-primary: 242, 235, 225;         /* Aged paper */
+  --copy-secondary: 188, 175, 158;       /* Faded ink */
+  --copy-muted: 138, 125, 110;           /* Dusty text */
+  --cta: 138, 60, 55;                    /* Burgundy wine */
+  --cta-active: 115, 45, 42;             /* Deep burgundy */
+  --cta-text: 255, 255, 255;
+  --success: 85, 115, 75;                /* Forest green */
+  --warning: 195, 150, 80;               /* Antique gold */
+  --error: 165, 75, 70;                  /* Muted red */
+  --accent: 115, 85, 70;                 /* Warm leather */
+  --accent-muted: 155, 125, 105;         /* Soft tan */
+  --shadow: 138, 60, 55, 0.15;           /* Wine shadow */
+  --shadow-lg: 138, 60, 55, 0.25;
+}
+
+/* Vanilla Latte - Creamy coffee shop vibes */
+.theme-ivory {
+  --background: 255, 252, 247;           /* Fresh cream */
+  --surface: 250, 245, 235;              /* Oat milk */
+  --border: 232, 222, 205;               /* Latte foam */
+  --card: 252, 248, 240;                 /* Warm vanilla */
+  --copy-primary: 65, 55, 42;            /* Espresso */
+  --copy-secondary: 108, 95, 78;         /* Coffee */
+  --copy-muted: 155, 142, 125;           /* Steamed milk */
+  --cta: 165, 130, 95;                   /* Caramel */
+  --cta-active: 140, 108, 75;            /* Toffee */
+  --cta-text: 255, 255, 255;
+  --success: 125, 150, 115;              /* Matcha */
+  --warning: 205, 165, 95;               /* Honey drizzle */
+  --error: 185, 115, 105;                /* Strawberry */
+  --accent: 182, 148, 115;               /* Cinnamon */
+  --accent-muted: 208, 185, 158;         /* Vanilla foam */
+  --shadow: 65, 55, 42, 0.04;
+  --shadow-lg: 65, 55, 42, 0.08;
+}
+
+/* Soft Sage - That girl wellness aesthetic */
+.theme-sage {
+  --background: 245, 248, 244;           /* Morning dew */
+  --surface: 235, 242, 233;              /* Soft sage */
+  --border: 210, 222, 208;               /* Eucalyptus */
+  --card: 240, 246, 238;                 /* Fresh mint */
+  --copy-primary: 55, 68, 55;            /* Forest ink */
+  --copy-secondary: 95, 112, 95;         /* Herb green */
+  --copy-muted: 140, 155, 140;           /* Soft fern */
+  --cta: 110, 135, 110;                  /* Sage button */
+  --cta-active: 88, 112, 88;             /* Deep sage */
+  --cta-text: 255, 255, 255;
+  --success: 105, 145, 105;              /* Fresh sage */
+  --warning: 195, 168, 105;              /* Golden hour */
+  --error: 175, 115, 115;                /* Dusty rose */
+  --accent: 130, 158, 130;               /* Calm sage */
+  --accent-muted: 172, 195, 172;         /* Light mint */
+  --shadow: 55, 68, 55, 0.04;
+  --shadow-lg: 55, 68, 55, 0.08;
+}
+
+/* After Hours - Late night coding vibes */
+.theme-twilight {
+  --background: 12, 14, 22;              /* 2AM sky */
+  --surface: 20, 24, 35;                 /* Night surface */
+  --border: 38, 45, 62;                  /* Soft neon border */
+  --card: 18, 21, 32;                    /* Deep twilight */
+  --copy-primary: 235, 240, 255;         /* Moonlight text */
+  --copy-secondary: 155, 165, 195;       /* Dusk gray */
+  --copy-muted: 105, 115, 145;           /* Evening mist */
+  --cta: 130, 145, 255;                  /* Soft blue neon */
+  --cta-active: 105, 120, 235;           /* Deeper blue */
+  --cta-text: 255, 255, 255;
+  --success: 115, 210, 175;              /* Mint glow */
+  --warning: 255, 200, 120;              /* Warm lamp */
+  --error: 255, 135, 145;                /* Soft pink error */
+  --accent: 160, 140, 255;               /* Lavender glow */
+  --accent-muted: 125, 135, 205;         /* Muted purple */
+  --shadow: 130, 145, 255, 0.08;         /* Blue glow */
+  --shadow-lg: 130, 145, 255, 0.12;
+}
+
+/* Soft Lilac - Dreamy lavender aesthetic */
+.theme-lavender {
+  --background: 252, 250, 255;           /* Whisper lilac */
+  --surface: 245, 240, 252;              /* Soft lavender */
+  --border: 225, 215, 240;               /* Dusty purple */
+  --card: 248, 244, 254;                 /* Light violet */
+  --copy-primary: 62, 52, 78;            /* Deep purple ink */
+  --copy-secondary: 105, 92, 125;        /* Muted violet */
+  --copy-muted: 150, 138, 168;           /* Soft purple */
+  --cta: 148, 125, 185;                  /* Wisteria */
+  --cta-active: 125, 102, 162;           /* Deep wisteria */
+  --cta-text: 255, 255, 255;
+  --success: 140, 168, 145;              /* Sage hint */
+  --warning: 205, 175, 125;              /* Warm sand */
+  --error: 195, 130, 145;                /* Dusty rose */
+  --accent: 168, 145, 200;               /* Soft violet */
+  --accent-muted: 195, 180, 218;         /* Pale lilac */
+  --shadow: 62, 52, 78, 0.04;
+  --shadow-lg: 62, 52, 78, 0.08;
+}
+
+/* Golden Hour - Warm sunset aesthetic */
+.theme-honey {
+  --background: 255, 252, 245;           /* Soft sunlight */
+  --surface: 252, 245, 230;              /* Warm glow */
+  --border: 238, 225, 198;               /* Honey border */
+  --card: 254, 248, 235;                 /* Light amber */
+  --copy-primary: 78, 62, 38;            /* Warm brown */
+  --copy-secondary: 125, 105, 75;        /* Toasted caramel */
+  --copy-muted: 165, 148, 120;           /* Soft sand */
+  --cta: 205, 160, 90;                   /* Golden honey */
+  --cta-active: 180, 138, 72;            /* Deep gold */
+  --cta-text: 255, 255, 255;
+  --success: 135, 158, 110;              /* Meadow green */
+  --warning: 215, 168, 85;               /* Amber */
+  --error: 195, 125, 110;                /* Terracotta */
+  --accent: 218, 178, 115;               /* Sunset gold */
+  --accent-muted: 235, 205, 155;         /* Light honey */
+  --shadow: 78, 62, 38, 0.04;
+  --shadow-lg: 78, 62, 38, 0.08;
+}
+
+/* Midnight Blue - Deep night aesthetic */
+.theme-midnight {
+  --background: 10, 12, 22;              /* Deep void */
+  --surface: 18, 22, 38;                 /* Night blue */
+  --border: 35, 42, 68;                  /* Starlight edge */
+  --card: 15, 18, 32;                    /* Cosmic card */
+  --copy-primary: 235, 240, 255;         /* Star white */
+  --copy-secondary: 165, 175, 205;       /* Moon gray */
+  --copy-muted: 115, 125, 158;           /* Twilight mist */
+  --cta: 100, 130, 255;                  /* Electric blue */
+  --cta-active: 75, 105, 230;            /* Deep electric */
+  --cta-text: 255, 255, 255;
+  --success: 100, 220, 180;              /* Aurora green */
+  --warning: 255, 195, 100;              /* Amber star */
+  --error: 255, 120, 135;                /* Soft coral */
+  --accent: 140, 160, 255;               /* Soft neon blue */
+  --accent-muted: 115, 135, 215;         /* Muted blue */
+  --shadow: 100, 130, 255, 0.1;          /* Blue glow */
+  --shadow-lg: 100, 130, 255, 0.15;
+}
+
+/* Y2K Pink - Bubblegum princess era */
+.theme-blush {
+  --background: 255, 250, 252;           /* Baby pink white */
+  --surface: 255, 240, 248;              /* Bubblegum surface */
+  --border: 255, 215, 232;               /* Candy border */
+  --card: 255, 245, 250;                 /* Soft pink card */
+  --copy-primary: 95, 50, 75;            /* Berry ink */
+  --copy-secondary: 145, 95, 120;        /* Dusty rose */
+  --copy-muted: 185, 145, 165;           /* Soft mauve */
+  --cta: 255, 130, 180;                  /* Hot pink */
+  --cta-active: 240, 100, 160;           /* Electric pink */
+  --cta-text: 255, 255, 255;
+  --success: 160, 215, 185;              /* Mint green */
+  --warning: 255, 200, 150;              /* Peach */
+  --error: 255, 120, 140;                /* Coral pink */
+  --accent: 255, 155, 200;               /* Bubblegum */
+  --accent-muted: 255, 190, 220;         /* Light pink */
+  --shadow: 255, 130, 180, 0.08;         /* Pink glow */
+  --shadow-lg: 255, 130, 180, 0.12;
+}
+
+/* Moss & Stone - Cozy cottagecore dark */
+.theme-forest {
+  --background: 15, 18, 14;              /* Deep forest floor */
+  --surface: 25, 30, 22;                 /* Mossy stone */
+  --border: 42, 52, 38;                  /* Lichen edge */
+  --card: 22, 26, 20;                    /* Dark earth */
+  --copy-primary: 228, 235, 220;         /* Soft fern light */
+  --copy-secondary: 175, 188, 165;       /* Sage text */
+  --copy-muted: 125, 140, 118;           /* Moss muted */
+  --cta: 95, 125, 85;                    /* Forest sage */
+  --cta-active: 75, 102, 68;             /* Deep forest */
+  --cta-text: 255, 255, 255;
+  --success: 115, 165, 105;              /* Fresh leaf */
+  --warning: 198, 168, 105;              /* Honey amber */
+  --error: 185, 115, 105;                /* Autumn berry */
+  --accent: 125, 155, 115;               /* Fern green */
+  --accent-muted: 95, 120, 88;           /* Muted moss */
+  --shadow: 95, 125, 85, 0.1;            /* Green shadow */
+  --shadow-lg: 95, 125, 85, 0.15;
+}
+
+/* Peach Fuzz - Pantone 2024 vibes */
+.theme-sunset {
+  --background: 255, 252, 248;           /* Soft peach white */
+  --surface: 255, 245, 238;              /* Peach cream */
+  --border: 252, 228, 212;               /* Peach border */
+  --card: 255, 248, 242;                 /* Light apricot */
+  --copy-primary: 95, 65, 52;            /* Warm terra */
+  --copy-secondary: 145, 110, 92;        /* Soft brown */
+  --copy-muted: 185, 155, 138;           /* Dusty peach */
+  --cta: 255, 155, 125;                  /* Peach pop */
+  --cta-active: 240, 130, 100;           /* Deep peach */
+  --cta-text: 255, 255, 255;
+  --success: 145, 180, 145;              /* Soft sage */
+  --warning: 245, 185, 120;              /* Apricot */
+  --error: 235, 135, 125;                /* Coral */
+  --accent: 255, 175, 150;               /* Warm peach */
+  --accent-muted: 255, 205, 185;         /* Light peach */
+  --shadow: 255, 155, 125, 0.06;         /* Peach glow */
+  --shadow-lg: 255, 155, 125, 0.1;
+}
+
+/* Grape Soda - Y2K purple pop */
+.theme-plum {
+  --background: 18, 12, 25;              /* Deep grape */
+  --surface: 28, 20, 38;                 /* Plum surface */
+  --border: 52, 38, 72;                  /* Berry border */
+  --card: 24, 16, 34;                    /* Dark violet */
+  --copy-primary: 248, 240, 255;         /* Soft lavender white */
+  --copy-secondary: 200, 180, 225;       /* Misty purple */
+  --copy-muted: 155, 138, 180;           /* Dusty violet */
+  --cta: 180, 120, 255;                  /* Electric purple */
+  --cta-active: 155, 95, 235;            /* Deep violet */
+  --cta-text: 255, 255, 255;
+  --success: 130, 230, 190;              /* Mint pop */
+  --warning: 255, 200, 130;              /* Golden glow */
+  --error: 255, 130, 155;                /* Pink coral */
+  --accent: 200, 150, 255;               /* Soft neon purple */
+  --accent-muted: 165, 130, 215;         /* Muted violet */
+  --shadow: 180, 120, 255, 0.12;         /* Purple glow */
+  --shadow-lg: 180, 120, 255, 0.18;
+}
+
+/* Matcha - Clean girl wellness */
+.theme-mint {
+  --background: 250, 255, 252;           /* Fresh mint white */
+  --surface: 240, 252, 245;              /* Soft matcha */
+  --border: 215, 238, 225;               /* Mint border */
+  --card: 245, 253, 248;                 /* Light mint */
+  --copy-primary: 38, 62, 48;            /* Deep forest */
+  --copy-secondary: 75, 105, 85;         /* Sage text */
+  --copy-muted: 125, 155, 135;           /* Soft green */
+  --cta: 95, 165, 120;                   /* Fresh matcha */
+  --cta-active: 75, 140, 98;             /* Deep matcha */
+  --cta-text: 255, 255, 255;
+  --success: 105, 185, 130;              /* Bright mint */
+  --warning: 205, 175, 115;              /* Warm honey */
+  --error: 195, 130, 125;                /* Soft coral */
+  --accent: 120, 185, 145;               /* Bright sage */
+  --accent-muted: 165, 210, 180;         /* Light mint */
+  --shadow: 95, 165, 120, 0.05;          /* Mint shadow */
+  --shadow-lg: 95, 165, 120, 0.08;
+}
+
+/* Strawberry Glaze - Sweet Y2K */
+.theme-coral {
+  --background: 255, 252, 252;           /* Soft white pink */
+  --surface: 255, 245, 245;              /* Light blush */
+  --border: 255, 225, 225;               /* Strawberry border */
+  --card: 255, 248, 248;                 /* Cream pink */
+  --copy-primary: 95, 55, 55;            /* Deep berry */
+  --copy-secondary: 145, 100, 100;       /* Dusty rose */
+  --copy-muted: 185, 145, 145;           /* Soft mauve */
+  --cta: 255, 130, 140;                  /* Strawberry */
+  --cta-active: 240, 105, 118;           /* Deep strawberry */
+  --cta-text: 255, 255, 255;
+  --success: 155, 195, 160;              /* Soft mint */
+  --warning: 255, 195, 150;              /* Peach cream */
+  --error: 255, 120, 130;                /* Hot coral */
+  --accent: 255, 155, 165;               /* Rose pink */
+  --accent-muted: 255, 190, 195;         /* Light rose */
+  --shadow: 255, 130, 140, 0.06;         /* Pink shadow */
+  --shadow-lg: 255, 130, 140, 0.1;
+}
+
+/* Carbon - Minimal dark mode */
+.theme-slate {
+  --background: 14, 14, 16;              /* True dark */
+  --surface: 24, 24, 28;                 /* Soft carbon */
+  --border: 42, 42, 48;                  /* Graphite edge */
+  --card: 20, 20, 24;                    /* Dark card */
+  --copy-primary: 245, 245, 248;         /* Clean white */
+  --copy-secondary: 175, 175, 185;       /* Soft gray */
+  --copy-muted: 120, 120, 130;           /* Muted gray */
+  --cta: 145, 145, 155;                  /* Silver */
+  --cta-active: 125, 125, 135;           /* Dark silver */
+  --cta-text: 255, 255, 255;
+  --success: 135, 200, 165;              /* Soft green */
+  --warning: 235, 195, 125;              /* Warm amber */
+  --error: 235, 135, 135;                /* Soft red */
+  --accent: 165, 165, 180;               /* Light silver */
+  --accent-muted: 135, 135, 150;         /* Muted silver */
+  --shadow: 0, 0, 0, 0.25;
+  --shadow-lg: 0, 0, 0, 0.35;
+}
+
+
+
+/* Y2K Blue - Electric baby blue */
+.theme-ocean {
+  --background: 248, 252, 255;           /* Ice blue white */
+  --surface: 238, 248, 255;              /* Baby blue */
+  --border: 205, 230, 250;               /* Sky border */
+  --card: 242, 250, 255;                 /* Light ice */
+  --copy-primary: 35, 55, 85;            /* Deep navy */
+  --copy-secondary: 75, 100, 135;        /* Steel blue */
+  --copy-muted: 125, 150, 180;           /* Soft blue */
+  --cta: 90, 165, 255;                   /* Electric blue */
+  --cta-active: 65, 140, 235;            /* Deep electric */
+  --cta-text: 255, 255, 255;
+  --success: 130, 205, 175;              /* Aqua mint */
+  --warning: 255, 200, 130;              /* Warm peach */
+  --error: 255, 135, 150;                /* Soft coral */
+  --accent: 120, 185, 255;               /* Bright blue */
+  --accent-muted: 165, 210, 255;         /* Light blue */
+  --shadow: 90, 165, 255, 0.06;          /* Blue glow */
+  --shadow-lg: 90, 165, 255, 0.1;
+}
+
+/* Pumpkin Spice - Fall cottagecore */
+.theme-autumn {
+  --background: 255, 252, 248;           /* Warm cream */
+  --surface: 252, 245, 235;              /* Soft parchment */
+  --border: 235, 218, 195;               /* Oat border */
+  --card: 254, 248, 240;                 /* Light linen */
+  --copy-primary: 75, 55, 40;            /* Warm espresso */
+  --copy-secondary: 120, 95, 72;         /* Coffee brown */
+  --copy-muted: 165, 142, 118;           /* Dusty brown */
+  --cta: 195, 120, 70;                   /* Pumpkin spice */
+  --cta-active: 170, 100, 55;            /* Deep pumpkin */
+  --cta-text: 255, 255, 255;
+  --success: 125, 150, 110;              /* Olive green */
+  --warning: 215, 165, 95;               /* Maple syrup */
+  --error: 195, 115, 95;                 /* Autumn berry */
+  --accent: 210, 145, 95;                /* Warm amber */
+  --accent-muted: 230, 185, 145;         /* Light caramel */
+  --shadow: 195, 120, 70, 0.05;          /* Warm shadow */
+  --shadow-lg: 195, 120, 70, 0.08;
+}
+
+/* ── Auth pages ── */
+@keyframes auth-fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.auth-fade-1 { animation: auth-fade-up .5s ease-out both; }
+.auth-fade-2 { animation: auth-fade-up .5s ease-out .08s both; }
+.auth-fade-3 { animation: auth-fade-up .5s ease-out .16s both; }
+.auth-fade-4 { animation: auth-fade-up .5s ease-out .24s both; }
+
+.auth-input {
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+.auth-input::placeholder {
+  color: rgb(var(--copy-muted));
+}
+.auth-input:focus {
+  border-color: rgb(var(--cta));
+  box-shadow: 0 0 0 3px rgba(var(--cta), .1);
+}
+
+/* ── Toast enhancements ── */
+/* react-hot-toast renders a div[role="status"] inside each toast */
+div[data-hot-toast] > div {
+  line-height: 1.45;
+}
+/* Subtle hover lift on toasts */
+div[style*="translate"] > div > div {
+  transition: transform .15s ease;
+}
+
+/* Global Utility Classes for Enhanced Themes */
+.shadow-theme {
+  box-shadow: 0 4px 6px -1px rgba(var(--shadow)), 0 2px 4px -1px rgba(var(--shadow));
+}
+
+.shadow-theme-lg {
+  box-shadow: 0 10px 15px -3px rgba(var(--shadow-lg)), 0 4px 6px -2px rgba(var(--shadow-lg));
+}
+
+.shadow-theme-xl {
+  box-shadow: 0 20px 25px -5px rgba(var(--shadow-lg)), 0 10px 10px -5px rgba(var(--shadow-lg));
+}
+
+.border-accent {
+  border-color: rgb(var(--accent));
+}
+
+.text-accent {
+  color: rgb(var(--accent));
+}
+
+.bg-accent {
+  background-color: rgb(var(--accent));
+}
+
+.bg-accent-muted {
+  background-color: rgb(var(--accent-muted));
+}
+
+/* Enhanced animations and transitions */
+.theme-transition {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Smooth hover effects */
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(var(--shadow-lg)), 0 10px 10px -5px rgba(var(--shadow-lg));
+}
+
+/* Interactive elements */
+.interactive {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.interactive:hover {
+  transform: scale(1.02);
+}
+
+.interactive:active {
+  transform: scale(0.98);
+}
+
+/* Focus states for accessibility */
+.focus-ring:focus {
+  outline: 2px solid rgb(var(--cta));
+  outline-offset: 2px;
+}
+
+/* Glass morphism effect */
+.glass {
+  backdrop-filter: blur(12px);
+  background: rgba(var(--card), 0.8);
+  border: 1px solid rgba(var(--border), 0.3);
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, rgb(var(--cta)), rgb(var(--accent)));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Enhanced card styles */
+.card-elevated {
+  background: rgb(var(--card));
+  border: 1px solid rgb(var(--border));
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(var(--shadow)), 0 2px 4px -1px rgba(var(--shadow));
+  transition: all 0.3s ease;
+}
+
+.card-elevated:hover {
+  box-shadow: 0 20px 25px -5px rgba(var(--shadow-lg)), 0 10px 10px -5px rgba(var(--shadow-lg));
+  border-color: rgba(var(--cta), 0.3);
+}
+
+/* ── Smart Dropdown Animations ── */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { 
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dropdown-in {
+  from { 
+    opacity: 0;
+    transform: scale(0.95) translateY(-8px);
+  }
+  to { 
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+.animate-dropdown-in {
+  animation: dropdown-in 0.15s ease-out forwards;
+}
+
+/* ── Mobile Optimizations ── */
+@media (max-width: 640px) {
+  /* Larger touch targets */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Better scrolling */
+  .scroll-smooth {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Prevent text selection during swipes */
+  .no-select {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
