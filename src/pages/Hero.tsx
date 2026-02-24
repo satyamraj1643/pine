@@ -41,18 +41,6 @@ const Hero = () => (
       }
     `}</style>
 
-    {/* ── Nav ── */}
-    <header className="flex items-center justify-between px-6 lg:px-16 xl:px-24 h-14 border-b border-[rgb(var(--border))] backdrop-blur-sm bg-[rgba(var(--background),.85)] sticky top-0 z-50">
-      <NavLink to="/" className="flex items-center gap-2">
-        <img src={Pine} alt="Pine" className="w-6 h-6" />
-        <span className="font-serif text-[15px] font-bold">Pine</span>
-      </NavLink>
-      <div className="flex items-center gap-5 text-sm">
-        <NavLink to="/login" className="text-[rgb(var(--copy-secondary))] hover:text-[rgb(var(--copy-primary))] transition-colors">Log in</NavLink>
-        <NavLink to="/signup" className="px-3.5 py-1.5 rounded-md font-medium bg-[rgb(var(--cta))] text-[rgb(var(--cta-text))] hover:bg-[rgb(var(--cta-active))] transition-colors">Get Pine free</NavLink>
-      </div>
-    </header>
-
     {/* ── Hero ── */}
     <section className="relative overflow-hidden">
       {/* Radial glow */}

@@ -64,7 +64,7 @@ const VerifyOTP: React.FC = () => {
     const result = await dispatch(verifyOTP({ email, otp: code }));
 
     if (verifyOTP.fulfilled.match(result)) {
-      toast.success("Email verified!");
+      toast.success("Email verified");
       navigate("/login");
     } else {
       const msg = result.payload as { detail?: string } | undefined;

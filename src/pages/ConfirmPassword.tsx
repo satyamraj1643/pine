@@ -88,7 +88,7 @@ const ResetPassword = () => {
       );
 
       if (response.ok) {
-        toast.success("Your password has been updated!");
+        toast.success("Password updated");
         setFormData({ password: "", confirmPassword: "" });
         setTimeout(() => navigate("/login"), 3000);
       } else {

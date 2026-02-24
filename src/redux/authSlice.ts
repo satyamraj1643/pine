@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { loginUser, signupUser, logoutUser, verifyOTP } from "./authThunks";
+import { loginUser, signupUser, logoutUser, verifyOTP, updateProfile } from "./authThunks";
 import { validateUser } from "./validateThunk";
 
 interface AuthState {
@@ -140,6 +140,11 @@ const authSlice = createSlice({
       })
       .addCase(logoutUser.rejected, (state) => {
         state.isLoggingOut = false;
+      })
+
+      // Update profile
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.name = action.payload.name;
       });
 
   },

@@ -88,7 +88,7 @@ export type Note = {
     is_archived : boolean | null;
     is_favourite : boolean | null;
     collection : number[] | string;
-    mood : number | string;
+    mood : (number | string)[];
     chapter : number | string
 }
 

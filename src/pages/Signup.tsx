@@ -101,7 +101,7 @@ const Signup: React.FC = () => {
       );
 
       if (signupUser.fulfilled.match(result)) {
-        toast.success("Welcome to Pine! Account created.");
+        toast.success("Account created");
         navigate("/verifyOtp");
       } else {
         const data = result.payload as any;

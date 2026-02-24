@@ -5,6 +5,35 @@ import { GENERAL_BACKEND_BASE_URL } from "../constants";
 
 // --------- Thunks ---------
 
+// Update profile name
+export const updateProfile = createAsyncThunk<
+  { name: string },
+  { name: string },
+  { rejectValue: { detail: string } }
+>(
+  "auth/updateProfile",
+  async ({ name }, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("auth_token");
+      const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/auth/update-profile`, {
+        method: "PATCH",
+        credentials: "include",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) return rejectWithValue({ detail: data.detail || "Failed to update profile" });
+      return { name: data.name };
+    } catch {
+      return rejectWithValue({ detail: "Network Error" });
+    }
+  }
+);
+
 // Signup
 export const signupUser = createAsyncThunk<
   { user_id?: number; email: string; name: string , isVerified: boolean},

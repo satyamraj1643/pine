@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* Hide scrollbar utility */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { scrollbar-width: none; -ms-overflow-style: none; }
+
 @theme {
   --font-serif: "Fraunces", Georgia, "Times New Roman", serif;
   --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Roboto, sans-serif;
@@ -19,7 +23,8 @@
 */
 
 :root {
-   font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Roboto, Helvetica, Arial, sans-serif, "Segoe UI Emoji", "Noto Color Emoji";
+   font-family: var(--font-active, "Plus Jakarta Sans"), -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Roboto, Helvetica, Arial, sans-serif, "Segoe UI Emoji", "Noto Color Emoji";
+   --font-active: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Roboto, Helvetica, Arial, sans-serif;
    -webkit-font-smoothing: antialiased;
    -moz-osx-font-smoothing: grayscale;
    letter-spacing: -0.015em;
@@ -29,8 +34,8 @@
   --border: 228, 223, 213;               /* Warm taupe border */
   --card: 250, 247, 241;                 /* Light cream card */
   --copy-primary: 58, 53, 47;            /* Warm charcoal text */
-  --copy-secondary: 122, 115, 105;       /* Muted brown */
-  --copy-muted: 168, 161, 150;           /* Soft taupe */
+  --copy-secondary: 108, 102, 93;        /* Warm brown */
+  --copy-muted: 129, 123, 115;           /* Soft taupe */
   --cta: 168, 139, 108;                  /* Warm camel */
   --cta-active: 143, 116, 87;            /* Deeper camel */
   --cta-text: 255, 255, 255;
@@ -48,8 +53,8 @@
   --border: 228, 223, 213;               /* Warm taupe border */
   --card: 250, 247, 241;                 /* Light cream card */
   --copy-primary: 58, 53, 47;            /* Warm charcoal text */
-  --copy-secondary: 122, 115, 105;       /* Muted brown */
-  --copy-muted: 168, 161, 150;           /* Soft taupe */
+  --copy-secondary: 108, 102, 93;        /* Warm brown */
+  --copy-muted: 129, 123, 115;           /* Soft taupe */
   --cta: 168, 139, 108;                  /* Warm camel */
   --cta-active: 143, 116, 87;            /* Deeper camel */
   --cta-text: 255, 255, 255;
@@ -91,7 +96,7 @@
   --card: 250, 245, 235;                 /* Soft linen */
   --copy-primary: 72, 60, 48;            /* Warm brown ink */
   --copy-secondary: 115, 98, 80;         /* Soft brown */
-  --copy-muted: 158, 142, 122;           /* Faded brown */
+  --copy-muted: 136, 122, 105;           /* Faded brown */
   --cta: 139, 115, 85;                   /* Earthy brown */
   --cta-active: 115, 93, 65;             /* Deeper earth */
   --cta-text: 255, 255, 255;
@@ -133,7 +138,7 @@
   --card: 252, 248, 240;                 /* Warm vanilla */
   --copy-primary: 65, 55, 42;            /* Espresso */
   --copy-secondary: 108, 95, 78;         /* Coffee */
-  --copy-muted: 155, 142, 125;           /* Steamed milk */
+  --copy-muted: 135, 124, 109;           /* Steamed milk */
   --cta: 165, 130, 95;                   /* Caramel */
   --cta-active: 140, 108, 75;            /* Toffee */
   --cta-text: 255, 255, 255;
@@ -153,8 +158,8 @@
   --border: 210, 222, 208;               /* Eucalyptus */
   --card: 240, 246, 238;                 /* Fresh mint */
   --copy-primary: 55, 68, 55;            /* Forest ink */
-  --copy-secondary: 95, 112, 95;         /* Herb green */
-  --copy-muted: 140, 155, 140;           /* Soft fern */
+  --copy-secondary: 89, 104, 89;         /* Herb green */
+  --copy-muted: 113, 126, 113;           /* Soft fern */
   --cta: 110, 135, 110;                  /* Sage button */
   --cta-active: 88, 112, 88;             /* Deep sage */
   --cta-text: 255, 255, 255;
@@ -196,7 +201,7 @@
   --card: 248, 244, 254;                 /* Light violet */
   --copy-primary: 62, 52, 78;            /* Deep purple ink */
   --copy-secondary: 105, 92, 125;        /* Muted violet */
-  --copy-muted: 150, 138, 168;           /* Soft purple */
+  --copy-muted: 131, 120, 146;           /* Soft purple */
   --cta: 148, 125, 185;                  /* Wisteria */
   --cta-active: 125, 102, 162;           /* Deep wisteria */
   --cta-text: 255, 255, 255;
@@ -216,8 +221,8 @@
   --border: 238, 225, 198;               /* Honey border */
   --card: 254, 248, 235;                 /* Light amber */
   --copy-primary: 78, 62, 38;            /* Warm brown */
-  --copy-secondary: 125, 105, 75;        /* Toasted caramel */
-  --copy-muted: 165, 148, 120;           /* Soft sand */
+  --copy-secondary: 120, 100, 72;        /* Toasted caramel */
+  --copy-muted: 138, 123, 100;           /* Soft sand */
   --cta: 205, 160, 90;                   /* Golden honey */
   --cta-active: 180, 138, 72;            /* Deep gold */
   --cta-text: 255, 255, 255;
@@ -258,8 +263,8 @@
   --border: 255, 215, 232;               /* Candy border */
   --card: 255, 245, 250;                 /* Soft pink card */
   --copy-primary: 95, 50, 75;            /* Berry ink */
-  --copy-secondary: 145, 95, 120;        /* Dusty rose */
-  --copy-muted: 185, 145, 165;           /* Soft mauve */
+  --copy-secondary: 135, 89, 112;        /* Dusty rose */
+  --copy-muted: 147, 115, 131;           /* Soft mauve */
   --cta: 255, 130, 180;                  /* Hot pink */
   --cta-active: 240, 100, 160;           /* Electric pink */
   --cta-text: 255, 255, 255;
@@ -300,8 +305,8 @@
   --border: 252, 228, 212;               /* Peach border */
   --card: 255, 248, 242;                 /* Light apricot */
   --copy-primary: 95, 65, 52;            /* Warm terra */
-  --copy-secondary: 145, 110, 92;        /* Soft brown */
-  --copy-muted: 185, 155, 138;           /* Dusty peach */
+  --copy-secondary: 127, 97, 81;         /* Soft brown */
+  --copy-muted: 144, 120, 107;           /* Dusty peach */
   --cta: 255, 155, 125;                  /* Peach pop */
   --cta-active: 240, 130, 100;           /* Deep peach */
   --cta-text: 255, 255, 255;
@@ -343,7 +348,7 @@
   --card: 245, 253, 248;                 /* Light mint */
   --copy-primary: 38, 62, 48;            /* Deep forest */
   --copy-secondary: 75, 105, 85;         /* Sage text */
-  --copy-muted: 125, 155, 135;           /* Soft green */
+  --copy-muted: 107, 133, 115;           /* Soft green */
   --cta: 95, 165, 120;                   /* Fresh matcha */
   --cta-active: 75, 140, 98;             /* Deep matcha */
   --cta-text: 255, 255, 255;
@@ -363,8 +368,8 @@
   --border: 255, 225, 225;               /* Strawberry border */
   --card: 255, 248, 248;                 /* Cream pink */
   --copy-primary: 95, 55, 55;            /* Deep berry */
-  --copy-secondary: 145, 100, 100;       /* Dusty rose */
-  --copy-muted: 185, 145, 145;           /* Soft mauve */
+  --copy-secondary: 134, 93, 93;         /* Dusty rose */
+  --copy-muted: 150, 117, 117;           /* Soft mauve */
   --cta: 255, 130, 140;                  /* Strawberry */
   --cta-active: 240, 105, 118;           /* Deep strawberry */
   --cta-text: 255, 255, 255;
@@ -408,7 +413,7 @@
   --card: 242, 250, 255;                 /* Light ice */
   --copy-primary: 35, 55, 85;            /* Deep navy */
   --copy-secondary: 75, 100, 135;        /* Steel blue */
-  --copy-muted: 125, 150, 180;           /* Soft blue */
+  --copy-muted: 105, 127, 152;           /* Soft blue */
   --cta: 90, 165, 255;                   /* Electric blue */
   --cta-active: 65, 140, 235;            /* Deep electric */
   --cta-text: 255, 255, 255;
@@ -429,7 +434,7 @@
   --card: 254, 248, 240;                 /* Light linen */
   --copy-primary: 75, 55, 40;            /* Warm espresso */
   --copy-secondary: 120, 95, 72;         /* Coffee brown */
-  --copy-muted: 165, 142, 118;           /* Dusty brown */
+  --copy-muted: 142, 122, 102;           /* Dusty brown */
   --cta: 195, 120, 70;                   /* Pumpkin spice */
   --cta-active: 170, 100, 55;            /* Deep pumpkin */
   --cta-text: 255, 255, 255;
@@ -562,6 +567,7 @@ div[style*="translate"] > div > div {
 }
 
 /* ── Smart Dropdown Animations ── */
+/* Kept for backwards compat; SmartDropdown now uses CSS transitions for enter/exit */
 @keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -581,7 +587,7 @@ div[style*="translate"] > div > div {
 @keyframes dropdown-in {
   from { 
     opacity: 0;
-    transform: scale(0.95) translateY(-8px);
+    transform: scale(0.97) translateY(-4px);
   }
   to { 
     opacity: 1;
@@ -594,11 +600,255 @@ div[style*="translate"] > div > div {
 }
 
 .animate-slide-up {
-  animation: slide-up 0.3s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+  animation: slide-up 0.25s cubic-bezier(0.32, 0.72, 0, 1) forwards;
 }
 
 .animate-dropdown-in {
   animation: dropdown-in 0.15s ease-out forwards;
+}
+
+/* ── Notion Dark ── */
+/* Clean, minimal dark like Notion's dark mode */
+.theme-notion-dark {
+  --background: 25, 25, 25;
+  --surface: 32, 32, 32;
+  --border: 55, 55, 55;
+  --card: 37, 37, 37;
+  --copy-primary: 235, 235, 235;
+  --copy-secondary: 180, 180, 180;
+  --copy-muted: 120, 120, 120;
+  --cta: 235, 235, 235;
+  --cta-text: 25, 25, 25;
+  --cta-active: 210, 210, 210;
+  --accent: 147, 130, 220;
+  --success: 77, 171, 104;
+  --warning: 203, 145, 47;
+  --error: 235, 87, 87;
+}
+
+/* ── GitHub Dark ── */
+/* GitHub's dark default palette */
+.theme-github-dark {
+  --background: 13, 17, 23;
+  --surface: 22, 27, 34;
+  --border: 48, 54, 61;
+  --card: 22, 27, 34;
+  --copy-primary: 230, 237, 243;
+  --copy-secondary: 166, 176, 187;
+  --copy-muted: 110, 118, 129;
+  --cta: 47, 129, 247;
+  --cta-text: 255, 255, 255;
+  --cta-active: 56, 139, 253;
+  --accent: 163, 113, 247;
+  --success: 63, 185, 80;
+  --warning: 210, 153, 34;
+  --error: 248, 81, 73;
+}
+
+/* ── GitHub Dimmed ── */
+/* GitHub's dimmed dark palette - softer on the eyes */
+.theme-github-dimmed {
+  --background: 34, 39, 46;
+  --surface: 45, 51, 59;
+  --border: 68, 76, 86;
+  --card: 45, 51, 59;
+  --copy-primary: 173, 186, 199;
+  --copy-secondary: 149, 157, 167;
+  --copy-muted: 123, 132, 143;
+  --cta: 64, 158, 255;
+  --cta-text: 255, 255, 255;
+  --cta-active: 84, 174, 255;
+  --accent: 188, 140, 255;
+  --success: 87, 171, 90;
+  --warning: 192, 136, 37;
+  --error: 229, 83, 75;
+}
+
+/* ── True Black (OLED) ── */
+/* Pure black background for OLED screens */
+.theme-true-black {
+  --background: 0, 0, 0;
+  --surface: 12, 12, 12;
+  --border: 38, 38, 38;
+  --card: 18, 18, 18;
+  --copy-primary: 240, 240, 240;
+  --copy-secondary: 170, 170, 170;
+  --copy-muted: 108, 108, 108;
+  --cta: 240, 240, 240;
+  --cta-text: 0, 0, 0;
+  --cta-active: 210, 210, 210;
+  --accent: 130, 120, 210;
+  --success: 72, 166, 98;
+  --warning: 198, 140, 42;
+  --error: 230, 82, 82;
+}
+
+/* ── Notion Light ── */
+/* Clean, flat white like Notion's light mode */
+.theme-notion-light {
+  --background: 255, 255, 255;
+  --surface: 247, 247, 245;
+  --border: 233, 233, 231;
+  --card: 255, 255, 255;
+  --copy-primary: 55, 53, 47;
+  --copy-secondary: 106, 105, 102;
+  --copy-muted: 128, 128, 125;
+  --cta: 35, 131, 226;
+  --cta-text: 255, 255, 255;
+  --cta-active: 24, 115, 204;
+  --accent: 147, 130, 220;
+  --success: 15, 123, 108;
+  --warning: 203, 145, 47;
+  --error: 212, 76, 71;
+}
+
+/* ── GitHub Light ── */
+/* GitHub's default light theme */
+.theme-github-light {
+  --background: 255, 255, 255;
+  --surface: 246, 248, 250;
+  --border: 216, 222, 228;
+  --card: 255, 255, 255;
+  --copy-primary: 31, 35, 40;
+  --copy-secondary: 98, 106, 114;
+  --copy-muted: 122, 128, 135;
+  --cta: 31, 111, 235;
+  --cta-text: 255, 255, 255;
+  --cta-active: 9, 83, 197;
+  --accent: 130, 80, 223;
+  --success: 26, 127, 55;
+  --warning: 155, 108, 7;
+  --error: 207, 34, 46;
+}
+
+/* ── Paper ── */
+/* Warm paper, like writing on good stationery */
+.theme-paper {
+  --background: 253, 251, 247;
+  --surface: 248, 245, 239;
+  --border: 225, 220, 210;
+  --card: 253, 251, 247;
+  --copy-primary: 50, 44, 36;
+  --copy-secondary: 108, 100, 88;
+  --copy-muted: 131, 124, 113;
+  --cta: 50, 44, 36;
+  --cta-text: 253, 251, 247;
+  --cta-active: 75, 68, 58;
+  --accent: 140, 110, 75;
+  --success: 80, 132, 72;
+  --warning: 178, 128, 42;
+  --error: 185, 62, 55;
+}
+
+/* ── Snow ── */
+/* Cool pure white with blue accents */
+.theme-snow {
+  --background: 252, 253, 255;
+  --surface: 244, 246, 251;
+  --border: 224, 228, 237;
+  --card: 252, 253, 255;
+  --copy-primary: 30, 35, 50;
+  --copy-secondary: 90, 98, 118;
+  --copy-muted: 120, 126, 138;
+  --cta: 59, 91, 219;
+  --cta-text: 255, 255, 255;
+  --cta-active: 45, 73, 190;
+  --accent: 120, 88, 210;
+  --success: 34, 139, 84;
+  --warning: 180, 130, 24;
+  --error: 200, 50, 50;
+}
+
+/* ── Editor typography ── */
+.pine-editor {
+  color: rgb(var(--copy-primary));
+  font-size: 16px;
+  line-height: 1.75;
+}
+.pine-editor > *:first-child { margin-top: 0; }
+.pine-editor > *:last-child { margin-bottom: 0; }
+.pine-editor h1 { font-size: 1.875rem; font-weight: 700; margin: 1.5rem 0 0.75rem; line-height: 1.3; font-family: var(--font-serif); }
+.pine-editor h2 { font-size: 1.375rem; font-weight: 600; margin: 1.25rem 0 0.5rem; line-height: 1.35; font-family: var(--font-serif); }
+.pine-editor h3 { font-size: 1.125rem; font-weight: 600; margin: 1rem 0 0.4rem; line-height: 1.4; }
+.pine-editor p { margin: 0.5rem 0; }
+.pine-editor ul, .pine-editor ol { padding-left: 1.5rem; margin: 0.5rem 0; }
+.pine-editor ul { list-style: disc; }
+.pine-editor ol { list-style: decimal; }
+.pine-editor li { margin: 0.15rem 0; }
+.pine-editor li p { margin: 0; }
+.pine-editor blockquote {
+  border-left: 3px solid rgb(var(--border));
+  padding-left: 1rem;
+  margin: 0.75rem 0;
+  color: rgb(var(--copy-secondary));
+  font-style: italic;
+}
+.pine-editor pre {
+  background: rgb(var(--surface));
+  border: 1px solid rgb(var(--border));
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  margin: 0.75rem 0;
+  overflow-x: auto;
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+.pine-editor code {
+  background: rgb(var(--surface));
+  border: 1px solid rgb(var(--border));
+  border-radius: 4px;
+  padding: 0.15rem 0.35rem;
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+  font-size: 0.875em;
+}
+.pine-editor pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  border-radius: 0;
+}
+.pine-editor hr {
+  border: none;
+  border-top: 1px solid rgb(var(--border));
+  margin: 1.5rem 0;
+}
+.pine-editor a {
+  color: rgb(var(--cta));
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.pine-editor a:hover { opacity: 0.8; }
+.pine-editor mark {
+  background: rgba(var(--warning), 0.25);
+  border-radius: 2px;
+  padding: 0.05rem 0.15rem;
+}
+.pine-editor ul[data-type="taskList"] {
+  list-style: none;
+  padding-left: 0;
+}
+.pine-editor ul[data-type="taskList"] li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+.pine-editor ul[data-type="taskList"] li label {
+  margin-top: 0.2rem;
+}
+.pine-editor ul[data-type="taskList"] li label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: rgb(var(--cta));
+  cursor: pointer;
+}
+.pine-editor .is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: rgb(var(--copy-muted));
+  opacity: 0.5;
+  pointer-events: none;
+  height: 0;
 }
 
 /* ── Mobile Optimizations ── */

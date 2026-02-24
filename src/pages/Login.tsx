@@ -74,9 +74,7 @@ const Login: React.FC = () => {
 
     if (loginUser.fulfilled.match(resultAction)) {
       if (!data.isOtpVerified) {
-        toast("OTP sent. Please verify to activate your account.", {
-          icon: "\u{1F4E9}",
-        });
+      toast("OTP sent — check your email");
         navigate("/verifyOtp");
         return;
       }

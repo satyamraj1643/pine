@@ -15,8 +15,41 @@
     
     <script>
       (function () {
-        const theme = localStorage.getItem("app-theme") || "theme-light";
+        // Apply saved theme instantly to prevent flash
+        var theme = localStorage.getItem("pine-theme") || "theme-light";
         document.body.className = theme;
+
+        // Preload saved font from Google Fonts
+        var fontId = localStorage.getItem("pine-font");
+        if (fontId && fontId !== "plus-jakarta-sans") {
+          var fontMap = {
+            "inter": "Inter",
+            "dm-sans": "DM+Sans",
+            "outfit": "Outfit",
+            "sora": "Sora",
+            "space-grotesk": "Space+Grotesk",
+            "manrope": "Manrope",
+            "nunito": "Nunito",
+            "poppins": "Poppins",
+            "quicksand": "Quicksand",
+            "comfortaa": "Comfortaa",
+            "varela-round": "Varela+Round",
+            "lora": "Lora",
+            "source-serif": "Source+Serif+4",
+            "libre-baskerville": "Libre+Baskerville",
+            "crimson-text": "Crimson+Text",
+            "caveat": "Caveat",
+            "architects-daughter": "Architects+Daughter",
+            "satisfy": "Satisfy"
+          };
+          var gf = fontMap[fontId];
+          if (gf) {
+            var link = document.createElement("link");
+            link.rel = "stylesheet";
+            link.href = "https://fonts.googleapis.com/css2?family=" + gf + ":wght@400;500;600;700&display=swap";
+            document.head.appendChild(link);
+          }
+        }
       })();
     </script>
   </head>

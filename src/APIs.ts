@@ -63,6 +63,22 @@ export const DeleteTag = async (id: number) => {
 };
 export const DeleteCollection = DeleteTag;
 
+export const UpdateTag = async (id: number, tag: { name: string; color: string }): Promise<any> => {
+  try {
+    const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/collections/update/${id}`, {
+      method: "PUT",
+      headers: getAuthHeaders(),
+      credentials: "include",
+      body: JSON.stringify(tag),
+    });
+    if (!response.ok) return { updated: false, detail: response.statusText };
+    return await response.json();
+  } catch {
+    return { updated: false };
+  }
+};
+export const UpdateCollection = UpdateTag;
+
 // ─── Moods ────────────────────────────────────────────────
 
 export const CreateMood = async (mood: Mood): Promise<any> => {
@@ -103,6 +119,21 @@ export const DeleteMood = async (id: number) => {
     return response?.status === 200;
   } catch {
     return false;
+  }
+};
+
+export const UpdateMood = async (id: number, mood: { name: string; emoji: string; color: string }): Promise<any> => {
+  try {
+    const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/moods/update/${id}`, {
+      method: "PUT",
+      headers: getAuthHeaders(),
+      credentials: "include",
+      body: JSON.stringify(mood),
+    });
+    if (!response.ok) return { updated: false, detail: response.statusText };
+    return await response.json();
+  } catch {
+    return { updated: false };
   }
 };
 
@@ -306,3 +337,165 @@ export const UpdateNotebook = async (id: number, updatedNotebook: any) => {
   }
 };
 export const UpdateChapter = UpdateNotebook;
+
+// ─── Profile ─────────────────────────────────────────────
+
+export const UpdateProfile = async (name: string): Promise<{ updated: boolean; name?: string; detail?: string }> => {
+  try {
+    const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/auth/update-profile`, {
+      method: "PATCH",
+      headers: getAuthHeaders(),
+      credentials: "include",
+      body: JSON.stringify({ name }),
+    });
+    const data = await response.json();
+    if (!response.ok) return { updated: false, detail: data.detail || response.statusText };
+    return { updated: true, name: data.name };
+  } catch {
+    return { updated: false, detail: "Network error" };
+  }
+};
+
+// ─── AI Features ─────────────────────────────────────────
+
+export const AIReflect = async (title: string, content: string): Promise<{ reflection?: string; error?: string }> => {
+  try {
+    const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/ai/reflect`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ title, content }),
+    });
+    const data = await response.json();
+    if (!response.ok) return { error: data.detail || "Something went wrong" };
+    return { reflection: data.reflection };
+  } catch {
+    return { error: "Couldn't connect" };
+  }
+};
+
+export interface ChatMessage {
+  role: "user" | "model";
+  text: string;
+}
+
+export const AIChat = async (
+  title: string,
+  content: string,
+  messages: ChatMessage[],
+): Promise<{ reply?: string; error?: string }> => {
+  try {
+    const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/ai/chat`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ title, content, messages }),
+    });
+    const data = await response.json();
+    if (!response.ok) return { error: data.detail || "Something went wrong" };
+    return { reply: data.reply };
+  } catch {
+    return { error: "Couldn't connect" };
+  }
+};
+
+export const AISuggestMood = async (content: string): Promise<{ mood_id?: number; mood_name?: string; mood_emoji?: string; is_new?: boolean; error?: string }> => {
+  try {
+    const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/ai/suggest-mood`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ content }),
+    });
+    const data = await response.json();
+    if (!response.ok) return { error: data.detail || "Something went wrong" };
+    return { mood_id: data.mood_id, mood_name: data.mood_name, mood_emoji: data.mood_emoji, is_new: data.is_new };
+  } catch {
+    return { error: "Couldn't connect to AI" };
+  }
+};
+
+export const AIAsk = async (question: string): Promise<{ answer?: string; error?: string }> => {
+  try {
+    const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/ai/ask`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ question }),
+    });
+    const data = await response.json();
+    if (!response.ok) return { error: data.detail || "Something went wrong" };
+    return { answer: data.answer };
+  } catch {
+    return { error: "Couldn't connect to AI" };
+  }
+};
+
+export const AIWeeklyRecap = async (): Promise<{ recap?: string; entry_count?: number; error?: string }> => {
+  try {
+    const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/ai/weekly-recap`, {
+      method: "GET",
+      headers: getAuthHeaders(),
+    });
+    const data = await response.json();
+    if (!response.ok) return { error: data.detail || "Something went wrong" };
+    return { recap: data.recap, entry_count: data.entry_count };
+  } catch {
+    return { error: "Couldn't connect to AI" };
+  }
+};
+
+export const AIHealth = async (): Promise<{ available: boolean }> => {
+  try {
+    const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/ai/health`, {
+      method: "GET",
+      headers: getAuthHeaders(),
+    });
+    const data = await response.json();
+    return { available: data.available === true };
+  } catch {
+    return { available: false };
+  }
+};
+
+export interface JournalInsights {
+  themes: { name: string; count: number }[];
+  sentiment: { positive: number; neutral: number; negative: number };
+  patterns: string[];
+  summary: string;
+}
+
+export const GetJournalInsights = async (): Promise<{ data?: JournalInsights; error?: string }> => {
+  try {
+    const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/ai/insights`, {
+      method: "GET",
+      headers: getAuthHeaders(),
+    });
+    const data = await response.json();
+    if (!response.ok) return { error: data.detail || "Something went wrong" };
+    return { data: data as JournalInsights };
+  } catch {
+    return { error: "Couldn't connect" };
+  }
+};
+
+// ─── AI Personality ───────────────────────────────────────
+
+export interface PersonalityResult {
+  archetype: string;       // e.g. "The Midnight Philosopher"
+  summary: string;         // casual paragraph about their writing personality
+  traits: string[];        // e.g. ["introspective", "creative", "empathetic"]
+  vibes: string[];         // fun one-liners: "you're the type who..."
+  energy: string;          // e.g. "calm", "intense", "chaotic", "dreamy"
+  patterns: string[];      // writing patterns noticed across entries
+}
+
+export const AIPersonality = async (): Promise<{ data?: PersonalityResult; error?: string }> => {
+  try {
+    const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/ai/personality`, {
+      method: "GET",
+      headers: getAuthHeaders(),
+    });
+    const data = await response.json();
+    if (!response.ok) return { error: data.detail || "Something went wrong" };
+    return { data: data as PersonalityResult };
+  } catch {
+    return { error: "Couldn't connect to AI" };
+  }
+};

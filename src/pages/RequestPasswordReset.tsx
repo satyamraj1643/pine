@@ -48,7 +48,7 @@ const RequestPasswordReset = () => {
         }
       );
       if (response.ok) {
-        toast.success("Password reset link has been sent to your email.");
+        toast.success("Reset link sent");
         setSent(true);
       } else {
         const data = await response.json();

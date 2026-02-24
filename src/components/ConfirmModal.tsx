@@ -14,9 +14,9 @@ interface ConfirmModalProps {
 }
 
 const variantStyles = {
-  danger: "bg-red-600 hover:bg-red-700",
+  danger: "bg-[rgb(var(--error))] hover:opacity-90",
   warning: "bg-amber-600 hover:bg-amber-700",
-  info: "bg-blue-600 hover:bg-blue-700",
+  info: "bg-[rgb(var(--cta))] hover:bg-[rgb(var(--cta-active))]",
 };
 
 export default function ConfirmModal({
@@ -34,7 +34,7 @@ export default function ConfirmModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/40" onClick={isProcessing ? undefined : onClose} />
       <div className="relative bg-[rgb(var(--card))] rounded-lg border border-[rgb(var(--border))] max-w-sm w-full mx-4">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-[rgb(var(--border))]">
