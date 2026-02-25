@@ -4,9 +4,10 @@ import { useFont, fonts as fontOptions, getFontName } from "../hooks/useFont";
 import type { FontOption } from "../hooks/useFont";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState, AppDispatch } from "../redux/store";
-import { updateProfile } from "../redux/authThunks";
-import { GetAllNotes, GetAllChapter, GetAllTags, GetAllMood } from "../APIs";
+import { updateProfile, logoutUser } from "../redux/authThunks";
+import { GetAllNotes, GetAllChapter, GetAllTags, GetAllMood, DeleteAccount } from "../APIs";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 // ─── Theme data ──────────────────────────────────────────
 
@@ -218,7 +219,6 @@ function FontCard({
   isSelected: boolean;
   onSelect: () => void;
 }) {
-  // Load the Google Font for preview
   useEffect(() => {
     if (font.id === "plus-jakarta-sans") return;
     const link = document.createElement("link");
@@ -237,7 +237,6 @@ function FontCard({
       }`}
     >
       <div className="px-4 py-4">
-        {/* Font preview text */}
         <p
           className="text-[22px] font-semibold text-[rgb(var(--copy-primary))] leading-tight mb-1 truncate"
           style={{ fontFamily: font.family }}
@@ -250,7 +249,6 @@ function FontCard({
         >
           The quick brown fox
         </p>
-        {/* Font name & tag */}
         <div className="flex items-center justify-between gap-2">
           <span className={`text-[13px] leading-tight ${isSelected ? "font-medium text-[rgb(var(--copy-primary))]" : "text-[rgb(var(--copy-secondary))]"}`}>
             {font.name}
@@ -310,7 +308,6 @@ function FontPicker({ onBack }: { onBack: () => void }) {
         .
       </p>
 
-      {/* Category filter */}
       <div className="flex items-center gap-1 mb-5">
         {categories.map((c) => (
           <button
@@ -330,7 +327,6 @@ function FontPicker({ onBack }: { onBack: () => void }) {
         </span>
       </div>
 
-      {/* Font grid */}
       <div className="grid grid-cols-3 gap-3 mb-8">
         {filtered.map((font) => (
           <FontCard
@@ -349,99 +345,7 @@ function FontPicker({ onBack }: { onBack: () => void }) {
   );
 }
 
-// ─── Inline edit row for name ────────────────────────────
-
-function EditableNameRow({
-  name,
-  onSave,
-}: {
-  name: string | null;
-  onSave: (newName: string) => Promise<void>;
-}) {
-  const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState(name || "");
-  const [saving, setSaving] = useState(false);
-
-  const handleStartEdit = () => {
-    setDraft(name || "");
-    setEditing(true);
-  };
-
-  const handleCancel = () => {
-    setEditing(false);
-    setDraft(name || "");
-  };
-
-  const handleSave = async () => {
-    const trimmed = draft.trim();
-    if (!trimmed || trimmed === name) {
-      setEditing(false);
-      return;
-    }
-    setSaving(true);
-    await onSave(trimmed);
-    setSaving(false);
-    setEditing(false);
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") handleSave();
-    if (e.key === "Escape") handleCancel();
-  };
-
-  if (editing) {
-    return (
-      <div className="py-2.5">
-        <div className="flex items-center gap-3">
-          <input
-            autoFocus
-            type="text"
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={handleKeyDown}
-            maxLength={200}
-            disabled={saving}
-            className="flex-1 min-w-0 bg-[rgb(var(--background))] border border-[rgb(var(--border))] rounded-lg px-3 py-1.5 text-sm text-[rgb(var(--copy-primary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--cta))]/30 focus:border-[rgb(var(--cta))]/50 placeholder:text-[rgb(var(--copy-muted))] disabled:opacity-50"
-            placeholder="Your name"
-          />
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <button
-              onClick={handleCancel}
-              disabled={saving}
-              className="px-3 py-1.5 text-xs text-[rgb(var(--copy-secondary))] hover:text-[rgb(var(--copy-primary))] transition-colors rounded-md"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSave}
-              disabled={saving || !draft.trim() || draft.trim() === name}
-              className="px-3 py-1.5 text-xs font-medium rounded-md bg-[rgb(var(--cta))] text-[rgb(var(--cta-text))] hover:bg-[rgb(var(--cta-active))] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              {saving ? "Saving..." : "Save"}
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex items-center justify-between gap-4 py-2.5">
-      <span className="text-sm text-[rgb(var(--copy-primary))]">Display name</span>
-      <div className="flex items-center gap-3">
-        <span className="text-sm text-[rgb(var(--copy-muted))]">{name || "---"}</span>
-        <button
-          onClick={handleStartEdit}
-          className="text-xs text-[rgb(var(--cta))] hover:text-[rgb(var(--cta-active))] transition-colors flex-shrink-0"
-        >
-          Edit
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// ─── Data export helpers (moved from Backup page) ────────
+// ─── Data export helpers ─────────────────────────────────
 
 function getDateString(): string {
   return new Date().toISOString().split("T")[0];
@@ -510,11 +414,105 @@ function buildCsvExport(notes: any[]): string {
   return [header, ...rows].join("\n");
 }
 
+// ─── Setting row component ───────────────────────────────
+
+function SettingRow({
+  label,
+  value,
+  onClick,
+  hasChevron = true,
+}: {
+  label: string;
+  value?: string;
+  onClick?: () => void;
+  hasChevron?: boolean;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className="w-full flex items-center justify-between py-3 group text-left"
+    >
+      <span className="text-sm text-[rgb(var(--copy-primary))]">{label}</span>
+      <div className="flex items-center gap-2">
+        {value && (
+          <span className="text-sm text-[rgb(var(--copy-muted))]">{value}</span>
+        )}
+        {hasChevron && (
+          <ChevronRight className="text-[rgb(var(--copy-muted))] opacity-0 group-hover:opacity-100 transition-opacity" />
+        )}
+      </div>
+    </button>
+  );
+}
+
+function Divider() {
+  return <div className="h-px bg-[rgb(var(--border))]" />;
+}
+
+// ─── Delete account modal ────────────────────────────────
+
+function DeleteAccountModal({
+  open,
+  onClose,
+  onConfirm,
+  deleting,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  deleting: boolean;
+}) {
+  const [typed, setTyped] = useState("");
+
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative bg-[rgb(var(--card))] border border-[rgb(var(--border))] rounded-2xl shadow-2xl w-full max-w-sm mx-4 p-6">
+        <h2 className="text-lg font-serif font-bold text-[rgb(var(--copy-primary))] mb-2">
+          Delete your account?
+        </h2>
+        <p className="text-sm text-[rgb(var(--copy-secondary))] mb-4 leading-relaxed">
+          This will permanently delete all your notes, notebooks, tags, moods, and account data. This action cannot be undone.
+        </p>
+        <label className="block text-xs text-[rgb(var(--copy-muted))] mb-1.5">
+          Type <span className="font-medium text-[rgb(var(--error))]">delete my account</span> to confirm
+        </label>
+        <input
+          type="text"
+          value={typed}
+          onChange={(e) => setTyped(e.target.value)}
+          placeholder="delete my account"
+          disabled={deleting}
+          className="w-full px-3 py-2 rounded-lg text-sm bg-[rgb(var(--background))] border border-[rgb(var(--border))] text-[rgb(var(--copy-primary))] placeholder:text-[rgb(var(--copy-muted))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--error))]/30 disabled:opacity-50 mb-4"
+        />
+        <div className="flex gap-2">
+          <button
+            onClick={onClose}
+            disabled={deleting}
+            className="flex-1 py-2 rounded-lg text-sm font-medium text-[rgb(var(--copy-secondary))] hover:bg-[rgb(var(--surface))] transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={typed !== "delete my account" || deleting}
+            className="flex-1 py-2 rounded-lg text-sm font-medium bg-[rgb(var(--error))] text-white hover:opacity-90 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            {deleting ? "Deleting..." : "Delete forever"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Request Data section ────────────────────────────────
 
 type ExportFormat = "json" | "markdown" | "csv";
 
-function RequestDataSection() {
+function ExportPicker({ onBack }: { onBack: () => void }) {
   const [format, setFormat] = useState<ExportFormat>("json");
   const [exporting, setExporting] = useState(false);
 
@@ -553,43 +551,146 @@ function RequestDataSection() {
 
   return (
     <div>
-      <div className="flex flex-wrap gap-2 mb-4">
+      <button
+        onClick={onBack}
+        className="flex items-center gap-1.5 text-sm text-[rgb(var(--copy-secondary))] hover:text-[rgb(var(--copy-primary))] transition-colors mb-6"
+      >
+        <ChevronLeft />
+        <span>Settings</span>
+      </button>
+
+      <h1 className="text-2xl font-serif font-bold text-[rgb(var(--copy-primary))] tracking-tight mb-1">
+        Export your data
+      </h1>
+      <p className="text-sm text-[rgb(var(--copy-muted))] mb-8">
+        Download a copy of everything you've written. Pick a format below.
+      </p>
+
+      <div className="space-y-2 mb-6">
         {formats.map(f => (
           <button
             key={f.id}
             onClick={() => setFormat(f.id)}
-            className={`px-3 py-2 rounded-lg text-left transition-all ${
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all ${
               format === f.id
                 ? "bg-[rgb(var(--surface))] ring-1 ring-[rgb(var(--cta))]"
                 : "bg-[rgb(var(--surface))]/50 hover:bg-[rgb(var(--surface))]"
             }`}
           >
-            <p className={`text-sm ${format === f.id ? "font-medium text-[rgb(var(--copy-primary))]" : "text-[rgb(var(--copy-secondary))]"}`}>{f.label}</p>
-            <p className="text-[11px] text-[rgb(var(--copy-muted))]">{f.desc}</p>
+            <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+              format === f.id ? "border-[rgb(var(--cta))]" : "border-[rgb(var(--border))]"
+            }`}>
+              {format === f.id && <div className="w-2 h-2 rounded-full bg-[rgb(var(--cta))]" />}
+            </div>
+            <div>
+              <p className={`text-sm ${format === f.id ? "font-medium text-[rgb(var(--copy-primary))]" : "text-[rgb(var(--copy-secondary))]"}`}>{f.label}</p>
+              <p className="text-[11px] text-[rgb(var(--copy-muted))]">{f.desc}</p>
+            </div>
           </button>
         ))}
       </div>
+
       <button
         onClick={handleExport}
         disabled={exporting}
-        className="text-sm text-[rgb(var(--copy-muted))] hover:text-[rgb(var(--copy-primary))] transition-colors disabled:opacity-50"
+        className="px-5 py-2.5 rounded-lg text-sm font-medium bg-[rgb(var(--cta))] text-[rgb(var(--cta-text))] hover:bg-[rgb(var(--cta-active))] transition-colors disabled:opacity-50"
       >
-        {exporting ? "Preparing..." : `Download as .${format === "markdown" ? "md" : format}`}
+        {exporting ? "Preparing..." : `Download .${format === "markdown" ? "md" : format}`}
       </button>
     </div>
   );
 }
 
+// ─── Inline edit for name ────────────────────────────────
+
+function EditableNameRow({
+  name,
+  onSave,
+}: {
+  name: string | null;
+  onSave: (newName: string) => Promise<void>;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(name || "");
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    const trimmed = draft.trim();
+    if (!trimmed || trimmed === name) {
+      setEditing(false);
+      return;
+    }
+    setSaving(true);
+    await onSave(trimmed);
+    setSaving(false);
+    setEditing(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") handleSave();
+    if (e.key === "Escape") { setEditing(false); setDraft(name || ""); }
+  };
+
+  if (editing) {
+    return (
+      <div className="flex items-center gap-2 py-3">
+        <span className="text-sm text-[rgb(var(--copy-primary))] flex-shrink-0">Name</span>
+        <div className="flex-1 flex items-center gap-2 justify-end">
+          <input
+            autoFocus
+            type="text"
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={handleKeyDown}
+            maxLength={200}
+            disabled={saving}
+            className="w-48 bg-[rgb(var(--background))] border border-[rgb(var(--border))] rounded-lg px-3 py-1.5 text-sm text-[rgb(var(--copy-primary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--cta))]/30 disabled:opacity-50 text-right"
+          />
+          <button
+            onClick={() => { setEditing(false); setDraft(name || ""); }}
+            disabled={saving}
+            className="text-xs text-[rgb(var(--copy-muted))] hover:text-[rgb(var(--copy-primary))]"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={saving || !draft.trim() || draft.trim() === name}
+            className="text-xs font-medium text-[rgb(var(--cta))] hover:text-[rgb(var(--cta-active))] disabled:opacity-40"
+          >
+            {saving ? "..." : "Save"}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <button
+      onClick={() => { setDraft(name || ""); setEditing(true); }}
+      className="w-full flex items-center justify-between py-3 group text-left"
+    >
+      <span className="text-sm text-[rgb(var(--copy-primary))]">Name</span>
+      <div className="flex items-center gap-2">
+        <span className="text-sm text-[rgb(var(--copy-muted))]">{name || "---"}</span>
+        <span className="text-xs text-[rgb(var(--cta))] opacity-0 group-hover:opacity-100 transition-opacity">Edit</span>
+      </div>
+    </button>
+  );
+}
+
 // ─── Main Settings page ──────────────────────────────────
 
-type SettingsView = "main" | "theme" | "font";
+type SettingsView = "main" | "theme" | "font" | "export";
 
 export default function Settings() {
   const [view, setView] = useState<SettingsView>("main");
-  const [dataOpen, setDataOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const { currentTheme } = useTheme();
   const { currentFontOption } = useFont();
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const { name, email } = useSelector((state: RootState) => state.auth);
 
   const handleSaveName = async (newName: string) => {
@@ -601,8 +702,27 @@ export default function Settings() {
     }
   };
 
-  const firstName = name?.split(" ")[0] || "";
-  const initial = (firstName || email || "?").charAt(0).toUpperCase();
+  const handleDeleteAccount = async () => {
+    setDeleting(true);
+    const res = await DeleteAccount();
+    if (res.deleted) {
+      toast.success("Account deleted");
+      localStorage.removeItem("auth_token");
+      dispatch(logoutUser());
+      navigate("/");
+    } else {
+      toast.error(res.detail || "Failed to delete account");
+    }
+    setDeleting(false);
+    setDeleteOpen(false);
+  };
+
+  const handleLogout = () => {
+    dispatch(logoutUser());
+    navigate("/");
+  };
+
+  const initial = (name || email || "?").charAt(0).toUpperCase();
 
   if (view === "theme") {
     return (
@@ -620,20 +740,24 @@ export default function Settings() {
     );
   }
 
+  if (view === "export") {
+    return (
+      <div className="max-w-3xl mx-auto px-6 py-10">
+        <ExportPicker onBack={() => setView("main")} />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[rgb(var(--background))]">
-    <div className="max-w-2xl mx-auto px-4 py-10">
-      <h1 className="text-xl font-semibold text-[rgb(var(--copy-primary))] mb-10">Settings</h1>
+      <div className="max-w-lg mx-auto px-4 py-10">
+        <h1 className="text-2xl font-serif font-bold text-[rgb(var(--copy-primary))] tracking-tight mb-8">
+          Settings
+        </h1>
 
-      {/* ── Profile ── */}
-      <section>
-        <h2 className="text-xs font-semibold text-[rgb(var(--copy-muted))] uppercase tracking-widest mb-3">
-          Profile
-        </h2>
-
-        {/* Avatar + identity */}
-        <div className="flex items-center gap-3.5 py-2.5 px-3 -mx-3">
-          <div className="w-10 h-10 rounded-full bg-[rgb(var(--surface))] flex items-center justify-center text-base font-semibold text-[rgb(var(--copy-secondary))] flex-shrink-0">
+        {/* ── Profile ── */}
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-11 h-11 rounded-full bg-[rgb(var(--cta))]/10 flex items-center justify-center text-base font-semibold text-[rgb(var(--cta))] flex-shrink-0">
             {initial}
           </div>
           <div className="min-w-0">
@@ -642,92 +766,74 @@ export default function Settings() {
           </div>
         </div>
 
-        <div className="h-px bg-[rgb(var(--border))]" />
-
-        {/* Editable name */}
-        <div className="px-3 -mx-3">
+        {/* ── Account ── */}
+        <p className="text-[11px] font-semibold text-[rgb(var(--copy-muted))] uppercase tracking-wider mb-1">
+          Account
+        </p>
+        <div className="rounded-xl bg-[rgb(var(--card))] border border-[rgb(var(--border))] px-4 mb-5">
           <EditableNameRow name={name} onSave={handleSaveName} />
+          <Divider />
+          <div className="flex items-center justify-between py-3">
+            <span className="text-sm text-[rgb(var(--copy-primary))]">Email</span>
+            <span className="text-sm text-[rgb(var(--copy-muted))]">{email || "---"}</span>
+          </div>
         </div>
-      </section>
 
-      <div className="h-px bg-[rgb(var(--border))] my-6" />
-
-      {/* ── Appearance ── */}
-      <section>
-        <h2 className="text-xs font-semibold text-[rgb(var(--copy-muted))] uppercase tracking-widest mb-3">
+        {/* ── Appearance ── */}
+        <p className="text-[11px] font-semibold text-[rgb(var(--copy-muted))] uppercase tracking-wider mb-1">
           Appearance
-        </h2>
-        <button
-          onClick={() => setView("theme")}
-          className="w-full flex items-center justify-between gap-4 py-2.5 px-3 -mx-3 rounded-lg hover:bg-[rgb(var(--surface))] transition-colors text-left group"
-        >
-          <span className="text-sm text-[rgb(var(--copy-primary))]">Theme</span>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-[rgb(var(--copy-muted))]">{getThemeName(currentTheme)}</span>
-            <ChevronRight className="text-[rgb(var(--copy-muted))] group-hover:text-[rgb(var(--copy-secondary))] transition-colors" />
-          </div>
-        </button>
-        <div className="h-px bg-[rgb(var(--border))]" />
-        <button
-          onClick={() => setView("font")}
-          className="w-full flex items-center justify-between gap-4 py-2.5 px-3 -mx-3 rounded-lg hover:bg-[rgb(var(--surface))] transition-colors text-left group"
-        >
-          <span className="text-sm text-[rgb(var(--copy-primary))]">Font</span>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-[rgb(var(--copy-muted))]">{currentFontOption.name}</span>
-            <ChevronRight className="text-[rgb(var(--copy-muted))] group-hover:text-[rgb(var(--copy-secondary))] transition-colors" />
-          </div>
-        </button>
-      </section>
-
-      <div className="h-px bg-[rgb(var(--border))] my-6" />
-
-      {/* ── Data & Export (collapsible toggle) ── */}
-      <section>
-        <button
-          onClick={() => setDataOpen(!dataOpen)}
-          className="w-full flex items-center justify-between gap-3 mb-1 text-left group"
-        >
-          <h2 className="text-xs font-semibold text-[rgb(var(--copy-muted))] uppercase tracking-widest">
-            Data &amp; export
-          </h2>
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className={`text-[rgb(var(--copy-muted))] transition-transform duration-200 ${dataOpen ? "rotate-180" : ""}`}
-          >
-            <path d="M6 9l6 6 6-6" />
-          </svg>
-        </button>
-        {dataOpen && (
-          <div className="pt-3 pb-1">
-            <p className="text-xs text-[rgb(var(--copy-muted))] mb-4">
-              Download a copy of everything you've written. Pick a format below.
-            </p>
-            <RequestDataSection />
-          </div>
-        )}
-      </section>
-
-      <div className="h-px bg-[rgb(var(--border))] my-6" />
-
-      {/* ── About ── */}
-      <section>
-        <h2 className="text-xs font-semibold text-[rgb(var(--copy-muted))] uppercase tracking-widest mb-3">
-          About
-        </h2>
-        <div className="flex items-center justify-between py-2.5 px-3 -mx-3">
-          <span className="text-sm text-[rgb(var(--copy-primary))]">Version</span>
-          <span className="text-sm text-[rgb(var(--copy-muted))]">2.0</span>
+        </p>
+        <div className="rounded-xl bg-[rgb(var(--card))] border border-[rgb(var(--border))] px-4 mb-5">
+          <SettingRow label="Theme" value={getThemeName(currentTheme)} onClick={() => setView("theme")} />
+          <Divider />
+          <SettingRow label="Font" value={currentFontOption.name} onClick={() => setView("font")} />
         </div>
-      </section>
-    </div>
+
+        {/* ── Data ── */}
+        <p className="text-[11px] font-semibold text-[rgb(var(--copy-muted))] uppercase tracking-wider mb-1">
+          Data
+        </p>
+        <div className="rounded-xl bg-[rgb(var(--card))] border border-[rgb(var(--border))] px-4 mb-5">
+          <SettingRow label="Export your data" onClick={() => setView("export")} />
+        </div>
+
+        {/* ── Session ── */}
+        <div className="rounded-xl bg-[rgb(var(--card))] border border-[rgb(var(--border))] px-4 mb-5">
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center py-3 text-left"
+          >
+            <span className="text-sm font-medium text-[rgb(var(--error))]">Sign out</span>
+          </button>
+        </div>
+
+        {/* ── Danger zone ── */}
+        <p className="text-[11px] font-semibold text-[rgb(var(--copy-muted))] uppercase tracking-wider mb-1">
+          Danger zone
+        </p>
+        <div className="rounded-xl bg-[rgb(var(--card))] border border-[rgb(var(--error))]/20 px-4">
+          <button
+            onClick={() => setDeleteOpen(true)}
+            className="w-full flex items-center justify-between py-3 text-left group"
+          >
+            <div>
+              <p className="text-sm font-medium text-[rgb(var(--error))]">Delete account</p>
+              <p className="text-[11px] text-[rgb(var(--copy-muted))]">Permanently remove your account and all data</p>
+            </div>
+            <ChevronRight className="text-[rgb(var(--error))] opacity-50 group-hover:opacity-100 transition-opacity" />
+          </button>
+        </div>
+
+        {/* ── Footer ── */}
+        <p className="text-center text-[11px] text-[rgb(var(--copy-muted))] mt-8">Pine v2.0</p>
+      </div>
+
+      <DeleteAccountModal
+        open={deleteOpen}
+        onClose={() => setDeleteOpen(false)}
+        onConfirm={handleDeleteAccount}
+        deleting={deleting}
+      />
     </div>
   );
 }

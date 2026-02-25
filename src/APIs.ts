@@ -355,6 +355,21 @@ export const UpdateProfile = async (name: string): Promise<{ updated: boolean; n
   }
 };
 
+export const DeleteAccount = async (): Promise<{ deleted: boolean; detail?: string }> => {
+  try {
+    const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/auth/delete-account`, {
+      method: "DELETE",
+      headers: getAuthHeaders(),
+      credentials: "include",
+    });
+    const data = await response.json();
+    if (!response.ok) return { deleted: false, detail: data.detail || response.statusText };
+    return { deleted: true };
+  } catch {
+    return { deleted: false, detail: "Network error" };
+  }
+};
+
 // ─── AI Features ─────────────────────────────────────────
 
 export const AIReflect = async (title: string, content: string): Promise<{ reflection?: string; error?: string }> => {
