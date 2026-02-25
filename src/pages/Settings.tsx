@@ -254,30 +254,24 @@ function FontCard({
           : "border-[rgb(var(--border))] hover:border-[rgb(var(--copy-muted))]/50"
       }`}
     >
-      <div className="px-4 py-3">
+      <div className="px-3 py-2.5">
         <p
-          className="text-xl font-semibold text-[rgb(var(--copy-primary))] leading-tight mb-0.5 truncate"
-          style={{ fontFamily: font.family }}
-        >
-          Aa
-        </p>
-        <p
-          className="text-sm text-[rgb(var(--copy-secondary))] mb-2 truncate"
+          className="text-lg font-semibold text-[rgb(var(--copy-primary))] leading-none mb-1 truncate"
           style={{ fontFamily: font.family }}
         >
           The quick brown fox
         </p>
         <div className="flex items-center justify-between gap-2">
-          <span className={`text-xs ${isSelected ? "font-medium text-[rgb(var(--copy-primary))]" : "text-[rgb(var(--copy-muted))]"}`}>
+          <span className={`text-[11px] ${isSelected ? "font-medium text-[rgb(var(--copy-primary))]" : "text-[rgb(var(--copy-muted))]"}`}>
             {font.name}
           </span>
-          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[rgb(var(--surface))] text-[rgb(var(--copy-muted))]">
+          <span className="text-[9px] px-1.5 py-px rounded-full bg-[rgb(var(--surface))] text-[rgb(var(--copy-muted))]">
             {font.category === "sans" ? "Sans" : font.category === "serif" ? "Serif" : font.category === "rounded" ? "Round" : "Fun"}
           </span>
         </div>
       </div>
       {isSelected && (
-        <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[rgb(var(--cta))] text-[rgb(var(--cta-text))] flex items-center justify-center">
+        <div className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-[rgb(var(--cta))] text-[rgb(var(--cta-text))] flex items-center justify-center">
           <CheckIcon />
         </div>
       )}
@@ -332,7 +326,7 @@ function FontPicker({ onBack }: { onBack: () => void }) {
         </span>
       </div>
 
-      <div className="grid grid-cols-3 gap-3 items-start">
+      <div className="grid grid-cols-4 gap-3 items-start">
         {filtered.map((font) => (
           <FontCard
             key={font.id}
