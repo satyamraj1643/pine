@@ -505,51 +505,39 @@ function EditableNameRow({
   name: string | null;
   onSave: (newName: string) => Promise<void>;
 }) {
-  const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(name || "");
+  const dispatch = useDispatch<AppDispatch>();
+
+  // Keep draft in sync if name changes externally
+  useEffect(() => { setDraft(name || ""); }, [name]);
 
   const commit = () => {
     const trimmed = draft.trim();
-    if (trimmed && trimmed !== name) onSave(trimmed);
-    setEditing(false);
+    if (!trimmed) { setDraft(name || ""); return; }
+    if (trimmed === name) return;
+    // Optimistic: update Redux immediately so UI feels instant
+    dispatch({ type: "auth/updateProfileOptimistic", payload: { name: trimmed } });
+    // Save to backend silently
+    onSave(trimmed);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") commit();
-    if (e.key === "Escape") { setDraft(name || ""); setEditing(false); }
+    if (e.key === "Enter") { e.preventDefault(); (e.target as HTMLInputElement).blur(); }
   };
 
   return (
     <div className="flex items-center justify-between py-2.5 px-3 -mx-3 rounded-lg hover:bg-[rgb(var(--surface))] transition-colors">
       <span className="text-sm text-[rgb(var(--copy-primary))]">Display name</span>
-      <div className="flex items-center gap-2">
-        {editing ? (
-          <input
-            autoFocus
-            type="text"
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={handleKeyDown}
-            onBlur={commit}
-            maxLength={200}
-            className="w-40 bg-transparent border-b border-[rgb(var(--border))] text-sm text-[rgb(var(--copy-primary))] focus:outline-none focus:border-[rgb(var(--cta))] text-right py-0"
-          />
-        ) : (
-          <>
-            <span className="text-sm text-[rgb(var(--copy-muted))]">{name || "---"}</span>
-            <button
-              onClick={() => { setDraft(name || ""); setEditing(true); }}
-              className="p-1 rounded hover:bg-[rgb(var(--copy-primary))]/[0.06] text-[rgb(var(--copy-muted))] hover:text-[rgb(var(--copy-primary))] transition-colors"
-              title="Edit name"
-            >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M17 3a2.85 2.85 0 114 4L7.5 20.5 2 22l1.5-5.5Z" />
-                <path d="M15 5l4 4" />
-              </svg>
-            </button>
-          </>
-        )}
-      </div>
+      <input
+        type="text"
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={commit}
+        onKeyDown={handleKeyDown}
+        maxLength={200}
+        className="text-sm text-[rgb(var(--copy-muted))] text-right bg-transparent border-none outline-none focus:text-[rgb(var(--copy-primary))] w-40 cursor-text"
+        placeholder="---"
+      />
     </div>
   );
 }

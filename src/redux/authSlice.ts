@@ -52,11 +52,10 @@ const authSlice = createSlice({
       state.isLoggingIn = false;
       state.isLoggingOut = false;
     },
-    /**
-     * loginSuccess — the single convergence point for ALL auth methods.
-     * Call this after: OTP verify, Google OAuth callback, any future provider.
-     * Keeps login logic in one place so adding new providers is trivial.
-     */
+    updateProfileOptimistic: (state, action: PayloadAction<{ name?: string; profilePicture?: string }>) => {
+      if (action.payload.name !== undefined) state.name = action.payload.name;
+      if (action.payload.profilePicture !== undefined) state.profilePicture = action.payload.profilePicture;
+    },
     loginSuccess: (
       state,
       action: PayloadAction<{
@@ -179,5 +178,5 @@ const authSlice = createSlice({
 
 
 
-export const { logout, loginSuccess } = authSlice.actions;
+export const { logout, loginSuccess, updateProfileOptimistic } = authSlice.actions;
 export default authSlice.reducer;
