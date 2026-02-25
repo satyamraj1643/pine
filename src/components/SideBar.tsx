@@ -156,23 +156,17 @@ const SideBar: React.FC = () => {
           <div className="pt-2 mt-1">
             <NavLink
               to="/settings"
-              className={({ isActive }) =>
-                `flex items-center gap-2 rounded-md py-1.5 transition-colors duration-100 ${showLabels ? "px-2" : "px-0 justify-center"} ${
-                  isActive
-                    ? "bg-[rgb(var(--copy-primary))]/[0.08]"
-                    : "hover:bg-[rgb(var(--copy-primary))]/[0.04]"
-                }`
-              }
-              title={!showLabels ? firstName : undefined}
+              className={`flex items-center gap-2 rounded-md py-1.5 transition-colors duration-100 hover:bg-[rgb(var(--copy-primary))]/[0.04] ${showLabels ? "px-2" : "px-0 justify-center"}`}
+              title={!showLabels ? "Settings" : undefined}
             >
               {profilePicture ? (
                 <img
                   src={profilePicture}
                   alt=""
-                  className="w-6 h-6 rounded-sm object-cover flex-shrink-0"
+                  className="w-6 h-6 rounded-full object-cover flex-shrink-0"
                 />
               ) : (
-                <div className="w-6 h-6 rounded-sm bg-[rgb(var(--copy-primary))]/[0.08] flex items-center justify-center text-[10px] font-semibold text-[rgb(var(--copy-secondary))] flex-shrink-0">
+                <div className="w-6 h-6 rounded-full bg-[rgb(var(--copy-primary))]/[0.08] flex items-center justify-center text-[10px] font-semibold text-[rgb(var(--copy-secondary))] flex-shrink-0">
                   {initial}
                 </div>
               )}
