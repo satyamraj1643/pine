@@ -52,10 +52,3 @@ export function getEmojiFromShortcode(shortcode: string | undefined | null): str
   // Fallback for curated mood emojis
   return FALLBACK[clean] ?? "";
 }
-
-/**
- * Convert a unified code point string (e.g. "1F600") to a native emoji character.
- */
-export function charFromUtf16(utf16: string): string {
-  return String.fromCodePoint(...utf16.split("-").map((u) => parseInt("0x" + u, 16)));
-}

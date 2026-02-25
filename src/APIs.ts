@@ -1,6 +1,5 @@
 import { GENERAL_BACKEND_BASE_URL } from "./constants";
-import type { Collection, Entry, Mood, Chapter } from "./types";
-import { getCookie } from "./utilities/csrf";
+import type { Collection, Mood } from "./types";
 
 /**
  * Get auth token fresh from localStorage on every call.

@@ -64,9 +64,8 @@ export type Tags = {
     slug: string | null,
 }
 
-// Keep old names as aliases for backward compatibility
+// Keep old name as alias for backward compatibility
 export type Collection = Tag;
-export type Collections = Tags;
 
 export type Mood = {
     name: string | null,
@@ -92,9 +91,6 @@ export type Note = {
     chapter : number | string
 }
 
-// Keep old name as alias for backward compatibility
-export type Entry = Note;
-
 // Notebook (previously Chapter)
 export type Notebook = {
    color: string | null;
@@ -104,6 +100,3 @@ export type Notebook = {
    is_archived : boolean | null;
    is_favourite : boolean | null;
 }
-
-// Keep old name as alias for backward compatibility
-export type Chapter = Notebook;

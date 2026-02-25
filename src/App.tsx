@@ -27,8 +27,6 @@ import { useSelector } from "react-redux";
 import type { RootState } from "./redux/store";
 import Validating from "./components/IsValidating";
 import { Toaster } from "react-hot-toast";
-import RequestPasswordReset from "./pages/RequestPasswordReset";
-import ResetPassword from "./pages/ConfirmPassword";
 import NewTag from "./pages/CreateTag";
 import Mood from "./pages/Mood";
 import Favorites from "./pages/Favorites";
@@ -205,11 +203,6 @@ const App = () => {
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/verifyOtp" element={<VerifyOTP />} />
-        <Route path="/reset_password" element={<RequestPasswordReset />} />
-        <Route
-          path="/password/reset/confirm/:uid/:token"
-          element={<ResetPassword />}
-        />
         <Route path="*" element={<Login />} />
       </Routes>
     </>

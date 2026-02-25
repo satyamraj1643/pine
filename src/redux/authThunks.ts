@@ -1,6 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { getCookie } from "../utilities/csrf";
-import { ActivationPayload, ActivationResponse, ErrorResponse, LoginPayload, LoginResponse, SignupPayload, SignupResponse, VerifyOtpPayload, VerifyOtpResponse } from "../types"
+import { ErrorResponse, SignupPayload } from "../types";
 import { GENERAL_BACKEND_BASE_URL } from "../constants";
 
 // --------- Thunks ---------
@@ -42,7 +41,6 @@ export const signupUser = createAsyncThunk<
 >(
   "auth/signupUser",
   async (formData, { rejectWithValue }) => {
-    console.log("Data for signup", formData);
     try {
       const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/signup`, {
         method: "POST",
@@ -51,8 +49,6 @@ export const signupUser = createAsyncThunk<
       });
 
       const data = await response.json();
-
-      console.log("data from signuo", data)
 
       if (!response.ok) return rejectWithValue(data);
 
@@ -137,23 +133,11 @@ export const loginUser = createAsyncThunk<
 
       const data = await response.json();
 
-      console.log("Here is the data from login: ", data)
-
       if (!response.ok) {
         return rejectWithValue(data);
       }
 
-      const datab = {
-        user_id: data.user_id ?? data.id ?? undefined,
-        name: data.name ?? "",
-        email: data.email ?? email,
-        isOtpVerified: Boolean(data.isOtpVerified),
-        token: data.token ?? null,
-      }
-
       localStorage.setItem("auth_token", data.token);
-
-      console.log("set up tok in localstorage, here is the data", datab)
 
       return {
         user_id: data.user_id ?? data.id ?? undefined,
@@ -190,9 +174,8 @@ export const logoutUser = createAsyncThunk<void, void, { rejectValue: ErrorRespo
         body: JSON.stringify({})
       });
 
-      console.log("✅ Logout successful");
     } catch (error) {
-      console.log("❌ Network error during logout:", error);
+      // Logout is treated as successful even on network failure
     }
   }
 );

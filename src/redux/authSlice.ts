@@ -13,12 +13,9 @@ interface AuthState {
   isOtpVerified: boolean;
   isValidated: boolean;
   isValidating: boolean;
-  isLoggedIn: boolean,
   isSigningUp: boolean;
   isLoggingIn: boolean;
   isLoggingOut: boolean;
-  isSuperUser: boolean;
-  isStaff: boolean;
 }
 
 const initialState: AuthState = {
@@ -28,16 +25,12 @@ const initialState: AuthState = {
   jwtToken: null,
   isActivated: false,
   isOtpVerified: false,
-  isLoggedIn: false,
   isOtpVerifying: false,
   isValidated: false,
   isValidating: false,
   isSigningUp: false,
   isLoggingIn: false,
   isLoggingOut: false,
-  isSuperUser: false,
-  isStaff: false,
-
 };
 
 const authSlice = createSlice({
@@ -52,7 +45,6 @@ const authSlice = createSlice({
       state.isActivated = false;
       state.isValidated = false;
       state.isOtpVerified = false;
-      state.isLoggedIn = false;
       state.isSigningUp = false;
       state.isLoggingIn = false;
       state.isLoggingOut = false;
@@ -78,7 +70,6 @@ const authSlice = createSlice({
       state.email = email;
       state.jwtToken = token;
       state.isOtpVerified = isOtpVerified;
-      state.isLoggedIn = true;
       state.isValidated = true;
       state.isActivated = isOtpVerified;
     },
@@ -109,7 +100,6 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.isLoggingIn = false;
-        state.isLoggedIn = true;
         state.isValidated = true;
         state.email = action.payload.email;
         state.name = action.payload.name;
@@ -154,8 +144,6 @@ const authSlice = createSlice({
           state.email = action.payload.email;
           state.isActivated = action.payload.isActivated;
           state.isOtpVerified = action.payload.isActivated;
-          state.isSuperUser = action.payload.isSuperUser;
-          state.isStaff = action.payload.isStaff
         }
       )
       .addCase(validateUser.rejected, (state) => {
