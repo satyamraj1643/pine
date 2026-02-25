@@ -528,24 +528,33 @@ function EditableNameRow({
 
   if (editing) {
     return (
-      <div className="flex items-center justify-between py-2.5 px-3 -mx-3">
-        <span className="text-sm text-[rgb(var(--copy-primary))] flex-shrink-0">Display name</span>
+      <div className="py-2.5 px-3 -mx-3">
+        <label className="text-sm text-[rgb(var(--copy-primary))] mb-2 block">Display name</label>
+        <input
+          autoFocus
+          type="text"
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={handleKeyDown}
+          maxLength={200}
+          disabled={saving}
+          className="w-full bg-[rgb(var(--background))] border border-[rgb(var(--border))] rounded-lg px-3 py-1.5 text-sm text-[rgb(var(--copy-primary))] focus:outline-none focus:ring-1 focus:ring-[rgb(var(--cta))]/30 disabled:opacity-50 mb-2"
+          placeholder="Your name"
+        />
         <div className="flex items-center gap-2">
-          <input
-            autoFocus
-            type="text"
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={handleKeyDown}
-            maxLength={200}
-            disabled={saving}
-            className="w-40 bg-[rgb(var(--background))] border border-[rgb(var(--border))] rounded-lg px-2.5 py-1 text-sm text-[rgb(var(--copy-primary))] focus:outline-none focus:ring-1 focus:ring-[rgb(var(--cta))]/30 disabled:opacity-50 text-right"
-          />
-          <button onClick={() => { setEditing(false); setDraft(name || ""); }} disabled={saving} className="text-xs text-[rgb(var(--copy-muted))] hover:text-[rgb(var(--copy-primary))]">
-            Cancel
+          <button
+            onClick={handleSave}
+            disabled={saving || !draft.trim() || draft.trim() === name}
+            className="px-3 py-1 rounded-md text-xs font-medium bg-[rgb(var(--cta))] text-[rgb(var(--cta-text))] hover:bg-[rgb(var(--cta-active))] transition-colors disabled:opacity-40"
+          >
+            {saving ? "Saving..." : "Save"}
           </button>
-          <button onClick={handleSave} disabled={saving || !draft.trim() || draft.trim() === name} className="text-xs font-medium text-[rgb(var(--cta))] disabled:opacity-40">
-            {saving ? "..." : "Save"}
+          <button
+            onClick={() => { setEditing(false); setDraft(name || ""); }}
+            disabled={saving}
+            className="px-3 py-1 rounded-md text-xs text-[rgb(var(--copy-muted))] hover:text-[rgb(var(--copy-primary))] transition-colors"
+          >
+            Cancel
           </button>
         </div>
       </div>
@@ -553,16 +562,18 @@ function EditableNameRow({
   }
 
   return (
-    <button
-      onClick={() => { setDraft(name || ""); setEditing(true); }}
-      className="w-full flex items-center justify-between py-2.5 px-3 -mx-3 rounded-lg hover:bg-[rgb(var(--surface))] transition-colors text-left group"
-    >
+    <div className="flex items-center justify-between py-2.5 px-3 -mx-3 rounded-lg hover:bg-[rgb(var(--surface))] transition-colors">
       <span className="text-sm text-[rgb(var(--copy-primary))]">Display name</span>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
         <span className="text-sm text-[rgb(var(--copy-muted))]">{name || "---"}</span>
-        <span className="text-xs text-[rgb(var(--cta))] opacity-0 group-hover:opacity-100 transition-opacity">Edit</span>
+        <button
+          onClick={() => { setDraft(name || ""); setEditing(true); }}
+          className="text-xs text-[rgb(var(--cta))] hover:text-[rgb(var(--cta-active))] transition-colors"
+        >
+          Edit
+        </button>
       </div>
-    </button>
+    </div>
   );
 }
 
