@@ -564,13 +564,17 @@ function EditableNameRow({
   return (
     <div className="flex items-center justify-between py-2.5 px-3 -mx-3 rounded-lg hover:bg-[rgb(var(--surface))] transition-colors">
       <span className="text-sm text-[rgb(var(--copy-primary))]">Display name</span>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         <span className="text-sm text-[rgb(var(--copy-muted))]">{name || "---"}</span>
         <button
           onClick={() => { setDraft(name || ""); setEditing(true); }}
-          className="text-xs text-[rgb(var(--cta))] hover:text-[rgb(var(--cta-active))] transition-colors"
+          className="p-1 rounded hover:bg-[rgb(var(--copy-primary))]/[0.06] text-[rgb(var(--copy-muted))] hover:text-[rgb(var(--copy-primary))] transition-colors"
+          title="Edit name"
         >
-          Edit
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M17 3a2.85 2.85 0 114 4L7.5 20.5 2 22l1.5-5.5Z" />
+            <path d="M15 5l4 4" />
+          </svg>
         </button>
       </div>
     </div>
