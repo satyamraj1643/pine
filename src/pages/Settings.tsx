@@ -76,14 +76,14 @@ function CheckIcon() {
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-xs font-semibold text-[rgb(var(--copy-muted))] uppercase tracking-widest mb-2">
+    <p className="text-xs font-semibold text-[rgb(var(--copy-muted))] uppercase tracking-widest mb-3">
       {children}
     </p>
   );
 }
 
 function Divider() {
-  return <div className="h-px bg-[rgb(var(--border))]" />;
+  return <div className="h-px bg-[rgb(var(--border))] my-8" />;
 }
 
 function SettingRow({
@@ -781,7 +781,6 @@ export default function Settings() {
         </div>
 
         <Divider />
-        <div className="h-6" />
 
         {/* ── Appearance ── */}
         <SectionLabel>Appearance</SectionLabel>
@@ -789,14 +788,12 @@ export default function Settings() {
         <SettingRow label="Font" value={currentFontOption.name} onClick={() => setView("font")} />
 
         <Divider />
-        <div className="h-6" />
 
         {/* ── Data ── */}
         <SectionLabel>Data</SectionLabel>
         <SettingRow label="Export your data" onClick={() => setView("export")} />
 
         <Divider />
-        <div className="h-6" />
 
         {/* ── Sign out ── */}
         <button
@@ -807,7 +804,6 @@ export default function Settings() {
         </button>
 
         <Divider />
-        <div className="h-6" />
 
         {/* ── Danger ── */}
         <button
