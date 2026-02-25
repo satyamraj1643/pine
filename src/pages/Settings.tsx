@@ -507,75 +507,48 @@ function EditableNameRow({
 }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(name || "");
-  const [saving, setSaving] = useState(false);
 
-  const handleSave = async () => {
+  const commit = () => {
     const trimmed = draft.trim();
-    if (!trimmed || trimmed === name) {
-      setEditing(false);
-      return;
-    }
-    setSaving(true);
-    await onSave(trimmed);
-    setSaving(false);
+    if (trimmed && trimmed !== name) onSave(trimmed);
     setEditing(false);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") handleSave();
-    if (e.key === "Escape") { setEditing(false); setDraft(name || ""); }
+    if (e.key === "Enter") commit();
+    if (e.key === "Escape") { setDraft(name || ""); setEditing(false); }
   };
-
-  if (editing) {
-    return (
-      <div className="py-2.5 px-3 -mx-3">
-        <label className="text-sm text-[rgb(var(--copy-primary))] mb-2 block">Display name</label>
-        <input
-          autoFocus
-          type="text"
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          onKeyDown={handleKeyDown}
-          maxLength={200}
-          disabled={saving}
-          className="w-full bg-[rgb(var(--background))] border border-[rgb(var(--border))] rounded-lg px-3 py-1.5 text-sm text-[rgb(var(--copy-primary))] focus:outline-none focus:ring-1 focus:ring-[rgb(var(--cta))]/30 disabled:opacity-50 mb-2"
-          placeholder="Your name"
-        />
-        <div className="flex items-center gap-2">
-          <button
-            onClick={handleSave}
-            disabled={saving || !draft.trim() || draft.trim() === name}
-            className="px-3 py-1 rounded-md text-xs font-medium bg-[rgb(var(--cta))] text-[rgb(var(--cta-text))] hover:bg-[rgb(var(--cta-active))] transition-colors disabled:opacity-40"
-          >
-            {saving ? "Saving..." : "Save"}
-          </button>
-          <button
-            onClick={() => { setEditing(false); setDraft(name || ""); }}
-            disabled={saving}
-            className="px-3 py-1 rounded-md text-xs text-[rgb(var(--copy-muted))] hover:text-[rgb(var(--copy-primary))] transition-colors"
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="flex items-center justify-between py-2.5 px-3 -mx-3 rounded-lg hover:bg-[rgb(var(--surface))] transition-colors">
       <span className="text-sm text-[rgb(var(--copy-primary))]">Display name</span>
       <div className="flex items-center gap-2">
-        <span className="text-sm text-[rgb(var(--copy-muted))]">{name || "---"}</span>
-        <button
-          onClick={() => { setDraft(name || ""); setEditing(true); }}
-          className="p-1 rounded hover:bg-[rgb(var(--copy-primary))]/[0.06] text-[rgb(var(--copy-muted))] hover:text-[rgb(var(--copy-primary))] transition-colors"
-          title="Edit name"
-        >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M17 3a2.85 2.85 0 114 4L7.5 20.5 2 22l1.5-5.5Z" />
-            <path d="M15 5l4 4" />
-          </svg>
-        </button>
+        {editing ? (
+          <input
+            autoFocus
+            type="text"
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onBlur={commit}
+            maxLength={200}
+            className="w-40 bg-transparent border-b border-[rgb(var(--border))] text-sm text-[rgb(var(--copy-primary))] focus:outline-none focus:border-[rgb(var(--cta))] text-right py-0"
+          />
+        ) : (
+          <>
+            <span className="text-sm text-[rgb(var(--copy-muted))]">{name || "---"}</span>
+            <button
+              onClick={() => { setDraft(name || ""); setEditing(true); }}
+              className="p-1 rounded hover:bg-[rgb(var(--copy-primary))]/[0.06] text-[rgb(var(--copy-muted))] hover:text-[rgb(var(--copy-primary))] transition-colors"
+              title="Edit name"
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17 3a2.85 2.85 0 114 4L7.5 20.5 2 22l1.5-5.5Z" />
+                <path d="M15 5l4 4" />
+              </svg>
+            </button>
+          </>
+        )}
       </div>
     </div>
   );
