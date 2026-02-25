@@ -248,15 +248,15 @@ function FontCard({
   return (
     <button
       onClick={onSelect}
-      className={`group relative text-left w-full rounded-lg border-2 transition-all duration-200 overflow-hidden ${
+      className={`group relative text-left w-full rounded-md border-2 transition-all duration-200 overflow-hidden ${
         isSelected
-          ? "border-[rgb(var(--cta))] ring-2 ring-[rgb(var(--cta))]/20"
-          : "border-[rgb(var(--border))] hover:border-[rgb(var(--copy-muted))]/50"
+          ? "border-[rgb(var(--cta))] ring-1 ring-[rgb(var(--cta))]/20"
+          : "border-[rgb(var(--border))] group-hover:border-[rgb(var(--copy-muted))]/40"
       }`}
     >
       <div className="px-3 py-2.5">
         <p
-          className="text-lg font-semibold text-[rgb(var(--copy-primary))] leading-none mb-1 truncate"
+          className="text-sm font-semibold text-[rgb(var(--copy-primary))] leading-none mb-1 truncate"
           style={{ fontFamily: font.family }}
         >
           The quick brown fox
