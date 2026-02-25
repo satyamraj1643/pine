@@ -513,3 +513,36 @@ export const AIPersonality = async (): Promise<{ data?: PersonalityResult; error
     return { error: "Couldn't connect to AI" };
   }
 };
+
+// ─── Exports ─────────────────────────────────────────────
+
+export const LogExport = async (format: string, sizeBytes: number): Promise<boolean> => {
+  try {
+    const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/exports/log`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ format, size_bytes: sizeBytes }),
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
+};
+
+export const GetLatestExport = async (): Promise<{
+  has_export: boolean;
+  format?: string;
+  size_bytes?: number;
+  exported_at?: string;
+} | null> => {
+  try {
+    const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/exports/latest`, {
+      method: "GET",
+      headers: getAuthHeaders(),
+    });
+    if (!response.ok) return null;
+    return await response.json();
+  } catch {
+    return null;
+  }
+};

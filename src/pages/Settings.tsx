@@ -5,7 +5,7 @@ import type { FontOption } from "../hooks/useFont";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState, AppDispatch } from "../redux/store";
 import { updateProfile, logoutUser } from "../redux/authThunks";
-import { GetAllNotes, GetAllChapter, GetAllTags, GetAllMood, DeleteAccount } from "../APIs";
+import { GetAllNotes, GetAllChapter, GetAllTags, GetAllMood, DeleteAccount, LogExport, GetLatestExport } from "../APIs";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import ConfirmModal from "../components/ConfirmModal";
@@ -423,20 +423,18 @@ function formatBytes(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-const LAST_EXPORT_KEY = "pine-last-export";
-
 function ExportPicker({ onBack }: { onBack: () => void }) {
   const [format, setFormat] = useState<ExportFormat>("json");
   const [exporting, setExporting] = useState(false);
   const [dataSize, setDataSize] = useState<string | null>(null);
-  const [lastExport, setLastExport] = useState<string | null>(() => localStorage.getItem(LAST_EXPORT_KEY));
+  const [lastExport, setLastExport] = useState<string | null>(null);
 
-  // Fetch data size on mount
+  // Fetch data size + last export info on mount
   useEffect(() => {
     (async () => {
       try {
-        const [notesRes, chapRes, tagsRes, moodsRes] = await Promise.all([
-          GetAllNotes(), GetAllChapter(), GetAllTags(), GetAllMood(),
+        const [notesRes, chapRes, tagsRes, moodsRes, latest] = await Promise.all([
+          GetAllNotes(), GetAllChapter(), GetAllTags(), GetAllMood(), GetLatestExport(),
         ]);
         const notes = notesRes?.fetched && Array.isArray(notesRes.data) ? notesRes.data : [];
         const chapters = chapRes?.fetched && Array.isArray(chapRes.data) ? chapRes.data : [];
@@ -444,6 +442,9 @@ function ExportPicker({ onBack }: { onBack: () => void }) {
         const moods = moodsRes?.fetched && Array.isArray(moodsRes.data) ? moodsRes.data : [];
         const json = buildJsonExport(notes, chapters, tags, moods);
         setDataSize(formatBytes(new Blob([json]).size));
+        if (latest?.has_export && latest.exported_at) {
+          setLastExport(latest.exported_at);
+        }
       } catch { /* ignore */ }
     })();
   }, []);
@@ -466,17 +467,25 @@ function ExportPicker({ onBack }: { onBack: () => void }) {
       const moods = moodsRes?.fetched && Array.isArray(moodsRes.data) ? moodsRes.data : [];
       const dateStr = getDateString();
 
+      let exportContent: string;
       if (format === "json") {
-        triggerDownload(buildJsonExport(notes, chapters, tags, moods), `pine-backup-${dateStr}.json`, "application/json");
+        exportContent = buildJsonExport(notes, chapters, tags, moods);
+        triggerDownload(exportContent, `pine-backup-${dateStr}.json`, "application/json");
       } else if (format === "markdown") {
-        triggerDownload(buildMarkdownExport(notes), `pine-export-${dateStr}.md`, "text/markdown");
+        exportContent = buildMarkdownExport(notes);
+        triggerDownload(exportContent, `pine-export-${dateStr}.md`, "text/markdown");
       } else {
-        triggerDownload(buildCsvExport(notes), `pine-export-${dateStr}.csv`, "text/csv");
+        exportContent = buildCsvExport(notes);
+        triggerDownload(exportContent, `pine-export-${dateStr}.csv`, "text/csv");
       }
-      const now = new Date().toISOString();
-      localStorage.setItem(LAST_EXPORT_KEY, now);
-      setLastExport(now);
+
+      const sizeBytes = new Blob([exportContent]).size;
+      setDataSize(formatBytes(sizeBytes));
+      setLastExport(new Date().toISOString());
       toast.success("Download started");
+
+      // Log to DB in background
+      LogExport(format, sizeBytes);
     } catch {
       toast.error("Something went wrong");
     } finally {
