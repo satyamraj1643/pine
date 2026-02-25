@@ -64,8 +64,8 @@ const VerifyOTP: React.FC = () => {
     const result = await dispatch(verifyOTP({ email, otp: code }));
 
     if (verifyOTP.fulfilled.match(result)) {
-      toast.success("Email verified");
-      navigate("/login");
+      toast.success("Email verified — welcome to Pine!");
+      navigate("/");
     } else {
       const msg = result.payload as { detail?: string } | undefined;
       toast.error(msg?.detail || "Invalid or expired OTP");

@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { AnyAction } from "redux";
 import { ThunkDispatch } from "redux-thunk";
 
-// Assuming these are defined in your project
+
 import { validateUser } from "../redux/validateThunk";
 import type { RootState } from "../redux/store";
 

@@ -7,18 +7,18 @@ interface AuthState {
   userId: number | null;
   name: string | null;
   email: string | null;
-  jwtToken : string | null;
+  jwtToken: string | null;
   isActivated: boolean;
   isOtpVerifying: boolean,
   isOtpVerified: boolean;
-  isValidated : boolean;
-  isValidating : boolean;
-  isLoggedIn : boolean,
+  isValidated: boolean;
+  isValidating: boolean;
+  isLoggedIn: boolean,
   isSigningUp: boolean;
   isLoggingIn: boolean;
   isLoggingOut: boolean;
-  isSuperUser : boolean;
-  isStaff : boolean;
+  isSuperUser: boolean;
+  isStaff: boolean;
 }
 
 const initialState: AuthState = {
@@ -28,15 +28,15 @@ const initialState: AuthState = {
   jwtToken: null,
   isActivated: false,
   isOtpVerified: false,
-  isLoggedIn : false,
+  isLoggedIn: false,
   isOtpVerifying: false,
   isValidated: false,
-  isValidating : false,
+  isValidating: false,
   isSigningUp: false,
   isLoggingIn: false,
   isLoggingOut: false,
-  isSuperUser : false,
-  isStaff : false,
+  isSuperUser: false,
+  isStaff: false,
 
 };
 
@@ -48,11 +48,39 @@ const authSlice = createSlice({
       state.userId = null;
       state.email = null;
       state.name = null;
+      state.jwtToken = null;
       state.isActivated = false;
       state.isValidated = false;
+      state.isOtpVerified = false;
+      state.isLoggedIn = false;
       state.isSigningUp = false;
       state.isLoggingIn = false;
       state.isLoggingOut = false;
+    },
+    /**
+     * loginSuccess — the single convergence point for ALL auth methods.
+     * Call this after: OTP verify, Google OAuth callback, any future provider.
+     * Keeps login logic in one place so adding new providers is trivial.
+     */
+    loginSuccess: (
+      state,
+      action: PayloadAction<{
+        user_id?: string | number;
+        name: string;
+        email: string;
+        isOtpVerified: boolean;
+        token: string | null;
+      }>
+    ) => {
+      const { user_id, name, email, isOtpVerified, token } = action.payload;
+      state.userId = user_id !== undefined ? Number(user_id) : null;
+      state.name = name;
+      state.email = email;
+      state.jwtToken = token;
+      state.isOtpVerified = isOtpVerified;
+      state.isLoggedIn = true;
+      state.isValidated = true;
+      state.isActivated = isOtpVerified;
     },
   },
   extraReducers: (builder) => {
@@ -82,6 +110,7 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.isLoggingIn = false;
         state.isLoggedIn = true;
+        state.isValidated = true;
         state.email = action.payload.email;
         state.name = action.payload.name;
         state.jwtToken = action.payload.token;
@@ -89,18 +118,22 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.rejected, (state) => {
         state.isLoggingIn = false;
-        state.isValidating =false;
+        state.isValidating = false;
         state.isValidated = false;
       })
 
 
-      // OTP Verification
+      // OTP Verification — on success, reuse loginSuccess to auto-login
       .addCase(verifyOTP.pending, (state) => {
         state.isOtpVerifying = true;
       })
-      .addCase(verifyOTP.fulfilled, (state) => {
+      .addCase(verifyOTP.fulfilled, (state, action) => {
         state.isOtpVerifying = false;
-        state.isOtpVerified = true;   
+        // If the endpoint returned 200, OTP is verified by definition — force true
+        authSlice.caseReducers.loginSuccess(state, {
+          type: "auth/loginSuccess",
+          payload: { ...action.payload, isOtpVerified: true },
+        });
       })
       .addCase(verifyOTP.rejected, (state) => {
         state.isOtpVerifying = false;
@@ -113,8 +146,7 @@ const authSlice = createSlice({
         state.isValidating = true;
       })
       .addCase(
-        validateUser.fulfilled, (state, action) =>
-         {
+        validateUser.fulfilled, (state, action) => {
           state.isValidating = false;
           state.isValidated = true;
           state.userId = action.payload.userId ? Number(action.payload.userId) : null;
@@ -139,7 +171,7 @@ const authSlice = createSlice({
         authSlice.caseReducers.logout(state);
       })
       .addCase(logoutUser.rejected, (state) => {
-        state.isLoggingOut = false;
+        authSlice.caseReducers.logout(state);
       })
 
       // Update profile
@@ -152,5 +184,5 @@ const authSlice = createSlice({
 
 
 
-export const { logout } = authSlice.actions;
+export const { logout, loginSuccess } = authSlice.actions;
 export default authSlice.reducer;

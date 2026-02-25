@@ -200,7 +200,6 @@ const App = () => {
         containerStyle={{ bottom: 24, left: 24 }}
         toastOptions={toastOptions}
       />
-      <Navbar />
       <Routes>
         <Route path="/" element={<Hero />} />
         <Route path="/signup" element={<Signup />} />

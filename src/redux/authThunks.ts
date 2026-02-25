@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { getCookie } from "../utilities/csrf";
-import {ActivationPayload, ActivationResponse, ErrorResponse, LoginPayload, LoginResponse, SignupPayload,SignupResponse,VerifyOtpPayload, VerifyOtpResponse} from "../types"
+import { ActivationPayload, ActivationResponse, ErrorResponse, LoginPayload, LoginResponse, SignupPayload, SignupResponse, VerifyOtpPayload, VerifyOtpResponse } from "../types"
 import { GENERAL_BACKEND_BASE_URL } from "../constants";
 
 // --------- Thunks ---------
@@ -36,7 +36,7 @@ export const updateProfile = createAsyncThunk<
 
 // Signup
 export const signupUser = createAsyncThunk<
-  { user_id?: number; email: string; name: string , isVerified: boolean},
+  { user_id?: number; email: string; name: string, isVerified: boolean },
   SignupPayload,
   { rejectValue: ErrorResponse }
 >(
@@ -60,7 +60,7 @@ export const signupUser = createAsyncThunk<
         user_id: data.user_id ?? data.id ?? undefined,
         email: data.email,
         name: data.name,
-        isVerified : data.isVerified,
+        isVerified: data.isVerified,
       };
     } catch {
       return rejectWithValue({ detail: "Network Error" });
@@ -69,7 +69,13 @@ export const signupUser = createAsyncThunk<
 );
 
 export const verifyOTP = createAsyncThunk<
-  { isVerified: boolean; },
+  {
+    user_id?: string | number;
+    name: string;
+    email: string;
+    isOtpVerified: boolean;
+    token: string | null;
+  },
   { email: string; otp: string },
   { rejectValue: { detail?: string } }
 >(
@@ -85,7 +91,18 @@ export const verifyOTP = createAsyncThunk<
       const data = await response.json();
       if (!response.ok) return rejectWithValue(data);
 
-      return data;
+      // Store token so the app is immediately authenticated
+      if (data.token) {
+        localStorage.setItem("auth_token", data.token);
+      }
+
+      return {
+        user_id: data.user_id ?? data.id ?? undefined,
+        name: data.name ?? "",
+        email: data.email ?? formData.email,
+        isOtpVerified: Boolean(data.isOtpVerified),
+        token: data.token ?? null,
+      };
     } catch {
       return rejectWithValue({ detail: "Network Error" });
     }
@@ -157,34 +174,25 @@ export const logoutUser = createAsyncThunk<void, void, { rejectValue: ErrorRespo
   "auth/logoutUser",
   async (_, { rejectWithValue }) => {
     try {
-      const csrfToken = getCookie("csrftoken");
-      console.log("🔐 CSRF Token:", csrfToken);
-      
-      const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/auth/logout/`, {
+      const token = localStorage.getItem("auth_token");
+
+      // Clear token from localStorage immediately
+      localStorage.removeItem("auth_token");
+
+      // Attempt to notify backend, but treat the logout as successful regardless
+      await fetch(`${GENERAL_BACKEND_BASE_URL}/auth/logout/`, {
         method: "POST",
-        credentials: "include", // This sends cookies automatically
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          "X-CSRFToken": csrfToken || "",
+          ...(token ? { "Authorization": `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify({}) // Empty body since token comes from cookie
+        body: JSON.stringify({})
       });
 
-      if (!response.ok) {
-        const data = await response.json();
-        console.log("❌ Error response:", data);
-        return rejectWithValue(data);
-      }
-      
       console.log("✅ Logout successful");
     } catch (error) {
-      console.log("❌ Network error:", error);
-      return rejectWithValue({ detail: "Network Error" });
+      console.log("❌ Network error during logout:", error);
     }
   }
 );
-
-
-
-
-
