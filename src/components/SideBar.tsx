@@ -63,7 +63,7 @@ function NavSection({
 const SideBar: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isLoggingOut, name } = useSelector((state: RootState) => state.auth);
+  const { isLoggingOut, name, profilePicture } = useSelector((state: RootState) => state.auth);
   const { sidebarState, setSidebarState } = useSidebar();
   const [isHoveringEdge, setIsHoveringEdge] = useState(false);
 
@@ -165,16 +165,34 @@ const SideBar: React.FC = () => {
 
           {/* Bottom -- user */}
           <div className="pt-2 mt-1">
-            <div className={`flex items-center gap-2 rounded-md py-1.5 hover:bg-[rgb(var(--copy-primary))]/[0.04] transition-colors duration-100 cursor-default ${showLabels ? "px-2" : "px-0 justify-center"}`}>
-              <div className="w-6 h-6 rounded-sm bg-[rgb(var(--copy-primary))]/[0.08] flex items-center justify-center text-[10px] font-semibold text-[rgb(var(--copy-secondary))] flex-shrink-0">
-                {firstName.charAt(0).toUpperCase()}
-              </div>
+            <NavLink
+              to="/settings"
+              className={({ isActive }) =>
+                `flex items-center gap-2 rounded-md py-1.5 transition-colors duration-100 ${showLabels ? "px-2" : "px-0 justify-center"} ${
+                  isActive
+                    ? "bg-[rgb(var(--copy-primary))]/[0.08]"
+                    : "hover:bg-[rgb(var(--copy-primary))]/[0.04]"
+                }`
+              }
+              title={!showLabels ? firstName : undefined}
+            >
+              {profilePicture ? (
+                <img
+                  src={profilePicture}
+                  alt=""
+                  className="w-6 h-6 rounded-sm object-cover flex-shrink-0"
+                />
+              ) : (
+                <div className="w-6 h-6 rounded-sm bg-[rgb(var(--copy-primary))]/[0.08] flex items-center justify-center text-[10px] font-semibold text-[rgb(var(--copy-secondary))] flex-shrink-0">
+                  {firstName.charAt(0).toUpperCase()}
+                </div>
+              )}
               {showLabels && (
                 <span className="text-[13px] text-[rgb(var(--copy-secondary))] truncate">
                   {firstName}
                 </span>
               )}
-            </div>
+            </NavLink>
             <button
               onClick={handleLogout}
               disabled={isLoggingOut}

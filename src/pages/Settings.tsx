@@ -182,8 +182,17 @@ function ThemeCard({
 function ThemePicker({ onBack }: { onBack: () => void }) {
   const { setTheme, currentTheme } = useTheme();
   const [filter, setFilter] = useState<"all" | "light" | "dark">("all");
+  const gridRef = useRef<HTMLDivElement>(null);
+  const [gridHeight, setGridHeight] = useState<number | undefined>(undefined);
 
-  const count = filter === "all" ? themes.length : themes.filter((t) => t.category === filter).length;
+  // Capture grid height on first render (showing "All") to prevent layout shift
+  useEffect(() => {
+    if (gridRef.current && gridHeight === undefined) {
+      setGridHeight(gridRef.current.offsetHeight);
+    }
+  }, []);
+
+  const filtered = filter === "all" ? themes : themes.filter((t) => t.category === filter);
 
   return (
     <div>
@@ -209,18 +218,17 @@ function ThemePicker({ onBack }: { onBack: () => void }) {
           </button>
         ))}
         <span className="ml-auto text-[11px] text-[rgb(var(--copy-muted))]">
-          {count} themes
+          {filtered.length} themes
         </span>
       </div>
 
-      <div className="grid grid-cols-5 gap-3">
-        {themes.map((t) => (
-          <div
-            key={t.id}
-            className={filter !== "all" && t.category !== filter ? "hidden" : ""}
-          >
-            <ThemeCard id={t.id} name={t.name} isSelected={currentTheme === t.id} onSelect={() => setTheme(t.id)} />
-          </div>
+      <div
+        ref={gridRef}
+        className="grid grid-cols-5 gap-3"
+        style={gridHeight ? { minHeight: gridHeight } : undefined}
+      >
+        {filtered.map((t) => (
+          <ThemeCard key={t.id} id={t.id} name={t.name} isSelected={currentTheme === t.id} onSelect={() => setTheme(t.id)} />
         ))}
       </div>
 
@@ -295,6 +303,14 @@ function FontCard({
 function FontPicker({ onBack }: { onBack: () => void }) {
   const { setFont, currentFont, currentFontOption } = useFont();
   const [filter, setFilter] = useState<"all" | "sans" | "serif" | "rounded" | "display">("all");
+  const gridRef = useRef<HTMLDivElement>(null);
+  const [gridHeight, setGridHeight] = useState<number | undefined>(undefined);
+
+  useEffect(() => {
+    if (gridRef.current && gridHeight === undefined) {
+      setGridHeight(gridRef.current.offsetHeight);
+    }
+  }, []);
 
   const filtered =
     filter === "all"
@@ -337,18 +353,18 @@ function FontPicker({ onBack }: { onBack: () => void }) {
         </span>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
-        {fontOptions.map((font) => (
-          <div
+      <div
+        ref={gridRef}
+        className="grid grid-cols-3 gap-3"
+        style={gridHeight ? { minHeight: gridHeight } : undefined}
+      >
+        {filtered.map((font) => (
+          <FontCard
             key={font.id}
-            className={filter !== "all" && font.category !== filter ? "hidden" : ""}
-          >
-            <FontCard
-              font={font}
-              isSelected={currentFont === font.id}
-              onSelect={() => setFont(font.id)}
-            />
-          </div>
+            font={font}
+            isSelected={currentFont === font.id}
+            onSelect={() => setFont(font.id)}
+          />
         ))}
       </div>
 
@@ -679,11 +695,12 @@ export default function Settings() {
   };
 
   const handleUploadPicture = async (base64: string) => {
+    const toastId = toast.loading("Uploading picture...");
     try {
       await dispatch(updateProfile({ name: name || "", profile_picture: base64 })).unwrap();
-      toast.success("Profile picture updated");
+      toast.success("Profile picture updated", { id: toastId });
     } catch (err: any) {
-      toast.error(err?.detail || "Failed to upload picture");
+      toast.error(err?.detail || "Failed to upload picture", { id: toastId });
     }
   };
 
