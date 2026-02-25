@@ -182,15 +182,6 @@ function ThemeCard({
 function ThemePicker({ onBack }: { onBack: () => void }) {
   const { setTheme, currentTheme } = useTheme();
   const [filter, setFilter] = useState<"all" | "light" | "dark">("all");
-  const gridRef = useRef<HTMLDivElement>(null);
-  const [gridHeight, setGridHeight] = useState<number | undefined>(undefined);
-
-  // Capture grid height on first render (showing "All") to prevent layout shift
-  useEffect(() => {
-    if (gridRef.current && gridHeight === undefined) {
-      setGridHeight(gridRef.current.offsetHeight);
-    }
-  }, []);
 
   const filtered = filter === "all" ? themes : themes.filter((t) => t.category === filter);
 
@@ -222,11 +213,7 @@ function ThemePicker({ onBack }: { onBack: () => void }) {
         </span>
       </div>
 
-      <div
-        ref={gridRef}
-        className="grid grid-cols-5 gap-3"
-        style={gridHeight ? { minHeight: gridHeight } : undefined}
-      >
+      <div className="grid grid-cols-5 gap-3 items-start">
         {filtered.map((t) => (
           <ThemeCard key={t.id} id={t.id} name={t.name} isSelected={currentTheme === t.id} onSelect={() => setTheme(t.id)} />
         ))}
@@ -303,14 +290,6 @@ function FontCard({
 function FontPicker({ onBack }: { onBack: () => void }) {
   const { setFont, currentFont, currentFontOption } = useFont();
   const [filter, setFilter] = useState<"all" | "sans" | "serif" | "rounded" | "display">("all");
-  const gridRef = useRef<HTMLDivElement>(null);
-  const [gridHeight, setGridHeight] = useState<number | undefined>(undefined);
-
-  useEffect(() => {
-    if (gridRef.current && gridHeight === undefined) {
-      setGridHeight(gridRef.current.offsetHeight);
-    }
-  }, []);
 
   const filtered =
     filter === "all"
@@ -353,11 +332,7 @@ function FontPicker({ onBack }: { onBack: () => void }) {
         </span>
       </div>
 
-      <div
-        ref={gridRef}
-        className="grid grid-cols-3 gap-3"
-        style={gridHeight ? { minHeight: gridHeight } : undefined}
-      >
+      <div className="grid grid-cols-3 gap-3 items-start">
         {filtered.map((font) => (
           <FontCard
             key={font.id}
