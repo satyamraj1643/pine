@@ -143,34 +143,34 @@ function ThemeCard({
       title={name}
     >
       <div
-        className={`relative w-full aspect-[4/3] rounded-lg overflow-hidden border-2 transition-all duration-200 ${
+        className={`relative w-full aspect-[3/2] rounded-md overflow-hidden border-2 transition-all duration-200 ${
           isSelected
-            ? "border-[rgb(var(--cta))] ring-2 ring-[rgb(var(--cta))]/20"
-            : "border-[rgb(var(--border))] group-hover:border-[rgb(var(--copy-muted))]/50"
+            ? "border-[rgb(var(--cta))] ring-1 ring-[rgb(var(--cta))]/20"
+            : "border-[rgb(var(--border))] group-hover:border-[rgb(var(--copy-muted))]/40"
         }`}
       >
         <div className="absolute inset-0 flex bg-[rgb(var(--background))]">
-          <div className="w-[28%] h-full bg-[rgb(var(--card))] border-r border-[rgb(var(--border))] p-2 flex flex-col gap-1.5">
-            <div className="w-3 h-3 rounded bg-[rgb(var(--cta))] opacity-80" />
-            <div className="mt-1 space-y-1">
-              <div className="h-1 rounded-full bg-[rgb(var(--copy-primary))] opacity-20 w-4/5" />
-              <div className="h-1 rounded-full bg-[rgb(var(--copy-muted))] opacity-30 w-3/5" />
-              <div className="h-1 rounded-full bg-[rgb(var(--copy-muted))] opacity-30 w-full" />
+          <div className="w-[26%] h-full bg-[rgb(var(--card))] border-r border-[rgb(var(--border))] p-1.5 flex flex-col gap-1">
+            <div className="w-2 h-2 rounded-sm bg-[rgb(var(--cta))] opacity-80" />
+            <div className="mt-0.5 space-y-0.5">
+              <div className="h-[2px] rounded-full bg-[rgb(var(--copy-primary))] opacity-20 w-4/5" />
+              <div className="h-[2px] rounded-full bg-[rgb(var(--copy-muted))] opacity-25 w-3/5" />
+              <div className="h-[2px] rounded-full bg-[rgb(var(--copy-muted))] opacity-25 w-full" />
             </div>
           </div>
-          <div className="flex-1 p-2.5 flex flex-col gap-1.5">
-            <div className="h-1.5 rounded-full bg-[rgb(var(--copy-primary))] opacity-40 w-2/3" />
-            <div className="h-1 rounded-full bg-[rgb(var(--copy-muted))] opacity-25 w-full" />
-            <div className="h-1 rounded-full bg-[rgb(var(--copy-muted))] opacity-25 w-5/6" />
+          <div className="flex-1 p-1.5 flex flex-col gap-1">
+            <div className="h-[3px] rounded-full bg-[rgb(var(--copy-primary))] opacity-35 w-2/3" />
+            <div className="h-[2px] rounded-full bg-[rgb(var(--copy-muted))] opacity-20 w-full" />
+            <div className="h-[2px] rounded-full bg-[rgb(var(--copy-muted))] opacity-20 w-5/6" />
           </div>
         </div>
         {isSelected && (
-          <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-[rgb(var(--cta))] text-[rgb(var(--cta-text))] flex items-center justify-center">
+          <div className="absolute top-1 right-1 w-4 h-4 rounded-full bg-[rgb(var(--cta))] text-[rgb(var(--cta-text))] flex items-center justify-center">
             <CheckIcon />
           </div>
         )}
       </div>
-      <p className={`mt-1.5 text-xs ${isSelected ? "font-medium text-[rgb(var(--copy-primary))]" : "text-[rgb(var(--copy-muted))]"}`}>
+      <p className={`mt-1 text-[11px] truncate ${isSelected ? "font-medium text-[rgb(var(--copy-primary))]" : "text-[rgb(var(--copy-muted))]"}`}>
         {name}
       </p>
     </button>
@@ -183,10 +183,7 @@ function ThemePicker({ onBack }: { onBack: () => void }) {
   const { setTheme, currentTheme } = useTheme();
   const [filter, setFilter] = useState<"all" | "light" | "dark">("all");
 
-  const filtered =
-    filter === "all"
-      ? themes
-      : themes.filter((t) => t.category === filter);
+  const count = filter === "all" ? themes.length : themes.filter((t) => t.category === filter).length;
 
   return (
     <div>
@@ -212,13 +209,18 @@ function ThemePicker({ onBack }: { onBack: () => void }) {
           </button>
         ))}
         <span className="ml-auto text-[11px] text-[rgb(var(--copy-muted))]">
-          {filtered.length} themes
+          {count} themes
         </span>
       </div>
 
-      <div className="grid grid-cols-4 gap-4">
-        {filtered.map((t) => (
-          <ThemeCard key={t.id} id={t.id} name={t.name} isSelected={currentTheme === t.id} onSelect={() => setTheme(t.id)} />
+      <div className="grid grid-cols-5 gap-3">
+        {themes.map((t) => (
+          <div
+            key={t.id}
+            className={filter !== "all" && t.category !== filter ? "hidden" : ""}
+          >
+            <ThemeCard id={t.id} name={t.name} isSelected={currentTheme === t.id} onSelect={() => setTheme(t.id)} />
+          </div>
         ))}
       </div>
 
@@ -336,13 +338,17 @@ function FontPicker({ onBack }: { onBack: () => void }) {
       </div>
 
       <div className="grid grid-cols-3 gap-3">
-        {filtered.map((font) => (
-          <FontCard
+        {fontOptions.map((font) => (
+          <div
             key={font.id}
-            font={font}
-            isSelected={currentFont === font.id}
-            onSelect={() => setFont(font.id)}
-          />
+            className={filter !== "all" && font.category !== filter ? "hidden" : ""}
+          >
+            <FontCard
+              font={font}
+              isSelected={currentFont === font.id}
+              onSelect={() => setFont(font.id)}
+            />
+          </div>
         ))}
       </div>
 
