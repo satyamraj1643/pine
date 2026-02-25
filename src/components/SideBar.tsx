@@ -1,14 +1,12 @@
 import React, { useState } from "react";
-import { FaSignOutAlt, FaPlus, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaPlus, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { NavLink, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-hot-toast";
+import { useSelector } from "react-redux";
 import pineLogo from "../assets/pine-transparent.png";
-import { logoutUser } from "../redux/authThunks";
 import type { RootState } from "../redux/store";
 import { useSidebar, type SidebarState } from "../contexts/SidebarContext";
 import { navGroups } from "../config/navConfig";
-import type { NavItem, NavGroup } from "../config/navConfig";
+import type { NavGroup } from "../config/navConfig";
 
 // ─── Nav section ─────────────────────────────────────────
 
@@ -60,10 +58,11 @@ function NavSection({
 
 // ─── Main sidebar ────────────────────────────────────────
 
+const SHORTCUT_LABEL = "\u2318\\";
+
 const SideBar: React.FC = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isLoggingOut, name, profilePicture } = useSelector((state: RootState) => state.auth);
+  const { name, profilePicture } = useSelector((state: RootState) => state.auth);
   const { sidebarState, setSidebarState } = useSidebar();
   const [isHoveringEdge, setIsHoveringEdge] = useState(false);
 
@@ -71,27 +70,17 @@ const SideBar: React.FC = () => {
   const isHidden = sidebarState === "hidden";
   const sidebarWidth = sidebarState === "full" ? "w-56" : sidebarState === "mid" ? "w-14" : "w-0";
 
-  const handleLogout = async () => {
-    try {
-      // @ts-ignore
-      await dispatch(logoutUser()).unwrap();
-      toast.success("Logged out");
-      navigate("/login");
-    } catch {
-      toast.error("Logout failed");
-    }
-  };
-
   const firstName = name?.split(" ")[0] || "Writer";
+  const initial = firstName.charAt(0).toUpperCase();
 
   const getNextState = (): { nextState: SidebarState; tooltip: string } => {
     switch (sidebarState) {
       case "full":
-        return { nextState: "mid", tooltip: "Collapse sidebar (\u2318B)" };
+        return { nextState: "mid", tooltip: `Collapse sidebar (${SHORTCUT_LABEL})` };
       case "mid":
-        return { nextState: "hidden", tooltip: "Hide sidebar (\u2318B)" };
+        return { nextState: "hidden", tooltip: `Hide sidebar (${SHORTCUT_LABEL})` };
       case "hidden":
-        return { nextState: "full", tooltip: "Show sidebar (\u2318B)" };
+        return { nextState: "full", tooltip: `Show sidebar (${SHORTCUT_LABEL})` };
     }
   };
 
@@ -113,7 +102,7 @@ const SideBar: React.FC = () => {
           className={`fixed top-1/2 -translate-y-1/2 left-0 z-50 h-12 w-5 rounded-r-lg bg-[rgb(var(--surface))] border border-l-0 border-[rgb(var(--border))] items-center justify-center text-[rgb(var(--copy-muted))] hover:text-[rgb(var(--copy-primary))] transition-all duration-200 hidden sm:flex ${
             isHoveringEdge ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-1"
           }`}
-          title="Show sidebar (\u2318B)"
+          title={`Show sidebar (${SHORTCUT_LABEL})`}
           aria-label="Show sidebar"
         >
           <FaChevronRight size={9} />
@@ -163,7 +152,7 @@ const SideBar: React.FC = () => {
             ))}
           </div>
 
-          {/* Bottom -- user */}
+          {/* Bottom -- user profile (links to settings) */}
           <div className="pt-2 mt-1">
             <NavLink
               to="/settings"
@@ -184,7 +173,7 @@ const SideBar: React.FC = () => {
                 />
               ) : (
                 <div className="w-6 h-6 rounded-sm bg-[rgb(var(--copy-primary))]/[0.08] flex items-center justify-center text-[10px] font-semibold text-[rgb(var(--copy-secondary))] flex-shrink-0">
-                  {firstName.charAt(0).toUpperCase()}
+                  {initial}
                 </div>
               )}
               {showLabels && (
@@ -193,20 +182,6 @@ const SideBar: React.FC = () => {
                 </span>
               )}
             </NavLink>
-            <button
-              onClick={handleLogout}
-              disabled={isLoggingOut}
-              title={!showLabels ? "Log out" : undefined}
-              aria-label="Log out"
-              className={`flex items-center gap-2 w-full rounded-md text-[13px] text-[rgb(var(--copy-muted))] hover:bg-[rgb(var(--copy-primary))]/[0.04] hover:text-[rgb(var(--copy-secondary))] transition-colors duration-100 disabled:opacity-50 ${
-                showLabels ? "px-2 py-[5px]" : "py-1.5 justify-center"
-              }`}
-            >
-              <span className="flex items-center justify-center w-5 opacity-[0.75]">
-                <FaSignOutAlt size={13} />
-              </span>
-              {showLabels && <span>{isLoggingOut ? "Logging out..." : "Log out"}</span>}
-            </button>
           </div>
         </div>
       </aside>

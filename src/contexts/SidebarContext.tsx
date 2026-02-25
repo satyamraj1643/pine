@@ -41,10 +41,10 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  // Keyboard shortcut: Cmd/Ctrl + B to cycle sidebar states
+  // Keyboard shortcut: Cmd/Ctrl + \ to cycle sidebar states
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "b") {
+      if ((e.metaKey || e.ctrlKey) && e.key === "\\") {
         e.preventDefault();
         cycleSidebar();
       }

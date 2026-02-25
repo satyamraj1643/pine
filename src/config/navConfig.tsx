@@ -4,7 +4,6 @@ import {
   FaBookOpen,
   FaTag,
   FaArchive,
-  FaCog,
   FaSmile,
   FaStar,
 } from "react-icons/fa";
@@ -53,11 +52,10 @@ export const navGroups: NavGroup[] = [
     ],
   },
   {
-    label: "System",
+    label: "Insights",
     items: [
       { to: "/reflect", label: "Reflect", icon: <TbSparkles size={15} /> },
       { to: "/archives", label: "Archive", icon: <FaArchive size={15} /> },
-      { to: "/settings", label: "Settings", icon: <FaCog size={15} /> },
     ],
   },
 ];
