@@ -61,7 +61,7 @@ const toastOptions = {
 } as const;
 
 function AppContent() {
-  const { sidebarState } = useSidebar();
+  const { sidebarWidth, isDragging } = useSidebar();
   const navigate = useNavigate();
   
   // Global Cmd+N shortcut for new note
@@ -75,18 +75,6 @@ function AppContent() {
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [navigate]);
-
-  // Margin based on sidebar state: full = 14rem (224px), mid = 3.5rem (56px), hidden = 0
-  const getMarginClass = () => {
-    switch (sidebarState) {
-      case "full":
-        return "sm:ml-56";
-      case "mid":
-        return "sm:ml-14";
-      case "hidden":
-        return "sm:ml-0";
-    }
-  };
   
   return (
     <div className="flex min-h-screen bg-[rgb(var(--background))]">
@@ -94,7 +82,8 @@ function AppContent() {
       <CommandPalette />
       <AskJournal />
       <main 
-        className={`flex-1 transition-all duration-300 ease-in-out ${getMarginClass()}`}
+        className={`flex-1 ${isDragging ? "" : "transition-[margin] duration-200 ease-out"}`}
+        style={{ marginLeft: `${sidebarWidth}px` }}
       >
         <Routes>
           <Route path="/" element={<Home />} />

@@ -1,14 +1,14 @@
 import React from "react";
 import {
-  FaHome,
-  FaBookOpen,
-  FaTag,
-  FaArchive,
-  FaSmile,
-  FaStar,
-} from "react-icons/fa";
-import { FaPenNib } from "react-icons/fa6";
-import { TbSparkles } from "react-icons/tb";
+  House,
+  PenLine,
+  BookOpen,
+  Star,
+  Tag,
+  Smile,
+  Sparkles,
+  Archive,
+} from "lucide-react";
 
 // ────────────────────────────────────────────────────────────
 // Types
@@ -34,28 +34,31 @@ export interface NavGroup {
 // Authenticated navigation
 // ────────────────────────────────────────────────────────────
 
+const ICON_SIZE = 16;
+const STROKE = 1.75;
+
 export const navGroups: NavGroup[] = [
   {
     // Main -- no label, always visible at top
     items: [
-      { to: "/", label: "Home", icon: <FaHome size={15} /> },
-      { to: "/notes", label: "Notes", icon: <FaPenNib size={15} /> },
-      { to: "/notebooks", label: "Notebooks", icon: <FaBookOpen size={15} /> },
-      { to: "/favorites", label: "Favorites", icon: <FaStar size={15} /> },
+      { to: "/", label: "Home", icon: <House size={ICON_SIZE} strokeWidth={STROKE} /> },
+      { to: "/notes", label: "Notes", icon: <PenLine size={ICON_SIZE} strokeWidth={STROKE} /> },
+      { to: "/notebooks", label: "Notebooks", icon: <BookOpen size={ICON_SIZE} strokeWidth={STROKE} /> },
+      { to: "/favorites", label: "Favorites", icon: <Star size={ICON_SIZE} strokeWidth={STROKE} /> },
     ],
   },
   {
     label: "Organize",
     items: [
-      { to: "/tags", label: "Tags", icon: <FaTag size={15} /> },
-      { to: "/mood", label: "Moods", icon: <FaSmile size={15} /> },
+      { to: "/tags", label: "Tags", icon: <Tag size={ICON_SIZE} strokeWidth={STROKE} /> },
+      { to: "/mood", label: "Moods", icon: <Smile size={ICON_SIZE} strokeWidth={STROKE} /> },
     ],
   },
   {
     label: "Insights",
     items: [
-      { to: "/reflect", label: "Reflect", icon: <TbSparkles size={15} /> },
-      { to: "/archives", label: "Archive", icon: <FaArchive size={15} /> },
+      { to: "/reflect", label: "Reflect", icon: <Sparkles size={ICON_SIZE} strokeWidth={STROKE} /> },
+      { to: "/archives", label: "Archive", icon: <Archive size={ICON_SIZE} strokeWidth={STROKE} /> },
     ],
   },
 ];

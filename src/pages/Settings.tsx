@@ -417,9 +417,36 @@ function buildCsvExport(notes: any[]): string {
 
 type ExportFormat = "json" | "markdown" | "csv";
 
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+const LAST_EXPORT_KEY = "pine-last-export";
+
 function ExportPicker({ onBack }: { onBack: () => void }) {
   const [format, setFormat] = useState<ExportFormat>("json");
   const [exporting, setExporting] = useState(false);
+  const [dataSize, setDataSize] = useState<string | null>(null);
+  const [lastExport, setLastExport] = useState<string | null>(() => localStorage.getItem(LAST_EXPORT_KEY));
+
+  // Fetch data size on mount
+  useEffect(() => {
+    (async () => {
+      try {
+        const [notesRes, chapRes, tagsRes, moodsRes] = await Promise.all([
+          GetAllNotes(), GetAllChapter(), GetAllTags(), GetAllMood(),
+        ]);
+        const notes = notesRes?.fetched && Array.isArray(notesRes.data) ? notesRes.data : [];
+        const chapters = chapRes?.fetched && Array.isArray(chapRes.data) ? chapRes.data : [];
+        const tags = Array.isArray(tagsRes?.data) ? tagsRes.data : [];
+        const moods = moodsRes?.fetched && Array.isArray(moodsRes.data) ? moodsRes.data : [];
+        const json = buildJsonExport(notes, chapters, tags, moods);
+        setDataSize(formatBytes(new Blob([json]).size));
+      } catch { /* ignore */ }
+    })();
+  }, []);
 
   const formats: { id: ExportFormat; label: string; desc: string }[] = [
     { id: "json", label: "JSON", desc: "Full backup, all data" },
@@ -446,6 +473,9 @@ function ExportPicker({ onBack }: { onBack: () => void }) {
       } else {
         triggerDownload(buildCsvExport(notes), `pine-export-${dateStr}.csv`, "text/csv");
       }
+      const now = new Date().toISOString();
+      localStorage.setItem(LAST_EXPORT_KEY, now);
+      setLastExport(now);
       toast.success("Download started");
     } catch {
       toast.error("Something went wrong");
@@ -459,9 +489,16 @@ function ExportPicker({ onBack }: { onBack: () => void }) {
       <BackButton onClick={onBack} />
 
       <h1 className="text-xl font-semibold text-[rgb(var(--copy-primary))] mb-1">Export your data</h1>
-      <p className="text-sm text-[rgb(var(--copy-muted))] mb-6">
+      <p className="text-sm text-[rgb(var(--copy-muted))] mb-4">
         Download a copy of everything you've written.
       </p>
+
+      <div className="flex items-center gap-4 text-xs text-[rgb(var(--copy-muted))] mb-5">
+        <span>Data size: {dataSize ?? "Calculating..."}</span>
+        {lastExport && (
+          <span>Last exported: {new Date(lastExport).toLocaleString(undefined, { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", hour12: true })}</span>
+        )}
+      </div>
 
       <div className="space-y-1 mb-6">
         {formats.map(f => (
