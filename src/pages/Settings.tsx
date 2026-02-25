@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useTheme } from "../hooks/useTheme";
-import { useFont, fonts as fontOptions, getFontName } from "../hooks/useFont";
+import { useFont, fonts as fontOptions } from "../hooks/useFont";
 import type { FontOption } from "../hooks/useFont";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState, AppDispatch } from "../redux/store";
@@ -8,6 +8,7 @@ import { updateProfile, logoutUser } from "../redux/authThunks";
 import { GetAllNotes, GetAllChapter, GetAllTags, GetAllMood, DeleteAccount } from "../APIs";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import ConfirmModal from "../components/ConfirmModal";
 
 // ─── Theme data ──────────────────────────────────────────
 
@@ -71,6 +72,57 @@ function CheckIcon() {
   );
 }
 
+// ─── Shared components ───────────────────────────────────
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="text-xs font-semibold text-[rgb(var(--copy-muted))] uppercase tracking-widest mb-2">
+      {children}
+    </p>
+  );
+}
+
+function Divider() {
+  return <div className="h-px bg-[rgb(var(--border))]" />;
+}
+
+function SettingRow({
+  label,
+  value,
+  onClick,
+}: {
+  label: string;
+  value?: string;
+  onClick?: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className="w-full flex items-center justify-between py-2.5 px-3 -mx-3 rounded-lg hover:bg-[rgb(var(--surface))] transition-colors text-left group"
+    >
+      <span className="text-sm text-[rgb(var(--copy-primary))]">{label}</span>
+      <div className="flex items-center gap-2">
+        {value && (
+          <span className="text-sm text-[rgb(var(--copy-muted))]">{value}</span>
+        )}
+        <ChevronRight className="text-[rgb(var(--copy-muted))] group-hover:text-[rgb(var(--copy-secondary))] transition-colors" />
+      </div>
+    </button>
+  );
+}
+
+function BackButton({ onClick, label = "Settings" }: { onClick: () => void; label?: string }) {
+  return (
+    <button
+      onClick={onClick}
+      className="flex items-center gap-1.5 text-sm text-[rgb(var(--copy-secondary))] hover:text-[rgb(var(--copy-primary))] transition-colors mb-6"
+    >
+      <ChevronLeft />
+      <span>{label}</span>
+    </button>
+  );
+}
+
 // ─── Theme preview card ──────────────────────────────────
 
 function ThemeCard({
@@ -91,10 +143,10 @@ function ThemeCard({
       title={name}
     >
       <div
-        className={`relative w-full aspect-[4/3] rounded-xl overflow-hidden border-2 transition-all duration-200 ${
+        className={`relative w-full aspect-[4/3] rounded-lg overflow-hidden border-2 transition-all duration-200 ${
           isSelected
-            ? "border-[rgb(var(--cta))] shadow-md ring-2 ring-[rgb(var(--cta))]/20"
-            : "border-[rgb(var(--border))] group-hover:border-[rgb(var(--copy-muted))]/50 group-hover:shadow-sm"
+            ? "border-[rgb(var(--cta))] ring-2 ring-[rgb(var(--cta))]/20"
+            : "border-[rgb(var(--border))] group-hover:border-[rgb(var(--copy-muted))]/50"
         }`}
       >
         <div className="absolute inset-0 flex bg-[rgb(var(--background))]">
@@ -104,30 +156,23 @@ function ThemeCard({
               <div className="h-1 rounded-full bg-[rgb(var(--copy-primary))] opacity-20 w-4/5" />
               <div className="h-1 rounded-full bg-[rgb(var(--copy-muted))] opacity-30 w-3/5" />
               <div className="h-1 rounded-full bg-[rgb(var(--copy-muted))] opacity-30 w-full" />
-              <div className="h-1 rounded-full bg-[rgb(var(--copy-muted))] opacity-20 w-2/3" />
             </div>
           </div>
           <div className="flex-1 p-2.5 flex flex-col gap-1.5">
             <div className="h-1.5 rounded-full bg-[rgb(var(--copy-primary))] opacity-40 w-2/3" />
             <div className="h-1 rounded-full bg-[rgb(var(--copy-muted))] opacity-25 w-full" />
             <div className="h-1 rounded-full bg-[rgb(var(--copy-muted))] opacity-25 w-5/6" />
-            <div className="mt-auto flex items-center gap-1">
-              <div className="h-1.5 w-1.5 rounded-full bg-[rgb(var(--cta))]" />
-              <div className="h-1 rounded-full bg-[rgb(var(--copy-muted))] opacity-20 w-1/4" />
-            </div>
           </div>
         </div>
         {isSelected && (
-          <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-[rgb(var(--cta))] text-[rgb(var(--cta-text))] flex items-center justify-center shadow-sm">
+          <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-[rgb(var(--cta))] text-[rgb(var(--cta-text))] flex items-center justify-center">
             <CheckIcon />
           </div>
         )}
       </div>
-      <div className="mt-2 px-0.5">
-        <span className={`text-[13px] leading-tight ${isSelected ? "font-medium text-[rgb(var(--copy-primary))]" : "text-[rgb(var(--copy-secondary))]"}`}>
-          {name}
-        </span>
-      </div>
+      <p className={`mt-1.5 text-xs ${isSelected ? "font-medium text-[rgb(var(--copy-primary))]" : "text-[rgb(var(--copy-muted))]"}`}>
+        {name}
+      </p>
     </button>
   );
 }
@@ -138,43 +183,19 @@ function ThemePicker({ onBack }: { onBack: () => void }) {
   const { setTheme, currentTheme } = useTheme();
   const [filter, setFilter] = useState<"all" | "light" | "dark">("all");
 
-  const featuredThemes = themes.filter((t) => t.featured);
-  const rest =
+  const filtered =
     filter === "all"
-      ? themes.filter((t) => !t.featured)
-      : themes.filter((t) => t.category === filter && !t.featured);
+      ? themes
+      : themes.filter((t) => t.category === filter);
 
   return (
     <div>
-      <button
-        onClick={onBack}
-        className="flex items-center gap-1.5 text-sm text-[rgb(var(--copy-secondary))] hover:text-[rgb(var(--copy-primary))] transition-colors mb-6"
-      >
-        <ChevronLeft />
-        <span>Settings</span>
-      </button>
+      <BackButton onClick={onBack} />
 
-      <h1 className="text-2xl font-serif font-bold text-[rgb(var(--copy-primary))] tracking-tight mb-1">
-        Theme
-      </h1>
-      <p className="text-sm text-[rgb(var(--copy-muted))] mb-8">
-        Choose how Pine looks. Currently using{" "}
-        <span className="font-medium text-[rgb(var(--copy-secondary))]">
-          {getThemeName(currentTheme)}
-        </span>
-        .
+      <h1 className="text-xl font-semibold text-[rgb(var(--copy-primary))] mb-1">Theme</h1>
+      <p className="text-sm text-[rgb(var(--copy-muted))] mb-6">
+        Currently using <span className="text-[rgb(var(--copy-secondary))]">{getThemeName(currentTheme)}</span>
       </p>
-
-      <div className="mb-8">
-        <p className="text-xs font-medium text-[rgb(var(--copy-muted))] mb-3">Recommended</p>
-        <div className="grid grid-cols-4 gap-3">
-          {featuredThemes.map((t) => (
-            <ThemeCard key={t.id} id={t.id} name={t.name} isSelected={currentTheme === t.id} onSelect={() => setTheme(t.id)} />
-          ))}
-        </div>
-      </div>
-
-      <div className="h-px bg-[rgb(var(--border))] mb-6" />
 
       <div className="flex items-center gap-1 mb-5">
         {(["all", "light", "dark"] as const).map((f) => (
@@ -183,25 +204,25 @@ function ThemePicker({ onBack }: { onBack: () => void }) {
             onClick={() => setFilter(f)}
             className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
               filter === f
-                ? "bg-[rgb(var(--card))] text-[rgb(var(--copy-primary))] shadow-sm"
+                ? "bg-[rgb(var(--surface))] text-[rgb(var(--copy-primary))]"
                 : "text-[rgb(var(--copy-muted))] hover:text-[rgb(var(--copy-secondary))]"
             }`}
           >
-            {f === "all" ? "All themes" : f === "light" ? "Light" : "Dark"}
+            {f === "all" ? "All" : f === "light" ? "Light" : "Dark"}
           </button>
         ))}
         <span className="ml-auto text-[11px] text-[rgb(var(--copy-muted))]">
-          {rest.length} {rest.length === 1 ? "theme" : "themes"}
+          {filtered.length} themes
         </span>
       </div>
 
-      <div className="grid grid-cols-4 gap-3 mb-8">
-        {rest.map((t) => (
+      <div className="grid grid-cols-4 gap-4">
+        {filtered.map((t) => (
           <ThemeCard key={t.id} id={t.id} name={t.name} isSelected={currentTheme === t.id} onSelect={() => setTheme(t.id)} />
         ))}
       </div>
 
-      <p className="text-xs text-[rgb(var(--copy-muted))]">
+      <p className="text-xs text-[rgb(var(--copy-muted))] mt-6">
         Changes apply immediately and persist across sessions.
       </p>
     </div>
@@ -230,15 +251,15 @@ function FontCard({
   return (
     <button
       onClick={onSelect}
-      className={`group relative text-left w-full rounded-xl border-2 transition-all duration-200 overflow-hidden ${
+      className={`group relative text-left w-full rounded-lg border-2 transition-all duration-200 overflow-hidden ${
         isSelected
-          ? "border-[rgb(var(--cta))] shadow-md ring-2 ring-[rgb(var(--cta))]/20"
-          : "border-[rgb(var(--border))] hover:border-[rgb(var(--copy-muted))]/50 hover:shadow-sm"
+          ? "border-[rgb(var(--cta))] ring-2 ring-[rgb(var(--cta))]/20"
+          : "border-[rgb(var(--border))] hover:border-[rgb(var(--copy-muted))]/50"
       }`}
     >
-      <div className="px-4 py-4">
+      <div className="px-4 py-3">
         <p
-          className="text-[22px] font-semibold text-[rgb(var(--copy-primary))] leading-tight mb-1 truncate"
+          className="text-xl font-semibold text-[rgb(var(--copy-primary))] leading-tight mb-0.5 truncate"
           style={{ fontFamily: font.family }}
         >
           Aa
@@ -250,17 +271,16 @@ function FontCard({
           The quick brown fox
         </p>
         <div className="flex items-center justify-between gap-2">
-          <span className={`text-[13px] leading-tight ${isSelected ? "font-medium text-[rgb(var(--copy-primary))]" : "text-[rgb(var(--copy-secondary))]"}`}>
+          <span className={`text-xs ${isSelected ? "font-medium text-[rgb(var(--copy-primary))]" : "text-[rgb(var(--copy-muted))]"}`}>
             {font.name}
           </span>
           <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[rgb(var(--surface))] text-[rgb(var(--copy-muted))]">
             {font.category === "sans" ? "Sans" : font.category === "serif" ? "Serif" : font.category === "rounded" ? "Round" : "Fun"}
           </span>
         </div>
-        <p className="text-[11px] text-[rgb(var(--copy-muted))] mt-0.5">{font.preview}</p>
       </div>
       {isSelected && (
-        <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[rgb(var(--cta))] text-[rgb(var(--cta-text))] flex items-center justify-center shadow-sm">
+        <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[rgb(var(--cta))] text-[rgb(var(--cta-text))] flex items-center justify-center">
           <CheckIcon />
         </div>
       )}
@@ -289,23 +309,11 @@ function FontPicker({ onBack }: { onBack: () => void }) {
 
   return (
     <div>
-      <button
-        onClick={onBack}
-        className="flex items-center gap-1.5 text-sm text-[rgb(var(--copy-secondary))] hover:text-[rgb(var(--copy-primary))] transition-colors mb-6"
-      >
-        <ChevronLeft />
-        <span>Settings</span>
-      </button>
+      <BackButton onClick={onBack} />
 
-      <h1 className="text-2xl font-serif font-bold text-[rgb(var(--copy-primary))] tracking-tight mb-1">
-        Font
-      </h1>
-      <p className="text-sm text-[rgb(var(--copy-muted))] mb-8">
-        Choose your writing font. Currently using{" "}
-        <span className="font-medium text-[rgb(var(--copy-secondary))]">
-          {currentFontOption.name}
-        </span>
-        .
+      <h1 className="text-xl font-semibold text-[rgb(var(--copy-primary))] mb-1">Font</h1>
+      <p className="text-sm text-[rgb(var(--copy-muted))] mb-6">
+        Currently using <span className="text-[rgb(var(--copy-secondary))]">{currentFontOption.name}</span>
       </p>
 
       <div className="flex items-center gap-1 mb-5">
@@ -315,7 +323,7 @@ function FontPicker({ onBack }: { onBack: () => void }) {
             onClick={() => setFilter(c.key)}
             className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
               filter === c.key
-                ? "bg-[rgb(var(--card))] text-[rgb(var(--copy-primary))] shadow-sm"
+                ? "bg-[rgb(var(--surface))] text-[rgb(var(--copy-primary))]"
                 : "text-[rgb(var(--copy-muted))] hover:text-[rgb(var(--copy-secondary))]"
             }`}
           >
@@ -323,11 +331,11 @@ function FontPicker({ onBack }: { onBack: () => void }) {
           </button>
         ))}
         <span className="ml-auto text-[11px] text-[rgb(var(--copy-muted))]">
-          {filtered.length} {filtered.length === 1 ? "font" : "fonts"}
+          {filtered.length} fonts
         </span>
       </div>
 
-      <div className="grid grid-cols-3 gap-3 mb-8">
+      <div className="grid grid-cols-3 gap-3">
         {filtered.map((font) => (
           <FontCard
             key={font.id}
@@ -338,7 +346,7 @@ function FontPicker({ onBack }: { onBack: () => void }) {
         ))}
       </div>
 
-      <p className="text-xs text-[rgb(var(--copy-muted))]">
+      <p className="text-xs text-[rgb(var(--copy-muted))] mt-6">
         Changes apply immediately and persist across sessions.
       </p>
     </div>
@@ -414,101 +422,7 @@ function buildCsvExport(notes: any[]): string {
   return [header, ...rows].join("\n");
 }
 
-// ─── Setting row component ───────────────────────────────
-
-function SettingRow({
-  label,
-  value,
-  onClick,
-  hasChevron = true,
-}: {
-  label: string;
-  value?: string;
-  onClick?: () => void;
-  hasChevron?: boolean;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className="w-full flex items-center justify-between py-3 group text-left"
-    >
-      <span className="text-sm text-[rgb(var(--copy-primary))]">{label}</span>
-      <div className="flex items-center gap-2">
-        {value && (
-          <span className="text-sm text-[rgb(var(--copy-muted))]">{value}</span>
-        )}
-        {hasChevron && (
-          <ChevronRight className="text-[rgb(var(--copy-muted))] opacity-0 group-hover:opacity-100 transition-opacity" />
-        )}
-      </div>
-    </button>
-  );
-}
-
-function Divider() {
-  return <div className="h-px bg-[rgb(var(--border))]" />;
-}
-
-// ─── Delete account modal ────────────────────────────────
-
-function DeleteAccountModal({
-  open,
-  onClose,
-  onConfirm,
-  deleting,
-}: {
-  open: boolean;
-  onClose: () => void;
-  onConfirm: () => void;
-  deleting: boolean;
-}) {
-  const [typed, setTyped] = useState("");
-
-  if (!open) return null;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-[rgb(var(--card))] border border-[rgb(var(--border))] rounded-2xl shadow-2xl w-full max-w-sm mx-4 p-6">
-        <h2 className="text-lg font-serif font-bold text-[rgb(var(--copy-primary))] mb-2">
-          Delete your account?
-        </h2>
-        <p className="text-sm text-[rgb(var(--copy-secondary))] mb-4 leading-relaxed">
-          This will permanently delete all your notes, notebooks, tags, moods, and account data. This action cannot be undone.
-        </p>
-        <label className="block text-xs text-[rgb(var(--copy-muted))] mb-1.5">
-          Type <span className="font-medium text-[rgb(var(--error))]">delete my account</span> to confirm
-        </label>
-        <input
-          type="text"
-          value={typed}
-          onChange={(e) => setTyped(e.target.value)}
-          placeholder="delete my account"
-          disabled={deleting}
-          className="w-full px-3 py-2 rounded-lg text-sm bg-[rgb(var(--background))] border border-[rgb(var(--border))] text-[rgb(var(--copy-primary))] placeholder:text-[rgb(var(--copy-muted))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--error))]/30 disabled:opacity-50 mb-4"
-        />
-        <div className="flex gap-2">
-          <button
-            onClick={onClose}
-            disabled={deleting}
-            className="flex-1 py-2 rounded-lg text-sm font-medium text-[rgb(var(--copy-secondary))] hover:bg-[rgb(var(--surface))] transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={onConfirm}
-            disabled={typed !== "delete my account" || deleting}
-            className="flex-1 py-2 rounded-lg text-sm font-medium bg-[rgb(var(--error))] text-white hover:opacity-90 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            {deleting ? "Deleting..." : "Delete forever"}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ─── Request Data section ────────────────────────────────
+// ─── Export sub-page ─────────────────────────────────────
 
 type ExportFormat = "json" | "markdown" | "csv";
 
@@ -551,36 +465,26 @@ function ExportPicker({ onBack }: { onBack: () => void }) {
 
   return (
     <div>
-      <button
-        onClick={onBack}
-        className="flex items-center gap-1.5 text-sm text-[rgb(var(--copy-secondary))] hover:text-[rgb(var(--copy-primary))] transition-colors mb-6"
-      >
-        <ChevronLeft />
-        <span>Settings</span>
-      </button>
+      <BackButton onClick={onBack} />
 
-      <h1 className="text-2xl font-serif font-bold text-[rgb(var(--copy-primary))] tracking-tight mb-1">
-        Export your data
-      </h1>
-      <p className="text-sm text-[rgb(var(--copy-muted))] mb-8">
-        Download a copy of everything you've written. Pick a format below.
+      <h1 className="text-xl font-semibold text-[rgb(var(--copy-primary))] mb-1">Export your data</h1>
+      <p className="text-sm text-[rgb(var(--copy-muted))] mb-6">
+        Download a copy of everything you've written.
       </p>
 
-      <div className="space-y-2 mb-6">
+      <div className="space-y-1 mb-6">
         {formats.map(f => (
           <button
             key={f.id}
             onClick={() => setFormat(f.id)}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all ${
-              format === f.id
-                ? "bg-[rgb(var(--surface))] ring-1 ring-[rgb(var(--cta))]"
-                : "bg-[rgb(var(--surface))]/50 hover:bg-[rgb(var(--surface))]"
+            className={`w-full flex items-center gap-3 py-2.5 px-3 -mx-3 rounded-lg text-left transition-colors ${
+              format === f.id ? "bg-[rgb(var(--surface))]" : "hover:bg-[rgb(var(--surface))]"
             }`}
           >
-            <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+            <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
               format === f.id ? "border-[rgb(var(--cta))]" : "border-[rgb(var(--border))]"
             }`}>
-              {format === f.id && <div className="w-2 h-2 rounded-full bg-[rgb(var(--cta))]" />}
+              {format === f.id && <div className="w-1.5 h-1.5 rounded-full bg-[rgb(var(--cta))]" />}
             </div>
             <div>
               <p className={`text-sm ${format === f.id ? "font-medium text-[rgb(var(--copy-primary))]" : "text-[rgb(var(--copy-secondary))]"}`}>{f.label}</p>
@@ -593,7 +497,7 @@ function ExportPicker({ onBack }: { onBack: () => void }) {
       <button
         onClick={handleExport}
         disabled={exporting}
-        className="px-5 py-2.5 rounded-lg text-sm font-medium bg-[rgb(var(--cta))] text-[rgb(var(--cta-text))] hover:bg-[rgb(var(--cta-active))] transition-colors disabled:opacity-50"
+        className="px-4 py-2 rounded-lg text-sm font-medium bg-[rgb(var(--cta))] text-[rgb(var(--cta-text))] hover:bg-[rgb(var(--cta-active))] transition-colors disabled:opacity-50"
       >
         {exporting ? "Preparing..." : `Download .${format === "markdown" ? "md" : format}`}
       </button>
@@ -633,9 +537,9 @@ function EditableNameRow({
 
   if (editing) {
     return (
-      <div className="flex items-center gap-2 py-3">
-        <span className="text-sm text-[rgb(var(--copy-primary))] flex-shrink-0">Name</span>
-        <div className="flex-1 flex items-center gap-2 justify-end">
+      <div className="flex items-center justify-between py-2.5 px-3 -mx-3">
+        <span className="text-sm text-[rgb(var(--copy-primary))] flex-shrink-0">Display name</span>
+        <div className="flex items-center gap-2">
           <input
             autoFocus
             type="text"
@@ -644,20 +548,12 @@ function EditableNameRow({
             onKeyDown={handleKeyDown}
             maxLength={200}
             disabled={saving}
-            className="w-48 bg-[rgb(var(--background))] border border-[rgb(var(--border))] rounded-lg px-3 py-1.5 text-sm text-[rgb(var(--copy-primary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--cta))]/30 disabled:opacity-50 text-right"
+            className="w-40 bg-[rgb(var(--background))] border border-[rgb(var(--border))] rounded-lg px-2.5 py-1 text-sm text-[rgb(var(--copy-primary))] focus:outline-none focus:ring-1 focus:ring-[rgb(var(--cta))]/30 disabled:opacity-50 text-right"
           />
-          <button
-            onClick={() => { setEditing(false); setDraft(name || ""); }}
-            disabled={saving}
-            className="text-xs text-[rgb(var(--copy-muted))] hover:text-[rgb(var(--copy-primary))]"
-          >
+          <button onClick={() => { setEditing(false); setDraft(name || ""); }} disabled={saving} className="text-xs text-[rgb(var(--copy-muted))] hover:text-[rgb(var(--copy-primary))]">
             Cancel
           </button>
-          <button
-            onClick={handleSave}
-            disabled={saving || !draft.trim() || draft.trim() === name}
-            className="text-xs font-medium text-[rgb(var(--cta))] hover:text-[rgb(var(--cta-active))] disabled:opacity-40"
-          >
+          <button onClick={handleSave} disabled={saving || !draft.trim() || draft.trim() === name} className="text-xs font-medium text-[rgb(var(--cta))] disabled:opacity-40">
             {saving ? "..." : "Save"}
           </button>
         </div>
@@ -668,14 +564,88 @@ function EditableNameRow({
   return (
     <button
       onClick={() => { setDraft(name || ""); setEditing(true); }}
-      className="w-full flex items-center justify-between py-3 group text-left"
+      className="w-full flex items-center justify-between py-2.5 px-3 -mx-3 rounded-lg hover:bg-[rgb(var(--surface))] transition-colors text-left group"
     >
-      <span className="text-sm text-[rgb(var(--copy-primary))]">Name</span>
+      <span className="text-sm text-[rgb(var(--copy-primary))]">Display name</span>
       <div className="flex items-center gap-2">
         <span className="text-sm text-[rgb(var(--copy-muted))]">{name || "---"}</span>
         <span className="text-xs text-[rgb(var(--cta))] opacity-0 group-hover:opacity-100 transition-opacity">Edit</span>
       </div>
     </button>
+  );
+}
+
+// ─── Profile avatar with upload ──────────────────────────
+
+function ProfileAvatar({
+  profilePicture,
+  initial,
+  name,
+  email,
+  onUpload,
+}: {
+  profilePicture: string | null;
+  initial: string;
+  name: string | null;
+  email: string | null;
+  onUpload: (base64: string) => void;
+}) {
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+    if (file.size > 500 * 1024) {
+      toast.error("Image must be under 500KB");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        onUpload(reader.result);
+      }
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
+  return (
+    <div className="flex items-center gap-3.5 mb-8">
+      <button
+        onClick={() => fileRef.current?.click()}
+        className="relative group flex-shrink-0"
+        title="Change profile picture"
+      >
+        {profilePicture ? (
+          <img
+            src={profilePicture}
+            alt=""
+            className="w-12 h-12 rounded-full object-cover"
+          />
+        ) : (
+          <div className="w-12 h-12 rounded-full bg-[rgb(var(--surface))] flex items-center justify-center text-lg font-semibold text-[rgb(var(--copy-secondary))]">
+            {initial}
+          </div>
+        )}
+        <div className="absolute inset-0 rounded-full bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-0 group-hover:opacity-100 transition-opacity">
+            <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" />
+            <circle cx="12" cy="13" r="4" />
+          </svg>
+        </div>
+        <input ref={fileRef} type="file" accept="image/*" onChange={handleFile} className="hidden" />
+      </button>
+      <div className="min-w-0">
+        <p className="text-sm font-medium text-[rgb(var(--copy-primary))] truncate">{name || "---"}</p>
+        <p className="text-xs text-[rgb(var(--copy-muted))] truncate">{email || "---"}</p>
+      </div>
+    </div>
   );
 }
 
@@ -691,7 +661,7 @@ export default function Settings() {
   const { currentFontOption } = useFont();
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const { name, email } = useSelector((state: RootState) => state.auth);
+  const { name, email, profilePicture } = useSelector((state: RootState) => state.auth);
 
   const handleSaveName = async (newName: string) => {
     try {
@@ -699,6 +669,15 @@ export default function Settings() {
       toast.success(`Name updated to "${result.name}"`);
     } catch (err: any) {
       toast.error(err?.detail || "Failed to update name");
+    }
+  };
+
+  const handleUploadPicture = async (base64: string) => {
+    try {
+      await dispatch(updateProfile({ name: name || "", profile_picture: base64 })).unwrap();
+      toast.success("Profile picture updated");
+    } catch (err: any) {
+      toast.error(err?.detail || "Failed to upload picture");
     }
   };
 
@@ -724,115 +703,114 @@ export default function Settings() {
 
   const initial = (name || email || "?").charAt(0).toUpperCase();
 
+  // Sub-pages
   if (view === "theme") {
     return (
-      <div className="max-w-3xl mx-auto px-6 py-10">
-        <ThemePicker onBack={() => setView("main")} />
+      <div className="min-h-screen bg-[rgb(var(--background))]">
+        <div className="max-w-2xl mx-auto px-4 py-10">
+          <ThemePicker onBack={() => setView("main")} />
+        </div>
       </div>
     );
   }
 
   if (view === "font") {
     return (
-      <div className="max-w-3xl mx-auto px-6 py-10">
-        <FontPicker onBack={() => setView("main")} />
+      <div className="min-h-screen bg-[rgb(var(--background))]">
+        <div className="max-w-2xl mx-auto px-4 py-10">
+          <FontPicker onBack={() => setView("main")} />
+        </div>
       </div>
     );
   }
 
   if (view === "export") {
     return (
-      <div className="max-w-3xl mx-auto px-6 py-10">
-        <ExportPicker onBack={() => setView("main")} />
+      <div className="min-h-screen bg-[rgb(var(--background))]">
+        <div className="max-w-2xl mx-auto px-4 py-10">
+          <ExportPicker onBack={() => setView("main")} />
+        </div>
       </div>
     );
   }
 
+  // Main settings
   return (
     <div className="min-h-screen bg-[rgb(var(--background))]">
-      <div className="max-w-lg mx-auto px-4 py-10">
-        <h1 className="text-2xl font-serif font-bold text-[rgb(var(--copy-primary))] tracking-tight mb-8">
-          Settings
-        </h1>
+      <div className="max-w-2xl mx-auto px-4 py-10">
+        <h1 className="text-xl font-semibold text-[rgb(var(--copy-primary))] mb-8">Settings</h1>
 
         {/* ── Profile ── */}
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-11 h-11 rounded-full bg-[rgb(var(--cta))]/10 flex items-center justify-center text-base font-semibold text-[rgb(var(--cta))] flex-shrink-0">
-            {initial}
-          </div>
-          <div className="min-w-0">
-            <p className="text-sm font-medium text-[rgb(var(--copy-primary))] truncate">{name || "---"}</p>
-            <p className="text-xs text-[rgb(var(--copy-muted))] truncate">{email || "---"}</p>
-          </div>
-        </div>
+        <ProfileAvatar
+          profilePicture={profilePicture}
+          initial={initial}
+          name={name}
+          email={email}
+          onUpload={handleUploadPicture}
+        />
 
         {/* ── Account ── */}
-        <p className="text-[11px] font-semibold text-[rgb(var(--copy-muted))] uppercase tracking-wider mb-1">
-          Account
-        </p>
-        <div className="rounded-xl bg-[rgb(var(--card))] border border-[rgb(var(--border))] px-4 mb-5">
-          <EditableNameRow name={name} onSave={handleSaveName} />
-          <Divider />
-          <div className="flex items-center justify-between py-3">
-            <span className="text-sm text-[rgb(var(--copy-primary))]">Email</span>
-            <span className="text-sm text-[rgb(var(--copy-muted))]">{email || "---"}</span>
-          </div>
+        <SectionLabel>Account</SectionLabel>
+        <EditableNameRow name={name} onSave={handleSaveName} />
+        <div className="flex items-center justify-between py-2.5 px-3 -mx-3">
+          <span className="text-sm text-[rgb(var(--copy-primary))]">Email</span>
+          <span className="text-sm text-[rgb(var(--copy-muted))]">{email || "---"}</span>
         </div>
+
+        <Divider />
+        <div className="h-6" />
 
         {/* ── Appearance ── */}
-        <p className="text-[11px] font-semibold text-[rgb(var(--copy-muted))] uppercase tracking-wider mb-1">
-          Appearance
-        </p>
-        <div className="rounded-xl bg-[rgb(var(--card))] border border-[rgb(var(--border))] px-4 mb-5">
-          <SettingRow label="Theme" value={getThemeName(currentTheme)} onClick={() => setView("theme")} />
-          <Divider />
-          <SettingRow label="Font" value={currentFontOption.name} onClick={() => setView("font")} />
-        </div>
+        <SectionLabel>Appearance</SectionLabel>
+        <SettingRow label="Theme" value={getThemeName(currentTheme)} onClick={() => setView("theme")} />
+        <SettingRow label="Font" value={currentFontOption.name} onClick={() => setView("font")} />
+
+        <Divider />
+        <div className="h-6" />
 
         {/* ── Data ── */}
-        <p className="text-[11px] font-semibold text-[rgb(var(--copy-muted))] uppercase tracking-wider mb-1">
-          Data
-        </p>
-        <div className="rounded-xl bg-[rgb(var(--card))] border border-[rgb(var(--border))] px-4 mb-5">
-          <SettingRow label="Export your data" onClick={() => setView("export")} />
-        </div>
+        <SectionLabel>Data</SectionLabel>
+        <SettingRow label="Export your data" onClick={() => setView("export")} />
 
-        {/* ── Session ── */}
-        <div className="rounded-xl bg-[rgb(var(--card))] border border-[rgb(var(--border))] px-4 mb-5">
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center py-3 text-left"
-          >
-            <span className="text-sm font-medium text-[rgb(var(--error))]">Sign out</span>
-          </button>
-        </div>
+        <Divider />
+        <div className="h-6" />
 
-        {/* ── Danger zone ── */}
-        <p className="text-[11px] font-semibold text-[rgb(var(--copy-muted))] uppercase tracking-wider mb-1">
-          Danger zone
-        </p>
-        <div className="rounded-xl bg-[rgb(var(--card))] border border-[rgb(var(--error))]/20 px-4">
-          <button
-            onClick={() => setDeleteOpen(true)}
-            className="w-full flex items-center justify-between py-3 text-left group"
-          >
-            <div>
-              <p className="text-sm font-medium text-[rgb(var(--error))]">Delete account</p>
-              <p className="text-[11px] text-[rgb(var(--copy-muted))]">Permanently remove your account and all data</p>
-            </div>
-            <ChevronRight className="text-[rgb(var(--error))] opacity-50 group-hover:opacity-100 transition-opacity" />
-          </button>
-        </div>
+        {/* ── Sign out ── */}
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center py-2.5 px-3 -mx-3 rounded-lg hover:bg-[rgb(var(--surface))] transition-colors text-left"
+        >
+          <span className="text-sm text-[rgb(var(--error))]">Sign out</span>
+        </button>
+
+        <Divider />
+        <div className="h-6" />
+
+        {/* ── Danger ── */}
+        <button
+          onClick={() => setDeleteOpen(true)}
+          className="w-full flex items-center justify-between py-2.5 px-3 -mx-3 rounded-lg hover:bg-[rgb(var(--surface))] transition-colors text-left group"
+        >
+          <div>
+            <p className="text-sm text-[rgb(var(--error))]">Delete account</p>
+            <p className="text-[11px] text-[rgb(var(--copy-muted))]">Permanently remove your account and all data</p>
+          </div>
+          <ChevronRight className="text-[rgb(var(--error))] opacity-0 group-hover:opacity-100 transition-opacity" />
+        </button>
 
         {/* ── Footer ── */}
-        <p className="text-center text-[11px] text-[rgb(var(--copy-muted))] mt-8">Pine v2.0</p>
+        <p className="text-center text-[11px] text-[rgb(var(--copy-muted))] mt-10">Pine v2.0</p>
       </div>
 
-      <DeleteAccountModal
-        open={deleteOpen}
+      <ConfirmModal
+        isOpen={deleteOpen}
         onClose={() => setDeleteOpen(false)}
         onConfirm={handleDeleteAccount}
-        deleting={deleting}
+        title="Delete account"
+        message="This will permanently delete all your notes, notebooks, tags, moods, and account data. This action cannot be undone."
+        isProcessing={deleting}
+        confirmText="Delete forever"
+        variant="danger"
       />
     </div>
   );

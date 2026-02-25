@@ -4,14 +4,14 @@ import { GENERAL_BACKEND_BASE_URL } from "../constants";
 
 // --------- Thunks ---------
 
-// Update profile name
+// Update profile name and/or picture
 export const updateProfile = createAsyncThunk<
-  { name: string },
-  { name: string },
+  { name: string; profile_picture?: string },
+  { name: string; profile_picture?: string },
   { rejectValue: { detail: string } }
 >(
   "auth/updateProfile",
-  async ({ name }, { rejectWithValue }) => {
+  async (payload, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("auth_token");
       const response = await fetch(`${GENERAL_BACKEND_BASE_URL}/auth/update-profile`, {
@@ -21,12 +21,12 @@ export const updateProfile = createAsyncThunk<
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name }),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
       if (!response.ok) return rejectWithValue({ detail: data.detail || "Failed to update profile" });
-      return { name: data.name };
+      return { name: data.name, profile_picture: data.profile_picture };
     } catch {
       return rejectWithValue({ detail: "Network Error" });
     }

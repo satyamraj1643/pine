@@ -7,6 +7,7 @@ interface AuthState {
   userId: number | null;
   name: string | null;
   email: string | null;
+  profilePicture: string | null;
   jwtToken: string | null;
   isActivated: boolean;
   isOtpVerifying: boolean,
@@ -22,6 +23,7 @@ const initialState: AuthState = {
   userId: null,
   name: null,
   email: null,
+  profilePicture: null,
   jwtToken: null,
   isActivated: false,
   isOtpVerified: false,
@@ -41,6 +43,7 @@ const authSlice = createSlice({
       state.userId = null;
       state.email = null;
       state.name = null;
+      state.profilePicture = null;
       state.jwtToken = null;
       state.isActivated = false;
       state.isValidated = false;
@@ -144,6 +147,7 @@ const authSlice = createSlice({
           state.email = action.payload.email;
           state.isActivated = action.payload.isActivated;
           state.isOtpVerified = action.payload.isActivated;
+          state.profilePicture = action.payload.profilePicture ?? null;
         }
       )
       .addCase(validateUser.rejected, (state) => {
@@ -165,6 +169,9 @@ const authSlice = createSlice({
       // Update profile
       .addCase(updateProfile.fulfilled, (state, action) => {
         state.name = action.payload.name;
+        if (action.payload.profile_picture !== undefined) {
+          state.profilePicture = action.payload.profile_picture || null;
+        }
       });
 
   },

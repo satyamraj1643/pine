@@ -7,6 +7,7 @@ export const validateUser = createAsyncThunk<
     name: string;
     email: string;
     isActivated: boolean;
+    profilePicture: string | null;
   },
   void,
   { rejectValue: { detail?: string } }
@@ -39,6 +40,7 @@ export const validateUser = createAsyncThunk<
       name: user.name ?? "",
       email: user.email ?? "",
       isActivated: Boolean(user.isVerified),
+      profilePicture: user.profile_picture || null,
     };
   } catch {
     return rejectWithValue({ detail: "Network Error" });
