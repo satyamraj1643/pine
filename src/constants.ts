@@ -1,1 +1,2 @@
-export const GENERAL_BACKEND_BASE_URL = "https://pine-server-lyd0.onrender.com";
+// Empty string = same-origin requests (frontend and backend served from the same host via Nginx)
+export const GENERAL_BACKEND_BASE_URL = "";
