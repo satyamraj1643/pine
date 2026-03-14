@@ -20,7 +20,7 @@ function NavSection({
   return (
     <div className="mb-0.5">
       {group.label && showLabels && (
-        <div className="px-2 pt-5 pb-1 text-[11px] font-medium text-[rgb(var(--copy-muted))] tracking-wide">
+        <div className="px-2 pt-5 pb-1 text-[10px] font-semibold text-[rgb(var(--copy-muted))] uppercase tracking-wider">
           {group.label}
         </div>
       )}
@@ -132,7 +132,7 @@ const SideBar: React.FC = () => {
               <div className="flex items-center gap-2 min-w-0">
                 <img src={pineLogo} alt="Pine" className="w-5 h-5 object-contain flex-shrink-0 opacity-80" />
                 {showLabels && (
-                  <span className="text-[13px] font-semibold text-[rgb(var(--copy-primary))] tracking-tight truncate">
+                  <span className="text-[13px] font-bold text-[rgb(var(--copy-primary))] tracking-tight truncate">
                     Pine
                   </span>
                 )}
@@ -144,8 +144,10 @@ const SideBar: React.FC = () => {
               onClick={() => navigate("/new-note")}
               title={!showLabels ? "New Note" : undefined}
               aria-label="New note"
-              className={`flex items-center gap-2.5 w-full rounded-md text-[13px] text-[rgb(var(--copy-primary))]/70 hover:bg-[rgb(var(--copy-primary))]/[0.04] hover:text-[rgb(var(--copy-primary))] transition-colors duration-100 mb-1 ${
-                showLabels ? "px-2 py-[6px]" : "px-2 py-1.5 justify-center"
+              className={`flex items-center gap-2.5 w-full rounded-md text-[13px] font-medium transition-colors duration-100 mb-1 ${
+                showLabels
+                  ? "px-2 py-[6px] bg-[rgb(var(--cta))] text-[rgb(var(--cta-text))] hover:bg-[rgb(var(--cta-active))]"
+                  : "px-2 py-1.5 justify-center bg-[rgb(var(--cta))] text-[rgb(var(--cta-text))] hover:bg-[rgb(var(--cta-active))]"
               }`}
             >
               <span className="flex items-center justify-center w-5">
@@ -170,7 +172,7 @@ const SideBar: React.FC = () => {
               {profilePicture ? (
                 <img src={profilePicture} alt="" className="w-6 h-6 rounded-full object-cover flex-shrink-0" />
               ) : (
-                <div className="w-6 h-6 rounded-full bg-[rgb(var(--copy-primary))]/[0.08] flex items-center justify-center text-[10px] font-semibold text-[rgb(var(--copy-secondary))] flex-shrink-0">
+                <div className="w-6 h-6 rounded-full bg-[rgb(var(--cta))] flex items-center justify-center text-[10px] font-bold text-[rgb(var(--cta-text))] flex-shrink-0">
                   {initial}
                 </div>
               )}
