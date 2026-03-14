@@ -59,18 +59,18 @@ const Hero = () => (
 
         <div className="flex min-h-[380px]">
           {/* Sidebar — matches real SideBar.tsx structure */}
-          <div className="w-[200px] border-r border-[rgb(var(--border))] bg-[rgb(var(--card))] py-4 px-3 hidden md:flex flex-col justify-between">
-            <div>
+          <div className="w-[200px] border-r border-[rgb(var(--border))] bg-[rgb(var(--surface))] hidden md:flex flex-col">
+            <div className="flex-1 px-2.5 pt-4">
               {/* Workspace header */}
-              <div className="flex items-center gap-2 mb-4 px-2">
+              <div className="flex items-center gap-2.5 mb-5 px-3">
                 <img src={Pine} alt="" className="w-5 h-5" />
-                <span className="text-[13px] font-bold text-[rgb(var(--copy-primary))]">Pine</span>
+                <span className="text-[14px] font-bold text-[rgb(var(--copy-primary))] tracking-tight">Pine</span>
               </div>
 
               {/* New note button */}
-              <div className="flex items-center gap-2 px-2.5 py-[7px] mb-4 rounded-md bg-[rgb(var(--cta))] text-[rgb(var(--cta-text))]">
+              <div className="flex items-center gap-2.5 px-3 py-2 mb-5 rounded-lg bg-[rgb(var(--cta))] text-[rgb(var(--cta-text))]">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
-                <span className="text-[12px] font-medium">New note</span>
+                <span className="text-[13px] font-medium">New note</span>
               </div>
 
               {/* Main nav */}
@@ -81,7 +81,7 @@ const Hero = () => (
                   { label: "Notebooks", active: false, icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" /></svg> },
                   { label: "Favorites", active: false, icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg> },
                 ].map((item) => (
-                  <div key={item.label} className={`flex items-center gap-2.5 text-[12px] px-2.5 py-[7px] rounded-md ${item.active ? "bg-[rgb(var(--copy-primary))]/[0.08] text-[rgb(var(--copy-primary))] font-medium" : "text-[rgb(var(--copy-muted))]"}`}>
+                  <div key={item.label} className={`flex items-center gap-2.5 text-[13px] px-3 py-[7px] rounded-md ${item.active ? "bg-[rgb(var(--copy-primary))]/[0.08] text-[rgb(var(--copy-primary))] font-medium" : "text-[rgb(var(--copy-secondary))]"}`}>
                     {item.icon}
                     {item.label}
                   </div>
@@ -89,13 +89,13 @@ const Hero = () => (
               </div>
 
               {/* Organize group */}
-              <div className="mt-5 mb-1.5 px-2.5 text-[10px] font-semibold uppercase tracking-wider text-[rgb(var(--copy-muted))]">Organize</div>
+              <div className="mt-6 mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-wider text-[rgb(var(--copy-muted))]">Organize</div>
               <div className="space-y-0.5">
                 {[
                   { label: "Tags", icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" /><line x1="7" y1="7" x2="7.01" y2="7" /></svg> },
                   { label: "Moods", icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M8 14s1.5 2 4 2 4-2 4-2" /><line x1="9" y1="9" x2="9.01" y2="9" /><line x1="15" y1="9" x2="15.01" y2="9" /></svg> },
                 ].map((item) => (
-                  <div key={item.label} className="flex items-center gap-2.5 text-[12px] px-2.5 py-[7px] rounded-md text-[rgb(var(--copy-muted))]">
+                  <div key={item.label} className="flex items-center gap-2.5 text-[13px] px-3 py-[7px] rounded-md text-[rgb(var(--copy-secondary))]">
                     {item.icon}
                     {item.label}
                   </div>
@@ -103,13 +103,13 @@ const Hero = () => (
               </div>
 
               {/* Insights group */}
-              <div className="mt-5 mb-1.5 px-2.5 text-[10px] font-semibold uppercase tracking-wider text-[rgb(var(--copy-muted))]">Insights</div>
+              <div className="mt-6 mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-wider text-[rgb(var(--copy-muted))]">Insights</div>
               <div className="space-y-0.5">
                 {[
                   { label: "Reflect", icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg> },
                   { label: "Archive", icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="21 8 21 21 3 21 3 8" /><rect x="1" y="3" width="22" height="5" /><line x1="10" y1="12" x2="14" y2="12" /></svg> },
                 ].map((item) => (
-                  <div key={item.label} className="flex items-center gap-2.5 text-[12px] px-2.5 py-[7px] rounded-md text-[rgb(var(--copy-muted))]">
+                  <div key={item.label} className="flex items-center gap-2.5 text-[13px] px-3 py-[7px] rounded-md text-[rgb(var(--copy-secondary))]">
                     {item.icon}
                     {item.label}
                   </div>
@@ -118,9 +118,11 @@ const Hero = () => (
             </div>
 
             {/* User profile */}
-            <div className="flex items-center gap-2 px-2 mt-4">
-              <div className="w-6 h-6 rounded-full bg-[rgb(var(--cta))] flex items-center justify-center text-[10px] font-bold text-[rgb(var(--cta-text))]">S</div>
-              <span className="text-[12px] text-[rgb(var(--copy-secondary))]">Satyam</span>
+            <div className="px-2.5 pb-4 pt-3 border-t border-[rgb(var(--border))]">
+              <div className="flex items-center gap-2.5 px-3 py-2">
+                <div className="w-7 h-7 rounded-full bg-[rgb(var(--cta))] flex items-center justify-center text-[11px] font-bold text-[rgb(var(--cta-text))]">S</div>
+                <span className="text-[13px] text-[rgb(var(--copy-secondary))]">Satyam</span>
+              </div>
             </div>
           </div>
 
