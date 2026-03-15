@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useBlocker } from "react-router-dom";
 import toast from "react-hot-toast";
 import {
   GetAllCollections,
@@ -196,6 +196,16 @@ const CreateEntry: React.FC = () => {
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isSavingRef = useRef(false);
 
+  // Snapshot of last-saved state for dirty tracking
+  const lastSavedRef = useRef({
+    title: title,
+    content: content,
+    chapter: selectedChapter?.id ?? null,
+    collections: selectedCollections.map((c) => c.id).sort().join(","),
+    moods: selectedMoods.map((m) => String(m.id)).sort().join(","),
+    pendingMoods: pendingMoods.map((m) => m.name).sort().join(","),
+  });
+
   // ── Auto-save draft to localStorage ────────────────────────
   const DRAFT_KEY = "pine-draft";
 
@@ -213,31 +223,55 @@ const CreateEntry: React.FC = () => {
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Save draft to localStorage (debounced 2s)
+  // Save draft to localStorage (debounced 1s)
   useEffect(() => {
     if (isEditMode || isSaving) return;
     const timer = setTimeout(() => {
       if (title.trim() || content.trim()) {
         localStorage.setItem(DRAFT_KEY, JSON.stringify({ title, content }));
       }
-    }, 2000);
+    }, 1000);
     return () => clearTimeout(timer);
   }, [title, content, isEditMode, isSaving]);
 
   const clearDraft = () => localStorage.removeItem(DRAFT_KEY);
 
-  // ── Unsaved changes warning ────────────────────────────────
-  const isDirty = title.trim() !== "" || content.trim() !== "";
+  // ── Dirty tracking (changes since last successful save) ────
+  const currentSnapshot = useCallback(() => ({
+    title,
+    content,
+    chapter: selectedChapter?.id ?? null,
+    collections: selectedCollections.map((c) => c.id).sort().join(","),
+    moods: selectedMoods.map((m) => String(m.id)).sort().join(","),
+    pendingMoods: pendingMoods.map((m) => m.name).sort().join(","),
+  }), [title, content, selectedChapter, selectedCollections, selectedMoods, pendingMoods]);
 
+  const isDirty = useCallback(() => {
+    const snap = currentSnapshot();
+    const last = lastSavedRef.current;
+    return (
+      snap.title !== last.title ||
+      snap.content !== last.content ||
+      snap.chapter !== last.chapter ||
+      snap.collections !== last.collections ||
+      snap.moods !== last.moods ||
+      snap.pendingMoods !== last.pendingMoods
+    );
+  }, [currentSnapshot]);
+
+  // Has any content at all (for form validity)
+  const hasContent = title.trim() !== "" || (content.trim() !== "" && content !== "<p></p>");
+
+  // ── Browser tab close: warn if unsaved ──────────────────────
   useEffect(() => {
     const handler = (e: BeforeUnloadEvent) => {
-      if (isDirty && !isSaving) {
+      if (isDirty() && !isSavingRef.current) {
         e.preventDefault();
       }
     };
     window.addEventListener("beforeunload", handler);
     return () => window.removeEventListener("beforeunload", handler);
-  }, [isDirty, isSaving]);
+  }, [isDirty]);
 
   // ── Derived ────────────────────────────────────────────────
   const totalMoodCount = selectedMoods.length + pendingMoods.length;
@@ -357,9 +391,9 @@ const CreateEntry: React.FC = () => {
     }
   };
 
-  // ── Auto-save function ─────────────────────────────────────
-  const performSave = useCallback(async () => {
-    if (!isFormValid || isSavingRef.current) return;
+  // ── Save function ───────────────────────────────────────────
+  const performSave = useCallback(async (): Promise<boolean> => {
+    if (!isFormValid || isSavingRef.current) return false;
 
     isSavingRef.current = true;
     setIsSaving(true);
@@ -400,18 +434,18 @@ const CreateEntry: React.FC = () => {
       mood: moodIds.map((id) => Number(id)).filter(Boolean),
     };
 
+    let success = false;
     try {
       if (entryId) {
-        // Update existing entry
         const res = await UpdateEntry(entryId, payload);
         if (res?.updated) {
           clearDraft();
           setAutoSaveStatus("saved");
+          success = true;
         } else {
           setAutoSaveStatus("error");
         }
       } else {
-        // Create new entry
         const res = await CreateNewEntry(payload);
         if (res?.created) {
           clearDraft();
@@ -419,6 +453,7 @@ const CreateEntry: React.FC = () => {
             setEntryId(res.id);
           }
           setAutoSaveStatus("saved");
+          success = true;
         } else {
           setAutoSaveStatus("error");
         }
@@ -429,11 +464,25 @@ const CreateEntry: React.FC = () => {
       isSavingRef.current = false;
       setIsSaving(false);
     }
+
+    // Update last-saved snapshot on success
+    if (success) {
+      lastSavedRef.current = {
+        title,
+        content,
+        chapter: selectedChapter?.id ?? null,
+        collections: selectedCollections.map((c) => c.id).sort().join(","),
+        moods: selectedMoods.map((m) => String(m.id)).sort().join(","),
+        pendingMoods: pendingMoods.map((m) => m.name).sort().join(","),
+      };
+    }
+
+    return success;
   }, [isFormValid, selectedMoods, pendingMoods, title, content, selectedChapter, selectedCollections, entryId]);
 
-  // ── Auto-save effect: 5s after inactivity ──────────────────
+  // ── Auto-save effect: 1.5s after any change ────────────────
   useEffect(() => {
-    if (!isFormValid) return;
+    if (!isFormValid || !isDirty()) return;
 
     if (autoSaveTimerRef.current) {
       clearTimeout(autoSaveTimerRef.current);
@@ -441,14 +490,14 @@ const CreateEntry: React.FC = () => {
 
     autoSaveTimerRef.current = setTimeout(() => {
       performSave();
-    }, 5000);
+    }, 1500);
 
     return () => {
       if (autoSaveTimerRef.current) {
         clearTimeout(autoSaveTimerRef.current);
       }
     };
-  }, [title, content, selectedChapter, selectedCollections, selectedMoods, pendingMoods, isFormValid, performSave]);
+  }, [title, content, selectedChapter, selectedCollections, selectedMoods, pendingMoods, isFormValid, isDirty, performSave]);
 
   // Reset "saved" status after 3s
   useEffect(() => {
@@ -469,6 +518,35 @@ const CreateEntry: React.FC = () => {
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }); // intentionally no deps — always uses latest
+
+  // ── React Router navigation blocker ────────────────────────
+  // Block in-app navigation (sidebar links, etc.) if unsaved
+  const blocker = useBlocker(
+    useCallback(
+      () => isDirty() && isFormValid && !isSavingRef.current,
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [isDirty, isFormValid, title, content, selectedChapter, selectedCollections, selectedMoods, pendingMoods]
+    )
+  );
+
+  // When blocker triggers, save then proceed
+  useEffect(() => {
+    if (blocker.state !== "blocked") return;
+
+    const saveAndProceed = async () => {
+      await performSave();
+      blocker.proceed();
+    };
+    saveAndProceed();
+  }, [blocker, performSave]);
+
+  // ── Back button handler (save-before-leave) ────────────────
+  const handleBack = useCallback(async () => {
+    if (isDirty() && isFormValid) {
+      await performSave();
+    }
+    navigate(-1);
+  }, [isDirty, isFormValid, performSave, navigate]);
 
   // ── Manual mood detect handler ─────────────────────────────
   const handleDetectMood = async () => {
@@ -526,7 +604,8 @@ const CreateEntry: React.FC = () => {
         {/* ── Header row ──────────────────────────────────── */}
         <div className="flex items-center justify-between mb-8">
           <button
-            onClick={() => navigate(-1)}
+            onClick={handleBack}
+            disabled={isSaving}
             className="inline-flex items-center gap-1.5 text-sm transition-colors"
             style={{ color: "rgb(var(--copy-muted))" }}
           >
