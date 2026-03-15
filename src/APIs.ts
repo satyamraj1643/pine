@@ -152,7 +152,9 @@ export const CreateNewNote = async (note: any): Promise<any> => {
       }),
     });
     if (!response.ok) return { created: false, detail: response.statusText };
-    if (response.status === 201) return { created: true };
+    const data = await response.json();
+    if (data.created) return { created: true, id: data.id };
+    return { created: false };
   } catch (error) {
     return { created: false, detail: error };
   }

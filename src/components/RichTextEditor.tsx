@@ -9,6 +9,7 @@ import Link from "@tiptap/extension-link";
 import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
 import { TextStyle } from "@tiptap/extension-text-style";
+import Image from "@tiptap/extension-image";
 import {
   Bold,
   Italic,
@@ -26,6 +27,7 @@ import {
   Highlighter,
   Link as LinkIcon,
   Minus,
+  ImageIcon,
 } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────
@@ -74,6 +76,17 @@ function Sep() {
   return <div className="w-px h-5 bg-[rgb(var(--border))] mx-1" />;
 }
 
+// ─── Helper: convert File to base64 data URI ─────────────
+
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 // ─── Fixed toolbar ───────────────────────────────────────
 
 function FixedToolbar({ editor }: { editor: any }) {
@@ -86,6 +99,23 @@ function FixedToolbar({ editor }: { editor: any }) {
       return;
     }
     editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
+  }, [editor]);
+
+  const addImage = useCallback(() => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+      try {
+        const dataUri = await fileToBase64(file);
+        editor.chain().focus().setImage({ src: dataUri }).run();
+      } catch {
+        // silently fail
+      }
+    };
+    input.click();
   }, [editor]);
 
   const s = 20;
@@ -142,6 +172,9 @@ function FixedToolbar({ editor }: { editor: any }) {
       <Btn onClick={setLink} active={editor.isActive("link")} title="Link">
         <LinkIcon size={s} strokeWidth={sw} />
       </Btn>
+      <Btn onClick={addImage} title="Add image">
+        <ImageIcon size={s} strokeWidth={sw} />
+      </Btn>
       <Btn onClick={() => editor.chain().focus().setHorizontalRule().run()} title="Divider">
         <Minus size={s} strokeWidth={sw} />
       </Btn>
@@ -171,6 +204,13 @@ export default function RichTextEditor({
       TaskList,
       TaskItem.configure({ nested: true }),
       TextStyle,
+      Image.configure({
+        inline: false,
+        allowBase64: true,
+        HTMLAttributes: {
+          class: "rounded-lg max-w-full my-2",
+        },
+      }),
     ],
     content,
     editable,
@@ -180,6 +220,38 @@ export default function RichTextEditor({
     editorProps: {
       attributes: {
         class: "pine-editor outline-none min-h-[320px] px-1 py-2",
+      },
+      // Handle image paste
+      handlePaste: (_view, event) => {
+        const items = event.clipboardData?.items;
+        if (!items) return false;
+
+        for (const item of Array.from(items)) {
+          if (item.type.startsWith("image/")) {
+            event.preventDefault();
+            const file = item.getAsFile();
+            if (!file) return false;
+            fileToBase64(file).then((dataUri) => {
+              editor?.chain().focus().setImage({ src: dataUri }).run();
+            });
+            return true;
+          }
+        }
+        return false;
+      },
+      // Handle image drop
+      handleDrop: (_view, event) => {
+        const files = event.dataTransfer?.files;
+        if (!files || files.length === 0) return false;
+
+        const file = files[0];
+        if (!file.type.startsWith("image/")) return false;
+
+        event.preventDefault();
+        fileToBase64(file).then((dataUri) => {
+          editor?.chain().focus().setImage({ src: dataUri }).run();
+        });
+        return true;
       },
     },
   });
