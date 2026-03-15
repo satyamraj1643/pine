@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useNavigate, useLocation, useBlocker } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import {
   GetAllCollections,
@@ -276,7 +276,7 @@ const CreateEntry: React.FC = () => {
   // ── Derived ────────────────────────────────────────────────
   const totalMoodCount = selectedMoods.length + pendingMoods.length;
 
-  const isFormValid = title.trim() && content.trim() && content !== "<p></p>";
+  const isFormValid = Boolean(title.trim() && content.trim() && content !== "<p></p>");
 
   const plainText = htmlToPlainText(content);
   const wordCount = plainText
@@ -518,27 +518,6 @@ const CreateEntry: React.FC = () => {
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }); // intentionally no deps — always uses latest
-
-  // ── React Router navigation blocker ────────────────────────
-  // Block in-app navigation (sidebar links, etc.) if unsaved
-  const blocker = useBlocker(
-    useCallback(
-      () => isDirty() && isFormValid && !isSavingRef.current,
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      [isDirty, isFormValid, title, content, selectedChapter, selectedCollections, selectedMoods, pendingMoods]
-    )
-  );
-
-  // When blocker triggers, save then proceed
-  useEffect(() => {
-    if (blocker.state !== "blocked") return;
-
-    const saveAndProceed = async () => {
-      await performSave();
-      blocker.proceed();
-    };
-    saveAndProceed();
-  }, [blocker, performSave]);
 
   // ── Back button handler (save-before-leave) ────────────────
   const handleBack = useCallback(async () => {
