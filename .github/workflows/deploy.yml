@@ -19,6 +19,10 @@ jobs:
             APP_DIR="$HOME/pine"
             cd "$APP_DIR/frontend"
 
+            echo "▸ Resetting local changes..."
+            git checkout -- .
+            git clean -fd
+
             echo "▸ Pulling latest frontend..."
             git pull origin main
 
