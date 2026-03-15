@@ -326,6 +326,7 @@ const CreateEntry: React.FC = () => {
       const res = await createTag({
         name: newTagName.trim(),
         color: newTagColor,
+        slug: null,
       });
       if (res) {
         // Refresh collections list and auto-select the new tag
