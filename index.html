@@ -3,8 +3,32 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Pine</title>
+
+    <!-- SEO -->
+    <title>Pine – Free Personal Diary & Journal App Online</title>
+    <meta name="description" content="Pine is a free online personal diary and journal app. Write notes, track your moods, organize with notebooks and tags, and reflect with AI-powered insights. Private by default." />
+    <meta name="keywords" content="personal diary, journal app, online diary, mood tracker, daily journal, private journal, free diary app, digital journal, personal journal, writing app" />
+    <link rel="canonical" href="https://pine-app.ddns.net/" />
+    <meta name="theme-color" content="#4CAF50" />
+
+    <!-- Open Graph (Facebook, LinkedIn, etc.) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://pine-app.ddns.net/" />
+    <meta property="og:title" content="Pine – Free Personal Diary & Journal App Online" />
+    <meta property="og:description" content="Your thoughts, beautifully organized. Write notes, track moods, and reflect on what matters — all in one calm, private space." />
+    <meta property="og:image" content="https://pine-app.ddns.net/pine-transparent.svg" />
+    <meta property="og:site_name" content="Pine" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Pine – Free Personal Diary & Journal App Online" />
+    <meta name="twitter:description" content="Your thoughts, beautifully organized. Write notes, track moods, and reflect on what matters — all in one calm, private space." />
+    <meta name="twitter:image" content="https://pine-app.ddns.net/pine-transparent.svg" />
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/manifest.json" />
     
     <!-- Preconnect for faster font loading -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -54,6 +78,49 @@
     </script>
   </head>
   <body>
+    <!-- Structured Data for Google Rich Results -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Pine",
+      "url": "https://pine-app.ddns.net",
+      "description": "A free personal diary and journal app. Write notes, track your moods, organize with notebooks and tags, and reflect with AI-powered insights.",
+      "applicationCategory": "LifestyleApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Personal diary and journaling",
+        "Mood tracking",
+        "Notebooks and note organization",
+        "Tags and full-text search",
+        "AI-powered reflection prompts",
+        "PDF and text export",
+        "Private by default"
+      ]
+    }
+    </script>
+
+    <!-- Fallback content for search engine crawlers (hidden when JS loads) -->
+    <noscript>
+      <h1>Pine – Free Personal Diary & Journal App</h1>
+      <p>Pine is a free online personal diary and journal app. Write notes, track your moods, organize with notebooks and tags, and reflect with AI-powered insights. Your thoughts, beautifully organized.</p>
+      <h2>Features</h2>
+      <ul>
+        <li>Notebooks & Notes – Organize entries into notebooks for daily reflections, travel logs, or creative writing.</li>
+        <li>Mood Tracking – Log how you feel with each entry and spot patterns over time.</li>
+        <li>Tags & Search – Tag entries with topics and find any note instantly.</li>
+        <li>Private by Default – No social features, no public profiles, no data selling.</li>
+        <li>AI Reflection – Get thoughtful prompts and insights to write deeper entries.</li>
+        <li>Export Anywhere – Download entries as PDF or text anytime.</li>
+      </ul>
+      <p><a href="/signup">Start writing for free</a> | <a href="/login">Sign in</a></p>
+    </noscript>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

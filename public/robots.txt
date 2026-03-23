@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+Disallow: /settings
+Disallow: /notes
+Disallow: /notebooks
+Disallow: /note
+Disallow: /notebook
+Disallow: /new-note
+Disallow: /new-notebook
+Disallow: /new-tag
+Disallow: /favorites
+Disallow: /archives
+Disallow: /reflect
+Disallow: /mood
+Disallow: /tags
+
+Sitemap: https://pine-app.ddns.net/sitemap.xml

@@ -1,0 +1,16 @@
+{
+  "name": "Pine – Personal Diary & Journal",
+  "short_name": "Pine",
+  "description": "A free personal diary and journal app. Write notes, track moods, and reflect on what matters.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4CAF50",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
