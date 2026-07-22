@@ -14,4 +14,4 @@ Disallow: /reflect
 Disallow: /mood
 Disallow: /tags
 
-Sitemap: https://pine-app.ddns.net/sitemap.xml
+Sitemap: https://pine-journal.ddns.net/sitemap.xml
