@@ -28,7 +28,7 @@ function computeCurrentStreak(entries: ApiEntry[]): number {
   for (const e of entries) { const d = new Date(e.CreatedAt); if (!isNaN(d.getTime())) daySet.add(toDateKey(d)); }
   if (daySet.size === 0) return 0;
   const today = new Date();
-  let check = new Date(today);
+  const check = new Date(today);
   if (!daySet.has(toDateKey(check))) { check.setDate(check.getDate() - 1); if (!daySet.has(toDateKey(check))) return 0; }
   let streak = 0;
   while (daySet.has(toDateKey(check))) { streak++; check.setDate(check.getDate() - 1); }

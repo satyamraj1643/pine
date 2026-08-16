@@ -1,54 +1,93 @@
-# React + TypeScript + Vite
+# Pine Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend web application for **Pine** – a private, calm personal journal & diary app built with React, TypeScript, Vite, Tailwind CSS, and TipTap.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Quick Start
 
-## Expanding the ESLint configuration
+### Prerequisites
+- **Node.js**: v18 or higher (v20+ recommended)
+- **npm**: v9 or higher
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+### 1. Install Dependencies
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+### 2. Configure Environment Variables
+Copy the example environment file:
+```bash
+cp .env.example .env
 ```
+Edit `.env` to configure your backend API base URL:
+```env
+# Backend Base URL (leave empty for same-origin proxy during local dev)
+VITE_BACKEND_URL=http://localhost:8080
+```
+
+### 3. Start Development Server
+```bash
+npm run dev
+```
+
+### 4. Build for Production
+```bash
+npm run build
+```
+The compiled static output will be generated in the `dist/` directory.
+
+---
+
+## 🌐 Deployment
+
+### Deploying to Cloudflare Pages (Recommended)
+
+1. Connect your repository to **Cloudflare Pages**.
+2. Set the build configuration:
+   - **Framework preset**: `Vite`
+   - **Build command**: `npm run build`
+   - **Build output directory**: `dist`
+   - **Node.js version**: `20` (in Environment Variables: `NODE_VERSION=20`)
+3. Add your Production Environment Variables in Cloudflare Pages dashboard:
+   - `VITE_BACKEND_URL`: `https://api.yourdomain.com`
+4. *SPA Routing*: The `public/_redirects` file (`/* /index.html 200`) is already included to handle client-side routing.
+
+---
+
+### Deploying to Render (Static Site)
+
+1. Create a new **Static Site** on [Render](https://render.com).
+2. Connect your Git repository.
+3. Configure the static site settings:
+   - **Build Command**: `npm run build`
+   - **Publish Directory**: `dist`
+4. Add your Environment Variables:
+   - `VITE_BACKEND_URL`: `https://api.yourdomain.com`
+5. Configure Redirects / Rewrites in Render settings:
+   - **Source**: `/*`
+   - **Destination**: `/index.html`
+   - **Action**: `Rewrite`
+
+---
+
+## 🛠️ Tech Stack
+
+- **Framework**: [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
+- **Build Tool**: [Vite](https://vitejs.dev/)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
+- **State Management**: [Redux Toolkit](https://redux-toolkit.js.org/)
+- **Editor**: [TipTap Editor](https://tiptap.dev/)
+- **Icons**: [Lucide React](https://lucide.dev/) & [React Icons](https://react-icons.github.io/react-icons/)
+- **Notifications**: [React Hot Toast](https://react-hot-toast.com/)
+
+---
+
+## 📜 Scripts
+
+| Command | Description |
+| :--- | :--- |
+| `npm run dev` | Starts local development server with HMR |
+| `npm run build` | Type-checks with `tsc` and builds production bundle in `dist/` |
+| `npm run preview` | Locally previews production build |
+| `npm run lint` | Runs ESLint |
