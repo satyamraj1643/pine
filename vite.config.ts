@@ -35,16 +35,16 @@ export default defineConfig({
   server: {
     proxy: {
       // Proxy API calls to the Go backend during local dev
-      '/entries': 'http://localhost:8080',
-      '/chapters': 'http://localhost:8080',
-      '/collections': 'http://localhost:8080',
-      '/moods': 'http://localhost:8080',
-      '/ai': 'http://localhost:8080',
-      '/auth': 'http://localhost:8080',
-      '/exports': 'http://localhost:8080',
-      '/signup': 'http://localhost:8080',
-      '/login': 'http://localhost:8080',
-      '/verify-otp': 'http://localhost:8080',
+      '/entries': { target: 'https://api.pine.brink.co.in', changeOrigin: true },
+      '/chapters': { target: 'https://api.pine.brink.co.in', changeOrigin: true },
+      '/collections': { target: 'https://api.pine.brink.co.in', changeOrigin: true },
+      '/moods': { target: 'https://api.pine.brink.co.in', changeOrigin: true },
+      '/ai': { target: 'https://api.pine.brink.co.in', changeOrigin: true },
+      '/auth': { target: 'https://api.pine.brink.co.in', changeOrigin: true },
+      '/exports': { target: 'https://api.pine.brink.co.in', changeOrigin: true },
+      '/signup': { target: 'https://api.pine.brink.co.in', changeOrigin: true },
+      '/login': { target: 'https://api.pine.brink.co.in', changeOrigin: true },
+      '/verify-otp': { target: 'https://api.pine.brink.co.in', changeOrigin: true },
     },
   },
 })
